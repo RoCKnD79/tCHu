@@ -12,14 +12,10 @@ public enum Card {
     //public static final List<Card> CARS = List.of(Card.values()).subList(0, 8);
     public static final List<Card> CARS = List.of(Card.values()).subList(0, Card.values().length - 1);
 
-    /*
-    CE BLOC NE FAIT PAS CE QU'ON VEUT
-     */
     public static Card of(Color color) {
         for(int i = 0; i < CARS.size(); ++i) {
-            //TODO à voir si .equals() fonctionne pour comparer
-            //FollowUp, equals ne fonctionne pas wola
-            if (color.equals(CARS.get(i))) {
+            System.out.println("color: " + color.toString());
+            if (color.toString().equals(CARS.get(i).toString())) {
                 return CARS.get(i);
             }
         }
