@@ -62,7 +62,7 @@ public final class Ticket implements Comparable<Ticket> {
         String info;
 
         for(int i = 0; i < trips.size(); ++i) {
-            text.add(trips.get(i).to().name());
+            text.add(trips.get(i).to().name() + " (" + trips.get(i).points() + ")");
         }
         if(text.size() > 1) {
             info = trips.get(0).from().name() + " - " + "{" + String.join(", ", text) + "}";
@@ -79,18 +79,6 @@ public final class Ticket implements Comparable<Ticket> {
              positive number if for ex: "z".compareTo("a");
              zero if for ex: "a".compareTo("a");
      */
-    //TODO je sais pas si c'est juste en fait
     @Override
-    public int compareTo(Ticket that) {
-
-        /*if (this.text() < that.text()){
-            return -1;
-        }else if(this.text() > that.text()){
-            return 1;
-        }else if(this.text() = that.text()){
-            return 0;
-        }*/
-
-        return this.text().compareTo(that.text());
-    }
+    public int compareTo(Ticket that) { return this.text().compareTo(that.text()); }
 }
