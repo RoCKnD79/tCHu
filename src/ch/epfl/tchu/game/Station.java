@@ -24,11 +24,8 @@ public final class Station {
 
     @Override
     public String toString() {
-        return "Gare de " + NAME;
-    }
-
-    public static final class IdBuilder {
-
+        //return "Gare de " + NAME;
+        return NAME;
     }
 
 }
