@@ -15,15 +15,12 @@ public final class Ticket implements Comparable<Ticket> {
      @param trips
     */
     public Ticket(List<Trip> trips) throws IllegalArgumentException {
-
         if (trips == null) {
             throw new IllegalArgumentException("List can't be null");
         }
-
-        //TODO A verifier ;)
         fromStation = trips.get(0).from();
         for(int i = 0; i < trips.size(); ++i) {
-            if (fromStation != trips.get(i).from()) {
+            if (!fromStation.name().equals(trips.get(i).from().name())) {
                 throw new IllegalArgumentException("Not all trips come from same Station");
             }
         }
@@ -48,6 +45,9 @@ public final class Ticket implements Comparable<Ticket> {
         return this.points(connectivity);
     }
 
+    /**
+     * @return tripInfo, a variable containing the textual representation of the trip written on the ticket
+     */
     public String text() { return tripInfo; }
 
     @Override
@@ -62,10 +62,13 @@ public final class Ticket implements Comparable<Ticket> {
         String info;
 
         for(int i = 0; i < trips.size(); ++i) {
-            text.add(trips.get(i).to().toString());
+            text.add(trips.get(i).to().name());
         }
-        info = trips.get(0).from().toString() + String.join(" - ", text);
-
+        if(text.size() > 1) {
+            info = trips.get(0).from().name() + " - " + "{" + String.join(", ", text) + "}";
+        } else {
+            info = trips.get(0).from().name() + " - " + text.last();
+        }
         return info;
     }
 
