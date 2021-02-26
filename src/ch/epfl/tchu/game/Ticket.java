@@ -9,13 +9,14 @@ public final class Ticket implements Comparable<Ticket> {
     //public final Trip trip;
     private final Station fromStation;
     //private final ArrayList<String> text = new ArrayList<>();
+    private final List<Trip> trips;
     private final String tripInfo;
 
     /**First constructor for ticket class, verifies that list of trips isn't null and that all trips have same origin.
      @param trips
     */
     public Ticket(List<Trip> trips) throws IllegalArgumentException {
-        if (trips == null) {
+        if (trips == null || trips.size() == 0) {
             throw new IllegalArgumentException("List can't be null");
         }
         fromStation = trips.get(0).from();
@@ -24,6 +25,8 @@ public final class Ticket implements Comparable<Ticket> {
                 throw new IllegalArgumentException("Not all trips come from same Station");
             }
         }
+        //Wallah dédicace à nous à l'étape 7, si vous trouvez pas l'erreur c cette merde ici
+        this.trips = trips;
         tripInfo = computeText(trips);
     }
 
@@ -42,7 +45,21 @@ public final class Ticket implements Comparable<Ticket> {
     @param connectivity
      */
     public int points(StationConnectivity connectivity){
-        return this.points(connectivity);
+
+        for(int i = 0; i < trips.size(); ++i) {
+            if (connectivity.connected(trips.get(i).from(), trips.get(i).to()) == true) {
+                return trips.get(i).points();
+            }
+        }
+
+        int minPts = trips.get(0).points();
+        for(int j = 0; j < trips.size(); ++j) {
+            if(minPts > trips.get(j).points()) {
+                minPts = trips.get(j).points();
+            }
+        }
+
+        return -minPts;
     }
 
     /**
