@@ -44,22 +44,56 @@ public final class Ticket implements Comparable<Ticket> {
     returns number of points for the specific ticket
     @param connectivity
      */
-    public int points(StationConnectivity connectivity){
+    public int points(StationConnectivity connectivity) {
 
-        for(int i = 0; i < trips.size(); ++i) {
+        boolean max = false;
+        int maxPts = trips.get(0).points();
+        int minPts = trips.get(0).points();
+        for (int h = 0; h < trips.size(); ++h) {
+            if (connectivity.connected(trips.get(h).from(), trips.get(h).to()) == true) {
+                if (maxPts < trips.get(h).points()) {
+                    maxPts = trips.get(h).points();
+                }
+            max = true;
+            }else {
+                if (minPts > trips.get(h).points()) {
+                    minPts = trips.get(h).points();
+                }
+
+            }
+        }
+
+
+        for (int j = 0; j < trips.size(); ++j) {
+            if((connectivity.connected(trips.get(j).from(), trips.get(j).to()) == false)){
+                if (minPts > trips.get(j).points()) {
+                    minPts = trips.get(j).points();
+                }
+            }
+        }
+
+        /*for (int i = 0; i < trips.size(); ++i) {
             if (connectivity.connected(trips.get(i).from(), trips.get(i).to()) == true) {
                 return trips.get(i).points();
-            }
-        }
+                //return maxPts;
+            } else if((connectivity.connected(trips.get(i).from(), trips.get(i).to()) == false)){
+                return -trips.get(i).points();
+                //return -minPts;*/
+            /*}else{
+                for(int u = 0; u < trips.size(); ++u) {
+                    if (connectivity.connected(trips.get(u).from(), trips.get(u).to()) == true) {
+                        return trips.get(u).points();
+                    }
+                }
+            }*/
+            //}
 
-        int minPts = trips.get(0).points();
-        for(int j = 0; j < trips.size(); ++j) {
-            if(minPts > trips.get(j).points()) {
-                minPts = trips.get(j).points();
-            }
-        }
+        //}
 
-        return -minPts;
+        if (max == false){
+            return -minPts;
+        }
+        return maxPts;
     }
 
     /**
