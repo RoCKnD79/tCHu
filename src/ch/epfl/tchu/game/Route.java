@@ -5,14 +5,14 @@ import java.util.Objects;
 
 public final class Route {
 
-    private Station station1;
-    private Station station2;
-    private String id;
-    private int length;
-    private Level level;
-    private Color color;
-    private List<Station> stations;
-    private List<Card> allCards;
+    private final Station station1;
+    private final Station station2;
+    private final String id;
+    private final int length;
+    private final Level level;
+    private final Color color;
+    private  Card Card;
+    private static SortedBag possibleCards;
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
 
@@ -103,7 +103,7 @@ public final class Route {
 
         SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
         if (this.level().equals(Level.UNDERGROUND)){
-            possibleCards = possibleCards.build(Card.of(color));
+            possibleCards = SortedBag.Builder.add()
         }else{
             //only cards of the same of color as route
         }
