@@ -1,5 +1,6 @@
 package ch.epfl.tchu.game;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -101,9 +102,9 @@ public final class Route {
 
     public List<SortedBag<Card>> possibleClaimCards(){
 
-        //List<SortedBag<Card>> list =
+        List<SortedBag<Card>> list = new ArrayList<>();
         //SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
-        if (this.level().equals(Level.UNDERGROUND)){
+        /*if (this.level().equals(Level.UNDERGROUND)){
             //possibleCards = possibleCards.Builder.add(1, Card.color());
             SortedBag.Builder<Card> possibleClaimCards = new SortedBag.Builder<Card>();
             for(int i = 0; i < length; ++i) {
@@ -111,9 +112,26 @@ public final class Route {
             }
         }else{
             //only cards of the same of color as route
+        }*/
+
+        if(level.equals(Level.OVERGROUND)) {
+            if (color == null) {
+                Color[] colors = Color.values();
+                for(int i = 0; i < length; ++i) {
+                    for(int j = 0; j < length; ++j) {
+                        list.add(SortedBag.of(length, Card.of(colors[i])));
+                    }
+                }
+            } else {
+                list.add(SortedBag.of(length, Card.of(color)));
+            }
+        } else {
+
         }
 
-    return possibleClaimCards.toList();
+
+    //return possibleClaimCards.toList();
+        return list;
     }
 
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards)
