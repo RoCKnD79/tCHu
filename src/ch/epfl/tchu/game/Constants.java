@@ -100,6 +100,7 @@ public final class Constants {
      */
     public static final int MAX_ROUTE_LENGTH = ROUTE_CLAIM_POINTS.size() - 1;
 
+
     /**
      * Nombre de points bonus obtenus par le(s) joueur(s) disposant du plus long chemin.
      */
