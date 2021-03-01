@@ -12,7 +12,7 @@ public final class Route {
     private final Level level;
     private final Color color;
     private  Card Card;
-    private static SortedBag possibleCards;
+    private static SortedBag possibleClaimCards;
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
 
@@ -101,14 +101,18 @@ public final class Route {
 
     public List<SortedBag<Card>> possibleClaimCards(){
 
-        SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
+        //SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
         if (this.level().equals(Level.UNDERGROUND)){
-            possibleCards = SortedBag.Builder.add()
+            //possibleCards = possibleCards.Builder.add(1, Card.color());
+            SortedBag.Builder<Card> possibleClaimCards = new SortedBag.Builder<Card>();
+            /*for(int i = 0; i < length; ++i) {
+                possibleClaimCards.add(Card.of(color));
+            }*/
         }else{
             //only cards of the same of color as route
         }
 
-    return possibleCards.toList();
+    return possibleClaimCards.toList();
     }
 
 }
