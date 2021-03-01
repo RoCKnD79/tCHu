@@ -25,7 +25,7 @@ public final class Ticket implements Comparable<Ticket> {
                 throw new IllegalArgumentException("Not all trips come from same Station");
             }
         }
-        //Wallah dédicace à nous à l'étape 7, si vous trouvez pas l'erreur c cette merde ici
+        //TODO Si ya une erreur c'est peut-être à cause de ça
         this.trips = trips;
         tripInfo = computeText(trips);
     }
@@ -64,13 +64,13 @@ public final class Ticket implements Comparable<Ticket> {
         }
 
 
-        for (int j = 0; j < trips.size(); ++j) {
+        /*for (int j = 0; j < trips.size(); ++j) {
             if((connectivity.connected(trips.get(j).from(), trips.get(j).to()) == false)){
                 if (minPts > trips.get(j).points()) {
                     minPts = trips.get(j).points();
                 }
             }
-        }
+        }*/
 
         /*for (int i = 0; i < trips.size(); ++i) {
             if (connectivity.connected(trips.get(i).from(), trips.get(i).to()) == true) {

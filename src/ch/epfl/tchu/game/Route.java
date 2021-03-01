@@ -11,7 +11,7 @@ public final class Route {
     private int length;
     private Level level;
     private Color color;
-    private List<Station> Stations;
+    private List<Station> stations;
     private List<Card> allCards;
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
@@ -29,6 +29,7 @@ public final class Route {
             throw new IllegalArgumentException("Stations cannot be equal");
         }
 
+
     }
 
     public enum Level{
@@ -45,14 +46,14 @@ public final class Route {
      * method that returns first station of the route
      * @return station1
      */
-    public Station Station1(){
+    public Station station1(){
         return station1;
     }
     /**
      * method that returns second station of the route
      * @return station2
      */
-    public Station Station2(){
+    public Station station2(){
         return station2;
     }
     /**
@@ -82,11 +83,10 @@ public final class Route {
      * method that returns a list of the stations in order
      * @return Stations
      */
-    public List<Station> Stations(){
-        return Stations = List.of(station1, station2);
+    public List<Station> stations(){
+        return List.of(station1, station2);
         }
 
-//TODO ca marche c'est sur, mais est ce que c'est la plus "belle" manière de le faire ? A verifier
     /**
      * method that returns the opposite station than the one given (when called)
      * @param station
@@ -101,7 +101,7 @@ public final class Route {
 
     public List<SortedBag<Card>> possibleClaimCards(){
 
-        SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card) //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
+        SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
         if (this.level().equals(Level.UNDERGROUND)){
             possibleCards = possibleCards.build(Card.of(color));
         }else{
