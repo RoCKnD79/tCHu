@@ -12,6 +12,7 @@ public final class Route {
     private Level level;
     private Color color;
     private List<Station> Stations;
+    private List<Card> allCards;
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
 
@@ -24,7 +25,7 @@ public final class Route {
         this.station2 = Objects.requireNonNull(station2);
 
         //TODO Jarrive pas a avoir les constantes de la classe constante non instanciable pour le if :
-        if(station1.equals(station2)){
+        if(station1.equals(station2) || length < Constants.MIN_ROUTE_LENGTH || length > Constants.MAX_ROUTE_LENGTH) {
             throw new IllegalArgumentException("Stations cannot be equal");
         }
 
@@ -58,7 +59,7 @@ public final class Route {
      * method that returns the length of the route
      * @return length
      */
-    public int lenght(){
+    public int length(){
         return length;
     }
     /**
@@ -96,6 +97,18 @@ public final class Route {
             return station2;
         }
         return station1;
+    }
+
+    public List<SortedBag<Card>> possibleClaimCards(){
+
+        SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card) //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
+        if (this.level().equals(Level.UNDERGROUND)){
+            possibleCards = possibleCards.build(Card.of(color));
+        }else{
+            //only cards of the same of color as route
+        }
+
+    return possibleCards.toList();
     }
 
 }
