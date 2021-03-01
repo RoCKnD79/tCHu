@@ -1,6 +1,6 @@
 package ch.epfl.tchu.game;
 
-import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.game.SortedBag;
 
 import java.util.List;
 
