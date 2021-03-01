@@ -113,22 +113,50 @@ public final class Route {
         }else{
             //only cards of the same of color as route
         }*/
+        Color[] colors = Color.values();
+        if (level.equals(Level.OVERGROUND)) {
 
-        if(level.equals(Level.OVERGROUND)) {
             if (color == null) {
-                Color[] colors = Color.values();
+                for(int i = 0; i < length; ++i) {
+                    list.add(SortedBag.of(length, Card.of(colors[i])));
+                    for(int j = 0; j < length; ++j) {
+                        for(int f = 1; f < length; ++f) {
+                            //TODO Ca va ajouter plusieurs fois les ensembles contenant que des cartes d'une seule couleur, donc à revoir
+                            if(colors[i].equals(colors[j])) {
+                                continue;
+                            }
+                            //System.out.println("f " + f + " length-f: " + (length-f));
+                            list.add(SortedBag.of(length-f, Card.of(colors[i]), f, Card.of(colors[j])));
+                        }
+                    }
+                }
+            } else { list.add(SortedBag.of(length, Card.of(color))); }
+
+        } else {
+
+            if (color == null) {
                 for(int i = 0; i < length; ++i) {
                     for(int j = 0; j < length; ++j) {
-                        list.add(SortedBag.of(length, Card.of(colors[i])));
+                        for(int f = 1; f < length; ++f) {
+                            //TODO Ca va ajouter plusieurs fois les ensembles contenant que des cartes d'une seule couleur, donc à revoir
+                            if(colors[i].equals(colors[j])) {
+                                continue;
+                            }
+                            //list.add(SortedBag.of(length-j, Card.of(colors[j]), f, Card.of(colors[f])));
+                            list.add(SortedBag.of(length-f, Card.of(colors[i]), f, Card.of(colors[j])));
+                            list.add(SortedBag.of(length-f, Card.of(colors[j]), f, Card.LOCOMOTIVE));
+                        }
                     }
                 }
             } else {
-                list.add(SortedBag.of(length, Card.of(color)));
+                for(int i = 0; i < length; ++i) {
+                    for(int j = 0; j < length; ++j) {
+                        list.add(SortedBag.of(length-i, Card.of(colors[i]), j, Card.LOCOMOTIVE));
+                    }
+                }
             }
-        } else {
 
         }
-
 
     //return possibleClaimCards.toList();
         return list;

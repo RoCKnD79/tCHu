@@ -6,7 +6,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        Station from1 = new Station(1, "Lausanne");
+        /*Station from1 = new Station(1, "Lausanne");
         Station from2 = new Station(2, "Lausanne");
         Station from3 = new Station(3, "Lausanne");
 
@@ -28,6 +28,21 @@ public class Main {
         System.out.println("ticket1: " + ticket1 +
                             "\nticket2: " + ticket2 +
                             "\ncompare: " + ticket1.compareTo(ticket2));
+
+        Route route = new Route("LAU_WHI_1", from1, to1, 2, Route.Level.OVERGROUND, Color.RED);
+        */
+
+        /*Route route1 = ChMap.routes().get(48);
+        System.out.println(route1.id());
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+        }*/
+
+        Route route1 = ChMap.routes().get(41);
+        System.out.println(route1.id());
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+        }
 
     }
 }
