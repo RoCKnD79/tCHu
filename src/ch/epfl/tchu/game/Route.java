@@ -101,18 +101,32 @@ public final class Route {
 
     public List<SortedBag<Card>> possibleClaimCards(){
 
+        //List<SortedBag<Card>> list =
         //SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
         if (this.level().equals(Level.UNDERGROUND)){
             //possibleCards = possibleCards.Builder.add(1, Card.color());
             SortedBag.Builder<Card> possibleClaimCards = new SortedBag.Builder<Card>();
-            /*for(int i = 0; i < length; ++i) {
+            for(int i = 0; i < length; ++i) {
                 possibleClaimCards.add(Card.of(color));
-            }*/
+            }
         }else{
             //only cards of the same of color as route
         }
 
     return possibleClaimCards.toList();
+    }
+
+    public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards)
+                throws IllegalArgumentException{
+        if(level.equals(Level.OVERGROUND) || drawnCards.size() != 3) {
+            throw new IllegalArgumentException("Route is not a tunnel or number of drawn cards is not 3");
+        }
+        return drawnCards.size();
+    }
+
+    public int claimPoints() {
+        //TODO jsp si c'est length-1 ou length qu'il faut mettre
+        return Constants.ROUTE_CLAIM_POINTS.get(length);
     }
 
 }
