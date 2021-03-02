@@ -50,8 +50,8 @@ public final class Trail {
                 }
             }
             simpleTrails = simpleTrails2;
-        }
 
+        }
         for(int i = 0; i < simpleTrails.size(); ++ i){
             if(simpleTrails.get(i).length() > simpleTrails.get(i+1).length()){
                 longestTrail = simpleTrails.get(i+1);

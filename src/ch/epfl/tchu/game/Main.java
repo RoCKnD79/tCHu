@@ -60,14 +60,13 @@ public class Main {
         System.out.println(i);
         */
 
-
-
+        /*
         //Underground and color null, length: 3
         Route route1 = ChMap.routes().get(32);
         System.out.println(route1.id());
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
-        }
+        }*/
 
         /*
         //UnderGround and Color not null, length: 3
@@ -76,8 +75,8 @@ public class Main {
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
         }*/
-
-
-
+        System.out.println(ChMap.routes().size());
+        List<Route> routes = ChMap.routes();
+        System.out.println(Trail.longest(routes));
     }
 }
