@@ -103,45 +103,38 @@ public final class Route {
     public List<SortedBag<Card>> possibleClaimCards() {
 
         List<SortedBag<Card>> list = new ArrayList<>();
-        //SortedBag<Card> sb = SortedBag.of();
 
         if (level.equals(Level.OVERGROUND)) {
 
             if (color == null) {
-                System.out.println("Overground, color null");
+                //System.out.println("Overground, color null");
                 for (int i = 0; i < Color.COUNT; ++i) {
                     list.add(SortedBag.of(length, Card.of(Color.ALL.get(i))));
                 }
             } else {
-                System.out.println("Overground, color not null");
+                //System.out.println("Overground, color not null");
                 list.add(SortedBag.of(length, Card.of(color)));
             }
 
         } else { //case where route is a tunnel => Level.UNDERGROUND
 
             if (color == null) {
-                System.out.println("Underground, color null");
-                //list.add(SortedBag.of(length, Card.LOCOMOTIVE));
-                for (int i = 0; i < Color.COUNT; ++i) {
-                    for (int j = 0; j < length; ++j) {
-                        //list.add(SortedBag.of(j, Card.of(Color.ALL.get(i)), length - j, Card.LOCOMOTIVE));
-                        list.add(SortedBag.of(length-j, Card.of(Color.ALL.get(i)), j, Card.LOCOMOTIVE));
+                //System.out.println("Underground, color null");
+                for (int i = 0; i < length; ++i) {
+                    for (int j = 0; j < Color.COUNT; ++j) {
+                        list.add(SortedBag.of(length-i, Card.of(Color.ALL.get(j)), i, Card.LOCOMOTIVE));
                     }
                 }
                 list.add(SortedBag.of(length, Card.LOCOMOTIVE));
             } else {
-                System.out.println("Underground, color not null");
+                //System.out.println("Underground, color not null");
                 for (int i = 0; i <= length; ++i) {
-                    //list.add(SortedBag.of(i, Card.of(color), length - i, Card.LOCOMOTIVE));
                     list.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
-                    //sb.union(SortedBag.of(i, Card.of(color), length-i, Card.LOCOMOTIVE));
                 }
             }
 
         }
-
         return list;
-        //list.add(sb);
     }
 
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards)

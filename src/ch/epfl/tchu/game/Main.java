@@ -40,6 +40,13 @@ public class Main {
             System.out.println(c);
         }*/
 
+        /*
+        //Overground, color not null, ength: 4
+        Route route1 = ChMap.routes().get(49);
+        System.out.println(route1.id());
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+        }*/
 
         /*
         //Underground, color null, length: 2
@@ -55,7 +62,7 @@ public class Main {
 
 
 
-        //Underground and color null
+        //Underground and color null, length: 3
         Route route1 = ChMap.routes().get(32);
         System.out.println(route1.id());
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
@@ -63,20 +70,14 @@ public class Main {
         }
 
         /*
-        //UnderGround and Color, length: 3
+        //UnderGround and Color not null, length: 3
         Route route1 = ChMap.routes().get(33);
         System.out.println(route1.id());
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
         }*/
 
-        /*
-        //Overground, color not null
-        Route route1 = ChMap.routes().get(49);
-        System.out.println(route1.id());
-        for(SortedBag<Card> c : route1.possibleClaimCards()) {
-            System.out.println(c);
-        }*/
+
 
     }
 }
