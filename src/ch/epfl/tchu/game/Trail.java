@@ -9,9 +9,9 @@ public final class Trail {
     private final Station station2;
     private static List<Route> routes;
     private static Trail longestTrail;
-    static List<Trail>  simpleTrails;
-    static List<Route>  routeSimple;
-    static List<Route>  routeSimpleToAdd;
+    private static List<Trail>  simpleTrails;
+    private static List<Route>  routeSimple;
+    private static List<Route>  routeSimpleToAdd;
 
 
     private Trail(int length, Station station1, Station station2, List<Route> routes){
@@ -33,9 +33,9 @@ public final class Trail {
         //int j = 0;
 
         //boucle for qui met dans une list de Trail, tous les trails de taille 1 (avec une route)
-        for (int i = 0; i < ChMap.routes().size(); ++i) {
-            simpleTrails.add(new Trail(1, ChMap.routes().get(i).station1(), ChMap.routes().get(i).station2()));
-            routeSimple.add(ChMap.routes().get(i));
+        for (int i = 0; i < routes.size(); ++i) {
+            simpleTrails.add(new Trail(1, routes.get(i).station1(), routes.get(i).station2()));
+            routeSimple.add(routes.get(i));
         }
         //TODO Will this while loop ever end ??
 
