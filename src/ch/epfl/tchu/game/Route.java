@@ -18,7 +18,7 @@ public final class Route {
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
 
 
-        this.color = color;
+        this.color = color; //can be null, this would mean its color is neutral (gray)
         this.level = Objects.requireNonNull(level);
         this.id = Objects.requireNonNull(id);
         this.length = length;
@@ -100,66 +100,48 @@ public final class Route {
         return station1;
     }
 
-    public List<SortedBag<Card>> possibleClaimCards(){
+    public List<SortedBag<Card>> possibleClaimCards() {
 
         List<SortedBag<Card>> list = new ArrayList<>();
-        //SortedBag possibleCards = SortedBag.of(Constants.TOTAL_CARDS_COUNT, Card); //Card est enum et on veut un objet mais je voit pas trop ce qu'on peut mettre d'autre);
-        /*if (this.level().equals(Level.UNDERGROUND)){
-            //possibleCards = possibleCards.Builder.add(1, Card.color());
-            SortedBag.Builder<Card> possibleClaimCards = new SortedBag.Builder<Card>();
-            for(int i = 0; i < length; ++i) {
-                possibleClaimCards.add(Card.of(color));
-            }
-        }else{
-            //only cards of the same of color as route
-        }*/
-        Color[] colors = Color.values();
+        //SortedBag<Card> sb = SortedBag.of();
+
         if (level.equals(Level.OVERGROUND)) {
 
             if (color == null) {
-                for(int i = 0; i < length; ++i) {
-                    list.add(SortedBag.of(length, Card.of(colors[i])));
-                    for(int j = 0; j < length; ++j) {
-                        for(int f = 1; f < length; ++f) {
-                            //TODO Ca va ajouter plusieurs fois les ensembles contenant que des cartes d'une seule couleur, donc à revoir
-                            if(colors[i].equals(colors[j])) {
-                                continue;
-                            }
-                            //System.out.println("f " + f + " length-f: " + (length-f));
-                            list.add(SortedBag.of(length-f, Card.of(colors[i]), f, Card.of(colors[j])));
-                        }
-                    }
-                }
-            } else { list.add(SortedBag.of(length, Card.of(color))); }
-
-        } else {
-
-            if (color == null) {
-                for(int i = 0; i < length; ++i) {
-                    for(int j = 0; j < length; ++j) {
-                        for(int f = 1; f < length; ++f) {
-                            //TODO Ca va ajouter plusieurs fois les ensembles contenant que des cartes d'une seule couleur, donc à revoir
-                            if(colors[i].equals(colors[j])) {
-                                continue;
-                            }
-                            //list.add(SortedBag.of(length-j, Card.of(colors[j]), f, Card.of(colors[f])));
-                            list.add(SortedBag.of(length-f, Card.of(colors[i]), f, Card.of(colors[j])));
-                            list.add(SortedBag.of(length-f, Card.of(colors[j]), f, Card.LOCOMOTIVE));
-                        }
-                    }
+                System.out.println("Overground, color null");
+                for (int i = 0; i < Color.COUNT; ++i) {
+                    list.add(SortedBag.of(length, Card.of(Color.ALL.get(i))));
                 }
             } else {
-                for(int i = 0; i < length; ++i) {
-                    for(int j = 0; j < length; ++j) {
-                        list.add(SortedBag.of(length-i, Card.of(colors[i]), j, Card.LOCOMOTIVE));
+                System.out.println("Overground, color not null");
+                list.add(SortedBag.of(length, Card.of(color)));
+            }
+
+        } else { //case where route is a tunnel => Level.UNDERGROUND
+
+            if (color == null) {
+                System.out.println("Underground, color null");
+                //list.add(SortedBag.of(length, Card.LOCOMOTIVE));
+                for (int i = 0; i < Color.COUNT; ++i) {
+                    for (int j = 0; j < length; ++j) {
+                        //list.add(SortedBag.of(j, Card.of(Color.ALL.get(i)), length - j, Card.LOCOMOTIVE));
+                        list.add(SortedBag.of(length-j, Card.of(Color.ALL.get(i)), j, Card.LOCOMOTIVE));
                     }
+                }
+                list.add(SortedBag.of(length, Card.LOCOMOTIVE));
+            } else {
+                System.out.println("Underground, color not null");
+                for (int i = 0; i <= length; ++i) {
+                    //list.add(SortedBag.of(i, Card.of(color), length - i, Card.LOCOMOTIVE));
+                    list.add(SortedBag.of(length-i, Card.of(color), i, Card.LOCOMOTIVE));
+                    //sb.union(SortedBag.of(i, Card.of(color), length-i, Card.LOCOMOTIVE));
                 }
             }
 
         }
 
-    //return possibleClaimCards.toList();
         return list;
+        //list.add(sb);
     }
 
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards)
@@ -171,7 +153,6 @@ public final class Route {
     }
 
     public int claimPoints() {
-        //TODO jsp si c'est length-1 ou length qu'il faut mettre
         return Constants.ROUTE_CLAIM_POINTS.get(length);
     }
 

@@ -32,17 +32,51 @@ public class Main {
         Route route = new Route("LAU_WHI_1", from1, to1, 2, Route.Level.OVERGROUND, Color.RED);
         */
 
-        /*Route route1 = ChMap.routes().get(48);
+        /*
+        //Overground, 6, null
+        Route route1 = ChMap.routes().get(48);
         System.out.println(route1.id());
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
         }*/
 
+
+        /*
+        //Underground, color null, length: 2
         Route route1 = ChMap.routes().get(41);
+        System.out.println(route1.id());
+        int i = 0;
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+            i += 1;
+        }
+        System.out.println(i);
+        */
+
+
+
+        //Underground and color null
+        Route route1 = ChMap.routes().get(32);
         System.out.println(route1.id());
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
         }
+
+        /*
+        //UnderGround and Color, length: 3
+        Route route1 = ChMap.routes().get(33);
+        System.out.println(route1.id());
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+        }*/
+
+        /*
+        //Overground, color not null
+        Route route1 = ChMap.routes().get(49);
+        System.out.println(route1.id());
+        for(SortedBag<Card> c : route1.possibleClaimCards()) {
+            System.out.println(c);
+        }*/
 
     }
 }
