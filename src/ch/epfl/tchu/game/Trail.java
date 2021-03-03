@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+/*
 public final class Trail {
 
     //private final int length;
@@ -12,32 +13,32 @@ public final class Trail {
     private final Station station2;
     private static List<Route> routeConnections;
     private static Trail longestTrail;
-    private static List<Trail>  simpleTrails = new ArrayList<>();
-    private static List<Route>  routeSimple = new ArrayList<>();
-    private static List<Route>  routeSimpleToAdd = new ArrayList<>();
+    private static List<Trail> simpleTrails = new ArrayList<>();
+    private static List<Route> routeSimple = new ArrayList<>();
+    private static List<Route> routeSimpleToAdd = new ArrayList<>();
 
-
-    private Trail(/*int length,*/ Station station1, Station station2, List<Route> routes){
+/*
+    private Trail(int length, Station station1, Station station2, List<Route> routes){
         //this.length = length;
         this.station1 = station1;
-        /*if(station1.id() == station2.id()) {
+        if(station1.id() == station2.id()) {
             throw new IllegalArgumentException(" 'from' station and 'to' station must be different");
-        }*/
+        }
         this.station2 = station2;
         routeConnections = routes;
-    }
-
-    private Trail(/*int length,*/ Station station1, Station station2){
-        //this.length = length;
+    }*/
+/*
+    private Trail(int length, Station station1, Station station2){
+        this.length = length;
         this.station1 = station1;
         this.station2 = station2;
-    }
-
+    }*/
+/*
     private Trail(Route route) {
         this.station1 = route.station1();
         this.station2 = route.station2();
         routeConnections = List.of(route);
-    }
+    }*/
 
     /*public static Trail longest(List<Route> routes) {
 
@@ -87,6 +88,7 @@ public final class Trail {
         return length;
     }*/
 
+/*
     private Trail(Trail oldTrail, Route routeToAdd) {
         this.station1 = oldTrail.station1();;
         this.station2 = oldTrail.station2();
@@ -113,6 +115,7 @@ public final class Trail {
 
         System.out.println(initTrails.size());
         /*while(initTrails.size() != 0) {*/
+/*
             List<Trail> trails = new ArrayList<>();
             for(Trail t : initTrails) {
                 List<Route> potentialRoutes = new ArrayList<>();
@@ -130,7 +133,7 @@ public final class Trail {
             }
             /*initTrails = trails;
         }*/
-
+/*
         int longestTrailIndex = 0;
         for(int k = 1; k < trails.size(); ++k) {
             if(trails.get(k-1).length() > trails.get(k).length()) {
@@ -175,11 +178,128 @@ public final class Trail {
         }
         info = station1.name() + " - " + String.join(" - ", text);
          */
-
+/*
         for(int i = 0; i < routeConnections.size(); ++i) {
             info += " - " + routeConnections.get(i).station1().name();
         }
         info += " - " + station2.name();
         return info;
     }
+}*/
+
+
+
+public final class Trail {
+
+    private final Station station1;
+    private final Station station2;
+    private final List<Route> routeConnections;
+
+    private Trail(Station station1, Station station2, List<Route> routes) {
+        this.station1 = station1;
+        this.station2 = station2;
+        routeConnections = List.copyOf(routes);
+    }
+
+    public static Trail longest(List<Route> routes) {
+
+        if(routes == null) {
+            return null;
+        }
+
+        List<Trail> initTrails = new ArrayList<>();
+        for(int i = 0; i < routes.size(); ++i) {
+            initTrails.add(new Trail(routes.get(i).station1(), routes.get(i).station2(), List.of(routes.get(i))));
+            initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
+            //System.out.println(initTrails.get(i));
+        }
+        //System.out.println((initTrails.size()));
+
+        while(initTrails.size() != 0) {
+
+            for(Trail t : initTrails) {
+                List<Route> potentialRoutes = new ArrayList<>();
+                for (int i = 0; i < routes.size(); ++i) {
+                    if(!t.routeConnections.contains(routes.get(i))
+                            && routes.get(i).station1().id() == t.routeConnections.get(t.routeConnections.size()-1).station2().id()
+                            && routes.get(i).station2().id() != t.station1().id()) {
+                        potentialRoutes.add(routes.get(i));
+                    }
+                }
+                /*
+                for (int i = 0; i < potentialRoutes.size(); i++) {
+                    System.out.println("station1: " + potentialRoutes.get(i).station1().name() +
+                            " station2: " + potentialRoutes.get(i).station2().name());
+                }*/
+
+                /*for (Route r : potentialRoutes) {
+
+                }*/
+
+            }
+
+
+
+            initTrails.clear();
+        }
+
+        while(initTrails.size() != 0) {
+            initTrails.clear();
+        }
+
+        return null;
+    }
+
+    public int length() {
+        int l = 0;
+        for(int i = 0; i < routeConnections.size(); ++i) {
+            l += routeConnections.get(i).length();
+        }
+        return l;
+    }
+
+    public Station station1() {
+        if (routeConnections == null) {
+            return null;
+        }
+        return station1;
+    }
+
+    public Station station2() {
+        if (routeConnections == null) {
+            return null;
+        }
+        return station2;
+    }
+
+    @Override
+    public String toString() {
+
+        /*TreeSet<String> text = new TreeSet<String>();
+        for(int i = 0; i < routeConnections.size(); ++i) {
+            text.add(routeConnections.get(i).station1().name());
+        }
+        text.add(routeConnections.get(routeConnections.size()-1).station2().name());
+        String info = String.join(" - ", text);*/
+
+        List<String> text = new ArrayList<>();
+        if(station1.id() == routeConnections.get(0).station1().id()) {
+            for(int i = 0; i < routeConnections.size(); ++i) {
+                text.add(routeConnections.get(i).station1().name());
+            }
+            text.add(station2.name());
+        } else {
+            text.add(station1.name());
+            for(int i = routeConnections.size()-1; i >= 0; --i) {
+                text.add(routeConnections.get(i).station1().name());
+            }
+        }
+        //text.add(routeConnections.get(routeConnections.size()-1).station2().name());
+        String info = String.join(" - ", text);
+
+        return info;
+    }
+
 }
+
+

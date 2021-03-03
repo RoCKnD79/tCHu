@@ -17,7 +17,6 @@ public final class Route {
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
 
-
         this.color = color; //can be null, this would mean its color is neutral (gray)
         this.level = Objects.requireNonNull(level);
         this.id = Objects.requireNonNull(id);
@@ -29,7 +28,6 @@ public final class Route {
         if(station1.equals(station2) || length < Constants.MIN_ROUTE_LENGTH || length > Constants.MAX_ROUTE_LENGTH) {
             throw new IllegalArgumentException("Stations cannot be equal");
         }
-
 
     }
 
@@ -101,9 +99,7 @@ public final class Route {
     }
 
     public List<SortedBag<Card>> possibleClaimCards() {
-
         List<SortedBag<Card>> list = new ArrayList<>();
-
         if (level.equals(Level.OVERGROUND)) {
 
             if (color == null) {
