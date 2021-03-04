@@ -219,7 +219,7 @@ public final class Trail {
         List<Trail> initTrails = new ArrayList<>();
         for(int i = 0; i < routes.size(); ++i) {
             initTrails.add(new Trail(routes.get(i).station1(), routes.get(i).station2(), List.of(routes.get(i))));
-            initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
+            //initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
             System.out.println(initTrails.get(i));
         }
         //System.out.println((initTrails.size()));
@@ -228,22 +228,37 @@ public final class Trail {
         while(initTrails.size() != 0) {
             System.out.println("1 ROUTE TRAILS");
             for(Trail t : initTrails) {
+                System.out.println("--------------------------");
+                System.out.println("\nTrail: " + t);
                 List<Route> potentialRoutes = new ArrayList<>();
+                System.out.print("\n(After initialization) potentialRoute null? (1): ");
+                System.out.println(potentialRoutes.size() == 0);
                 for (int i = 0; i < routes.size(); ++i) {
                     if (!t.routeConnections.contains(routes.get(i))
-                            && routes.get(i).station1().id() == t.routeConnections.get(t.routeConnections.size() - 1).station2().id()
+                            && routes.get(i).station1().id() == t.station2().id()
                             && routes.get(i).station2().id() != t.station1().id()) {
                         potentialRoutes.add(routes.get(i));
                     }
                 }
+                //System.out.println("\npotentialRoute null? (2): " + potentialRoutes.size() == 0 + "\n");
+
+                System.out.print("(After creation) potentialRoute null? (1): ");
+                System.out.println(potentialRoutes.size() == 0);
 
                 for (int i = 0; i < potentialRoutes.size(); i++) {
                     System.out.println("station1: " + potentialRoutes.get(i).station1().name() +
                             " station2: " + potentialRoutes.get(i).station2().name());
                 }
 
+                System.out.print("(Before for) potentialRoute null? (1): ");
+                System.out.println(potentialRoutes.size() == 0);
+
                 for (Route r : potentialRoutes) {
                     trails.add(new Trail(t, r));
+                }
+                System.out.println("\nafter adding route");
+                for (int i = 0; i < trails.size(); i++) {
+                    System.out.println(trails.get(i));
                 }
 
             }
@@ -302,21 +317,26 @@ public final class Trail {
         }
         text.add(routeConnections.get(routeConnections.size()-1).station2().name());
         String info = String.join(" - ", text);*/
+        String info = "";
 
         List<String> text = new ArrayList<>();
         if(station1.id() == routeConnections.get(0).station1().id()) {
             for(int i = 0; i < routeConnections.size(); ++i) {
                 text.add(routeConnections.get(i).station1().name());
+                info += routeConnections.get(i).station1().name() + " - ";
             }
             text.add(station2.name());
+            info += station2.name();
         } else {
             text.add(station1.name());
+            info += station1.name();
             for(int i = routeConnections.size()-1; i >= 0; --i) {
                 text.add(routeConnections.get(i).station1().name());
+                info += " - " + routeConnections.get(i).station1().name();
             }
         }
         //text.add(routeConnections.get(routeConnections.size()-1).station2().name());
-        String info = String.join(" - ", text);
+        //String info = String.join(" - ", text);
 
         return info;
     }

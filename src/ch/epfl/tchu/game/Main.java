@@ -78,7 +78,7 @@ public class Main {
         System.out.println(ChMap.routes().size());
         List<Route> routes = new ArrayList<>();
 
-        for(int i = 0; i < 15; ++i) {
+        for(int i = 2; i < 11; ++i) {
             routes.add(ChMap.routes().get(i));
         }
         System.out.println(Trail.longest(routes));
