@@ -16,7 +16,6 @@ public final class Route {
     private static SortedBag possibleClaimCards;
 
     public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
-
         this.color = color; //can be null, this would mean its color is neutral (gray)
         this.level = Objects.requireNonNull(level);
         this.id = Objects.requireNonNull(id);

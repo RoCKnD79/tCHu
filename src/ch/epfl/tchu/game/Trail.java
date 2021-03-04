@@ -201,6 +201,15 @@ public final class Trail {
         routeConnections = List.copyOf(routes);
     }
 
+    private Trail(Trail oldTrail, Route routeToAdd) {
+        this.station1 = oldTrail.station1();;
+        this.station2 = routeToAdd.station2();
+        List<Route> routes = oldTrail.routeConnections();
+        routes.add(routeToAdd);
+        this.routeConnections = routes;
+
+    }
+
     public static Trail longest(List<Route> routes) {
 
         if(routes == null) {
@@ -211,34 +220,38 @@ public final class Trail {
         for(int i = 0; i < routes.size(); ++i) {
             initTrails.add(new Trail(routes.get(i).station1(), routes.get(i).station2(), List.of(routes.get(i))));
             initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
-            //System.out.println(initTrails.get(i));
+            System.out.println(initTrails.get(i));
         }
         //System.out.println((initTrails.size()));
 
+        List<Trail> trails = new ArrayList<>();
         while(initTrails.size() != 0) {
-
+            System.out.println("1 ROUTE TRAILS");
             for(Trail t : initTrails) {
                 List<Route> potentialRoutes = new ArrayList<>();
                 for (int i = 0; i < routes.size(); ++i) {
-                    if(!t.routeConnections.contains(routes.get(i))
-                            && routes.get(i).station1().id() == t.routeConnections.get(t.routeConnections.size()-1).station2().id()
+                    if (!t.routeConnections.contains(routes.get(i))
+                            && routes.get(i).station1().id() == t.routeConnections.get(t.routeConnections.size() - 1).station2().id()
                             && routes.get(i).station2().id() != t.station1().id()) {
                         potentialRoutes.add(routes.get(i));
                     }
                 }
-                /*
+
                 for (int i = 0; i < potentialRoutes.size(); i++) {
                     System.out.println("station1: " + potentialRoutes.get(i).station1().name() +
                             " station2: " + potentialRoutes.get(i).station2().name());
-                }*/
+                }
 
-                /*for (Route r : potentialRoutes) {
-
-                }*/
+                for (Route r : potentialRoutes) {
+                    trails.add(new Trail(t, r));
+                }
 
             }
 
-
+            System.out.println("\nNEW TRAILS");
+            for (int i = 0; i < trails.size(); i++) {
+                System.out.println(trails.get(i));
+            }
 
             initTrails.clear();
         }
@@ -270,6 +283,14 @@ public final class Trail {
             return null;
         }
         return station2;
+    }
+
+    public List<Route> routeConnections() {
+        List<Route> list = new ArrayList<>();
+        for(int i = 0; i < routeConnections.size(); ++i) {
+            list.add(routeConnections.get(i));
+        }
+        return list;
     }
 
     @Override
