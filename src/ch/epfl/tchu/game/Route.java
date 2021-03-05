@@ -12,10 +12,21 @@ public final class Route {
     private final int length;
     private final Level level;
     private final Color color;
-    private  Card Card;
-    private static SortedBag possibleClaimCards;
 
-    public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException{
+
+
+    /**
+     * Constructor of a route
+     * @param id
+     * @param station1
+     * @param station2
+     * @param length
+     * @param level
+     * @param color
+     * @throws IllegalArgumentException, if first station is equal to end station, or if the length of the route is higher or lower than a constant.
+     * @throws NullPointerException, if either the station1, station 2, the level or the id is null.
+     */
+    public Route(String id, Station station1, Station station2, int length, Level level, Color color) throws IllegalArgumentException, NullPointerException{
         this.color = color; //can be null, this would mean its color is neutral (gray)
         this.level = Objects.requireNonNull(level);
         this.id = Objects.requireNonNull(id);
@@ -23,7 +34,7 @@ public final class Route {
         this.station1 = Objects.requireNonNull(station1);
         this.station2 = Objects.requireNonNull(station2);
 
-        //TODO Jarrive pas a avoir les constantes de la classe constante non instanciable pour le if :
+
         if(station1.equals(station2) || length < Constants.MIN_ROUTE_LENGTH || length > Constants.MAX_ROUTE_LENGTH) {
             throw new IllegalArgumentException("Stations cannot be equal");
         }
@@ -88,7 +99,7 @@ public final class Route {
     /**
      * method that returns the opposite station than the one given (when called)
      * @param station
-     * @return Station
+     * @return the opposite of the station
      */
     public Station stationOpposite(Station station){
         if (station.equals(station1)){
@@ -97,6 +108,10 @@ public final class Route {
         return station1;
     }
 
+    /**
+     * method that fins all the cards that could be played to get control of the route
+     * @return a list of cards that could be played to claim the route
+     */
     public List<SortedBag<Card>> possibleClaimCards() {
         List<SortedBag<Card>> list = new ArrayList<>();
         if (level.equals(Level.OVERGROUND)) {
@@ -132,14 +147,31 @@ public final class Route {
         return list;
     }
 
+    /**
+     * counts how many additional cards have to be played by the player to take control of a tunnel, depending on which cards where drawn from deck.
+     * @param claimCards
+     * @param drawnCards
+     * @return the number of cards that need to be put down by the player to claim the tunnel.
+     * @throws IllegalArgumentException, if not 3 cards were drawn, or if the route trying to be claimed is not a tunnel
+     */
     public int additionalClaimCardsCount(SortedBag<Card> claimCards, SortedBag<Card> drawnCards)
                 throws IllegalArgumentException{
-        if(level.equals(Level.OVERGROUND) || drawnCards.size() != 3) {
-            throw new IllegalArgumentException("Route is not a tunnel or number of drawn cards is not 3");
+        int additionalClaimCardsNumber = 0;
+        if((drawnCards.size() != 3) || (this.level().equals(Level.OVERGROUND))){
+            throw new IllegalArgumentException("size of drawn Cards is not equal to 3 or the route is not a tunnel");
         }
-        return drawnCards.size();
+        for(int i = 0; i < drawnCards.size(); ++i){
+            if(drawnCards.get(i).equals(claimCards.get(0))){
+                additionalClaimCardsNumber += 1;
+            }
+        }
+        return additionalClaimCardsNumber;
     }
 
+    /**
+     * method that finds how many points will be given out to the player if he manages to take control of the route
+     * @return number of points for the route
+     */
     public int claimPoints() {
         return Constants.ROUTE_CLAIM_POINTS.get(length);
     }

@@ -41,8 +41,9 @@ public final class Ticket implements Comparable<Ticket> {
     }
 
     /**
-    returns number of points for the specific ticket
+    returns number of points for the specific ticket and connectivity
     @param connectivity
+     @return int, max points if best connection was achieved, min points if no connection was achieved, or a specific amount of points if a in between connection was established.
      */
     public int points(StationConnectivity connectivity) {
 
@@ -97,6 +98,7 @@ public final class Ticket implements Comparable<Ticket> {
     }
 
     /**
+     * method that when called returns the computed Text with the tickets information.
      * @return tripInfo, a variable containing the textual representation of the trip written on the ticket
      */
     public String text() { return tripInfo; }
@@ -105,6 +107,7 @@ public final class Ticket implements Comparable<Ticket> {
     public String toString() { return tripInfo; }
 
     /**
+     * Computes Text for the ticket created, specific to the requirements.
      * @param trips
      * @return textual representation of the trip written on the ticket
      */
