@@ -75,12 +75,57 @@ public class Main {
         for(SortedBag<Card> c : route1.possibleClaimCards()) {
             System.out.println(c);
         }*/
-        System.out.println(ChMap.routes().size());
+
+        /*System.out.println(ChMap.routes().size());
         List<Route> routes = new ArrayList<>();
 
         for(int i = 2; i < 11; ++i) {
             routes.add(ChMap.routes().get(i));
         }
-        System.out.println(Trail.longest(routes));
+        System.out.println(Trail.longest(routes));*/
+
+        /*List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(2));
+        routes.add(ChMap.routes().get(7));
+        routes.add(ChMap.routes().get(67));*/
+        /*for (int i = 0; i < routes.size(); i++) {
+            System.out.println(routes.get(i).station1().name() + " - " + routes.get(i).station2().name());
+        }*/
+        //System.out.println(Trail.longest(routes));
+
+        /*List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(16));
+        routes.add(ChMap.routes().get(60));
+        routes.add(ChMap.routes().get(34));
+        routes.add(ChMap.routes().get(52));
+        routes.add(ChMap.routes().get(53));
+        for (int i = 0; i < routes.size(); i++) {
+            System.out.println(routes.get(i).station1().name() + " - " + routes.get(i).station2().name());
+        }
+        System.out.println("\n" + Trail.longest(routes));*/
+
+        /*List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(0));
+        routes.add(ChMap.routes().get(25));
+        routes.add(ChMap.routes().get(30));
+        for (int i = 0; i < routes.size(); i++) {
+            System.out.println(routes.get(i).station1().name() + " - " + routes.get(i).station2().name());
+        }
+        System.out.println("\n" + Trail.longest(routes));*/
+
+
+        //Brigue - Wassen - Coire (9)
+        //Allemagne - Kreuzlingen - Saint-Gall - Vaduz (4)
+        List<Route> routes = new ArrayList<>();
+        routes.add(ChMap.routes().get(24));
+        routes.add(ChMap.routes().get(30));
+        routes.add(ChMap.routes().get(35));
+        routes.add(ChMap.routes().get(53));
+        routes.add(ChMap.routes().get(81));
+        for (int i = 0; i < routes.size(); i++) {
+            System.out.println(routes.get(i).station1().name() + " - " + routes.get(i).station2().name());
+        }
+        System.out.println("\n" + Trail.longest(routes));
+
     }
 }

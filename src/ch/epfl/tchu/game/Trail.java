@@ -73,34 +73,50 @@ public final class Trail {
             iterTrails.add(initTrails.get(i));
         }
 
+        List<Trail> longestTrails = new ArrayList<>();
+        for(Trail t : initTrails) {
+            List<Trail> candidateTrails = possibleTrails(t, routeBothWays);
+            longestTrails.add(findLongest(candidateTrails));
+        }
+
+        return findLongest(longestTrails);
+    }
+
+    /**
+     * @param t, trail to which we'd like to add routes
+     * @param routes, the potentialroutes we could add
+     * @return the list of all the trails we could build by extending t with routes
+     */
+    private static List<Trail> possibleTrails(Trail t, List<Route> routes) {
+        List<Trail> trails = new ArrayList<>();
+        List<Trail> tempTrails = new ArrayList<>();
+        List<Trail> addTrails = new ArrayList<>();
+        tempTrails.add(t);
+        boolean canExtend = false;
         do {
-            for (int i = 0; i < trails.size(); i++) {
-                iterTrails.add(trails.get(i));
+            canExtend = false;
+            for (Trail temp: addTrails) {
+                tempTrails.add(temp);
             }
-            trails.clear();
-            boolean canExtend = false;
-            for(Trail t : iterTrails) {
+            tempTrails.removeAll(trails);
+            for (int i = 0; i < tempTrails.size(); i++) {
+                trails.add(tempTrails.get(i));
+            }
 
-                List<Route> potentialRoutes = calculatePotentialRoutes(t, routeBothWays);
-
+            addTrails.clear();
+            for(Trail iter : tempTrails) {
+                List<Route> potentialRoutes = calculatePotentialRoutes(iter, routes);
                 for (Route r : potentialRoutes) {
-                    trails.add(new Trail(t, r));
+                    addTrails.add(new Trail(iter, r));
                 }
 
                 if(!potentialRoutes.isEmpty()) {
                     canExtend = true;
                 }
             }
+        } while (canExtend);
 
-            if((canExtend == false)) {
-                initTrails.clear();
-            } else {
-                iterTrails.clear();
-            }
-
-        } while(!initTrails.isEmpty());
-
-        return findLongest(iterTrails);
+        return trails;
     }
 
 
@@ -128,7 +144,6 @@ public final class Trail {
                 potentialRoutes.add(routes.get(i));
             }
         }
-
         return potentialRoutes;
     }
 
@@ -145,7 +160,7 @@ public final class Trail {
 
         int index = 0;
         for (int i = 1; i < trails.size(); i++) {
-            if (trails.get(i-1).length() > trails.get(i).length()) {
+            if (trails.get(index).length() < trails.get(i).length()) {
                 index = i;
             }
         }
