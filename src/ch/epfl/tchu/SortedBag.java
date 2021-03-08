@@ -1,6 +1,4 @@
-package ch.epfl.tchu.game;
-
-import ch.epfl.tchu.Preconditions;
+package ch.epfl.tchu;
 
 import java.util.*;
 import java.util.stream.Stream;

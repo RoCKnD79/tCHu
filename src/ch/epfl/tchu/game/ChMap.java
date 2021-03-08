@@ -1,5 +1,6 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.game.*;
 import ch.epfl.tchu.game.Route.Level;
 
 import java.util.ArrayList;
