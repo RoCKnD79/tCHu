@@ -21,17 +21,29 @@ public final class Trail {
         routeConnections = copyList(routes);
     }
 
-
     /**
      * @param oldTrail, the trail to which we would like to add a route
      * @param routeToAdd, the route we would like to add to the trail
      */
     private Trail(Trail oldTrail, Route routeToAdd) {
         this.station1 = oldTrail.station1();
-        this.station2 = routeToAdd.station2();
+        //this.station2 = routeToAdd.station2();
+        this.station2 = routeToAdd.stationOpposite(oldTrail.station2);
         List<Route> routes = oldTrail.routeConnections();
         routes.add(routeToAdd);
-        this.routeConnections = routes;
+        this.routeConnections = List.copyOf(routes);
+    }
+
+    private static <E> void  displayList(List<E> list) {
+        for (E e : list) {
+            System.out.println(e);
+        }
+    }
+
+    private static void displayRouteList(List<Route> list) {
+        for (Route r : list) {
+            System.out.println(r.station1() + " - " + r.station2());
+        }
     }
 
     /**
@@ -40,83 +52,45 @@ public final class Trail {
      */
     public static Trail longest(List<Route> routes) {
 
-        if(routes == null) {
-            return null;
-        }
-
-        /*
-        I had a lot of difficulties working only with one-way routes and inverting each one of them to create new trails
-        in order to have: Bâle-Baden and Baden-Bâle
-        Therefore I created a list that just contains both ways
-         */
-        List<Route> routeBothWays = new ArrayList<>();
-
-        for (int i = 0; i < routes.size(); i++) {
-            Route temp = routes.get(i);
-            routeBothWays.add(routes.get(i));
-            routeBothWays.add(new Route(temp.id(), temp.station2(), temp.station1(), temp.length(), temp.level(), temp.color()));
+        if(routes == null || routes.isEmpty()) {
+            return new Trail(null, null, routes);
         }
 
         //initial list of trails constituted of only one route each
         List<Trail> initTrails = new ArrayList<>();
-        for(int i = 0; i < routeBothWays.size(); ++i) {
-            initTrails.add(new Trail(routeBothWays.get(i).station1(), routeBothWays.get(i).station2(), List.of(routeBothWays.get(i))));
+        for(int i = 0; i < routes.size(); ++i) {
+            initTrails.add(new Trail(routes.get(i).station1(), routes.get(i).station2(), List.of(routes.get(i))));
+            initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
         }
 
-        //see it as a temporary list used to stock new trails and assign them to iterTrails
-        List<Trail> trails = new ArrayList<>();
-
-        /*iterTrails is the list on which we'll iterate to create new trails, each time the while loop loops,
-        iterTrails will be cleared and given the new trails*/
-        List<Trail> iterTrails = new ArrayList<>();
-        for (int i = 0; i < initTrails.size(); i++) {
-            iterTrails.add(initTrails.get(i));
+        Trail longest = null;
+        if(!initTrails.isEmpty()) {
+            longest = initTrails.get(0);
         }
 
-        List<Trail> longestTrails = new ArrayList<>();
         for(Trail t : initTrails) {
-            List<Trail> candidateTrails = possibleTrails(t, routeBothWays);
-            longestTrails.add(findLongest(candidateTrails));
+            if(longest.length() < t.length()) {
+                longest = t;
+            }
         }
 
-        return findLongest(longestTrails);
-    }
-
-    /**
-     * @param t, trail to which we'd like to add routes
-     * @param routes, the potentialroutes we could add
-     * @return the list of all the trails we could build by extending t with routes
-     */
-    private static List<Trail> possibleTrails(Trail t, List<Route> routes) {
-        List<Trail> trails = new ArrayList<>();
-        List<Trail> tempTrails = new ArrayList<>();
-        List<Trail> addTrails = new ArrayList<>();
-        tempTrails.add(t);
-        boolean canExtend = false;
-        do {
-            canExtend = false;
-            for (Trail temp: addTrails) {
-                tempTrails.add(temp);
-            }
-            tempTrails.removeAll(trails);
-            for (int i = 0; i < tempTrails.size(); i++) {
-                trails.add(tempTrails.get(i));
-            }
-
-            addTrails.clear();
-            for(Trail iter : tempTrails) {
-                List<Route> potentialRoutes = calculatePotentialRoutes(iter, routes);
-                for (Route r : potentialRoutes) {
-                    addTrails.add(new Trail(iter, r));
-                }
-
-                if(!potentialRoutes.isEmpty()) {
-                    canExtend = true;
+        while(!initTrails.isEmpty()) {
+            List<Trail> trails = new ArrayList<>();
+            for(Trail t : initTrails) {
+                List<Route> routesToAdd = calculatePotentialRoutes(t, routes);
+                for(Route r : routesToAdd) {
+                    trails.add(new Trail(t, r));
                 }
             }
-        } while (canExtend);
+            for(Trail t : trails) {
+                if(longest.length() < t.length()) {
+                    longest = t;
+                }
+            }
+            initTrails = trails;
+        }
 
-        return trails;
+        return longest;
     }
 
 
@@ -129,56 +103,15 @@ public final class Trail {
 
         List<Route> potentialRoutes = new ArrayList<>();
 
-        for (int i = 0; i < routes.size(); ++i) {
-
-            boolean partOfTrail = false;
-            for (int j = 0; j < t.routeConnections.size(); j++) {
-                if(routes.get(i).station2().id() == t.routeConnections.get(j).station1().id()) {
-                    partOfTrail = true;
-                }
-            }
-
-            if (!t.routeConnections.contains(routes.get(i))
-                    && (routes.get(i).station1().id() == t.station2().id())
-                    && !partOfTrail) {
-                potentialRoutes.add(routes.get(i));
+        for (Route r : routes) {
+            if (!t.routeConnections.contains(r)
+                && (t.station2.equals(r.station1()) || t.station2.equals(r.station2()) )) {
+                potentialRoutes.add(r);
             }
         }
-        return potentialRoutes;
+        return List.copyOf(potentialRoutes);
     }
 
-
-    /**
-     * @param trails, the list of the trails of which we'll be comparing the lengths
-     * @return the longest trail ("longest" being the sum of the lengths of the routes constituting the list)
-     */
-    private static Trail findLongest(List<Trail> trails) {
-
-        if(trails == null) {
-            return null;
-        }
-
-        int index = 0;
-        for (int i = 1; i < trails.size(); i++) {
-            if (trails.get(index).length() < trails.get(i).length()) {
-                index = i;
-            }
-        }
-        return trails.get(index);
-    }
-
-
-    /**
-     * @param trails, the trails of which we'll choose the longest
-     * @return the length of the longest trail in the list
-     */
-    private static int biggestLength(List<Trail> trails) {
-        if(trails == null) {
-            return 0;
-        }
-        return findLongest(trails).length();
-
-    }
 
     /**
      * @param routes, the routes we want to copy to a new list
@@ -194,6 +127,9 @@ public final class Trail {
 
     //calculates the length of the trail
     public int length() {
+        if(this == null) {
+            return 0;
+        }
         int l = 0;
         for(int i = 0; i < routeConnections.size(); ++i) {
             l += routeConnections.get(i).length();
@@ -230,14 +166,7 @@ public final class Trail {
             return "Trail is null";
         }
 
-        List<String> text = new ArrayList<>();
-        text.add(station1.name());
-        for (int i = 0; i < routeConnections.size(); i++) {
-            text.add(routeConnections.get(i).station2().name());
-        }
-
-        String info = String.join(" - ", text);
-        return info;
+        return station1.name() + " - " + station2.name();
     }
 
 }

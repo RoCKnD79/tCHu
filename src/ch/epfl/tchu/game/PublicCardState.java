@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
+
 //IMMUTABLE class
 /*
 représente (une partie de) l'état des cartes wagon/locomotive qui ne sont pas en main des joueurs, à savoir:
@@ -30,7 +34,7 @@ public class PublicCardState {
             throw new IllegalArgumentException("deck size or discards size must be >= 0");
         }
         //TODO n'y aura-t-il pas un problème de référence ici ? car on fait List = List ?
-        this.faceUpCards = faceUpCards;
+        this.faceUpCards = List.copyOf(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
     }
@@ -43,7 +47,7 @@ public class PublicCardState {
     returns the 5 visible cards in the form of a list containing exactly 5 elements
      */
     public List<Card> faceUpCards() {
-        return new ArrayList<>(faceUpCards);
+        return List.copyOf(faceUpCards);
     }
 
     /**
@@ -52,10 +56,6 @@ public class PublicCardState {
      * @throws IndexOutOfBoundsException if slot < 0   or   slot >= 5
      */
     public Card faceUpCard(int slot) throws IndexOutOfBoundsException {
-        /*if(slot < 0 || slot >= 5) {
-            throw new IllegalArgumentException("Slot must be a number between 0 (included) and 5 (excluded)");
-        }
-        Objects.checkIndex(slot, faceUpCards.size());*/
         return faceUpCards.get(Objects.checkIndex(slot, faceUpCards.size()));
     }
 

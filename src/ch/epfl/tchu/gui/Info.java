@@ -7,6 +7,9 @@ import ch.epfl.tchu.game.Trail;
 
 import java.util.*;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
 //immutable class
 public final class Info {
 
