@@ -2,6 +2,7 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -103,7 +104,10 @@ public final class Route {
      * @param station
      * @return the opposite of the station
      */
-    public Station stationOpposite(Station station){
+    public Station stationOpposite(Station station) throws IllegalArgumentException{
+        if ((station != station1) && (station != station2)){
+            throw new IllegalArgumentException("station not equal to any of the two station of the route");
+        }
         if (station.equals(station1)){
             return station2;
         }
@@ -162,11 +166,17 @@ public final class Route {
         if((drawnCards.size() != 3) || (this.level().equals(Level.OVERGROUND))){
             throw new IllegalArgumentException("size of drawn Cards is not equal to 3 or the route is not a tunnel");
         }
+        System.out.println(claimCards.get(0) + " : possible claim card 1");
         for(int i = 0; i < drawnCards.size(); ++i){
-            if(drawnCards.get(i).equals(claimCards.get(0))){
+
+            System.out.println("drawn cards : " +drawnCards.get(i));
+            if(drawnCards.get(i).equals(claimCards.get(0)) || drawnCards.get(i).equals(Card.LOCOMOTIVE)){
+
                 additionalClaimCardsNumber += 1;
+
             }
         }
+        System.out.println("additionnal claim cards number : " + additionalClaimCardsNumber);
         return additionalClaimCardsNumber;
     }
 
