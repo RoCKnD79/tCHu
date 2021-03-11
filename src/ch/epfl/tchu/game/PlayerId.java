@@ -2,6 +2,9 @@ package ch.epfl.tchu.game;
 
 import java.util.List;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
 public enum PlayerId {
     PLAYER_1,
     PLAYER_2;

@@ -47,6 +47,7 @@ public final class Info {
      * @param points, the number of points each player's won at the end of a round
      * @return "[player1] et [player2] sont ex æqo avec [points] points !
      */
+    //pas demandé de tester si le nombre de players est au nombre de deux
     public static String draw(List<String> playerNames, int points) {
         return String.format(StringsFr.DRAW, playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1), points);
     }
@@ -70,7 +71,7 @@ public final class Info {
      * @return "C'est à [player] de jouer"
      */
     public String canPlay() {
-        return String.format(StringsFr.KEPT_N_TICKETS, StringsFr.CAN_PLAY);
+        return String.format(StringsFr.CAN_PLAY, playerName);
     }
 
     /**
@@ -78,7 +79,7 @@ public final class Info {
      * @return "[player] a tiré [count] billet/s"
      */
     public String drewTickets(int count) {
-        return String.format(StringsFr.DREW_TICKETS, this.playerName, count);
+        return String.format(StringsFr.DREW_TICKETS, this.playerName, count, StringsFr.plural(count));
     }
 
     /**
@@ -102,15 +103,7 @@ public final class Info {
      * @return "[player] a pris possession de la route [route] au moyen de [cards]
      */
     public String claimedRoute(Route route, SortedBag<Card> cards) {
-
-        TreeSet text = new TreeSet<>();
-        for (Card c: cards.toSet()) {
-            int numOccurrences = cards.countOf(c);
-            text.add(numOccurrences + " " + cardName(c, numOccurrences));
-        }
-        String cardStr = String.join(StringsFr.AND_SEPARATOR, text);
-
-        return String.format(StringsFr.CLAIMED_ROUTE, this.playerName, displayRoute(route), cardStr);
+        return String.format(StringsFr.CLAIMED_ROUTE, this.playerName, displayRoute(route), displayCards(cards));
     }
 
     /**
@@ -124,7 +117,7 @@ public final class Info {
     }
 
     /**
-     * @param drawnCards, the cards the player decides to draw
+     * @param drawnCards, the 3 cards the player decided to draw from the deck
      * @param additionalCost
      * @return "Les cartes supplémentaires sont [drawnCards]."
      *          if there is NO additional cost: "Elles n'impliquent aucun coût additionnel."
@@ -162,10 +155,8 @@ public final class Info {
      * @param carCount, number of cars that the player has left
      * @return "[player] n'a plus que [carCount] wagon/s, le dernier tour commence !"
      */
+    //pas demandé de tester si carCount est bien <= 2
     public String lastTurnBegins(int carCount) {
-        if(carCount > 2) {
-            throw new IllegalArgumentException("number of cars is still > 2");
-        }
         return String.format(StringsFr.LAST_TURN_BEGINS, this.playerName, carCount, StringsFr.plural(carCount));
     }
 

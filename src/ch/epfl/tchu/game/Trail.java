@@ -34,17 +34,6 @@ public final class Trail {
         this.routeConnections = List.copyOf(routes);
     }
 
-    private static <E> void  displayList(List<E> list) {
-        for (E e : list) {
-            System.out.println(e);
-        }
-    }
-
-    private static void displayRouteList(List<Route> list) {
-        for (Route r : list) {
-            System.out.println(r.station1() + " - " + r.station2());
-        }
-    }
 
     /**
      * @param routes, the routes in your network
@@ -58,9 +47,9 @@ public final class Trail {
 
         //initial list of trails constituted of only one route each
         List<Trail> initTrails = new ArrayList<>();
-        for(int i = 0; i < routes.size(); ++i) {
-            initTrails.add(new Trail(routes.get(i).station1(), routes.get(i).station2(), List.of(routes.get(i))));
-            initTrails.add(new Trail(routes.get(i).station2(), routes.get(i).station1(), List.of(routes.get(i))));
+        for (Route route : routes) {
+            initTrails.add(new Trail(route.station1(), route.station2(), List.of(route)));
+            initTrails.add(new Trail(route.station2(), route.station1(), List.of(route)));
         }
 
         Trail longest = null;
@@ -119,9 +108,7 @@ public final class Trail {
      */
     private static List<Route> copyList(List<Route> routes) {
         List<Route> copyList = new ArrayList<>();
-        for (int i = 0; i < routes.size(); i++) {
-            copyList.add(routes.get(i));
-        }
+        copyList.addAll(routes);
         return copyList;
     }
 

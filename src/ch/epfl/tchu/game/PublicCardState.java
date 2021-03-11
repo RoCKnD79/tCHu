@@ -1,6 +1,5 @@
 package ch.epfl.tchu.game;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,12 +8,13 @@ import java.util.Objects;
  */
 
 //IMMUTABLE class
-/*
-représente (une partie de) l'état des cartes wagon/locomotive qui ne sont pas en main des joueurs, à savoir:
-- les 5 cartes disposées face visible à côté du plateau,
-- la pioche,
-- la défausse.
- */
+    /*
+    represents (a part of) the state of the wagon/locomotive cards that are not in the players' hands, this includes:
+    - the 5 cards facing up (=> visible cards)
+    - the deck
+    - the discards pile
+    */
+
 public class PublicCardState {
 
     private final List<Card> faceUpCards;
@@ -23,9 +23,10 @@ public class PublicCardState {
 
     /**
      * Builds a public state of the cards
-     * @param faceUpCards
-     * @param deckSize
-     * @param discardsSize
+     * @param faceUpCards, the "visible" cards, so the cards facing up
+     * @param deckSize, size of the deck
+     * @param discardsSize, size of the discards pile
+     * @throws IllegalArgumentException, if number of cards facing up is not 5 OR if size of the deck or of the discards is < 0
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) throws IllegalArgumentException {
         if(faceUpCards.size() != 5) {
@@ -33,7 +34,7 @@ public class PublicCardState {
         } else if(deckSize < 0 || discardsSize < 0) {
             throw new IllegalArgumentException("deck size or discards size must be >= 0");
         }
-        //TODO n'y aura-t-il pas un problème de référence ici ? car on fait List = List ?
+
         this.faceUpCards = List.copyOf(faceUpCards);
         this.deckSize = deckSize;
         this.discardsSize = discardsSize;
@@ -51,7 +52,7 @@ public class PublicCardState {
     }
 
     /**
-     * @param slot
+     * @param slot, slot of the card we want to return
      * @return 1 card (at chosen slot) out of the 5 face-up cards
      * @throws IndexOutOfBoundsException if slot < 0   or   slot >= 5
      */
@@ -64,10 +65,7 @@ public class PublicCardState {
     }
 
     public boolean isDeckEmpty() {
-        if(deckSize == 0) {
-            return true;
-        }
-        return false;
+        return deckSize == 0;
     }
 
     public int discardsSize() {
