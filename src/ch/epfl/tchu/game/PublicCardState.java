@@ -40,12 +40,15 @@ public class PublicCardState {
         this.discardsSize = discardsSize;
     }
 
+    /**
+     * @return total of cards that are not in the player's hands => the 5 cards facing up, number of cards in deck and in discards
+     */
     public int totalSize() {
         return faceUpCards.size() + deckSize + discardsSize;
     }
 
-    /*
-    returns the 5 visible cards in the form of a list containing exactly 5 elements
+    /**
+     * @return the 5 visible cards in the form of a list containing exactly 5 elements
      */
     public List<Card> faceUpCards() {
         return List.copyOf(faceUpCards);
@@ -60,14 +63,24 @@ public class PublicCardState {
         return faceUpCards.get(Objects.checkIndex(slot, faceUpCards.size()));
     }
 
+    /**
+     * @return the size of the deck => number of cards in it
+     */
     public int deckSize() {
         return deckSize;
     }
 
+    /**
+     * @return true if deck is empty => if size of deck = 0
+     *         false, otherwise
+     */
     public boolean isDeckEmpty() {
         return deckSize == 0;
     }
 
+    /**
+     * @return the size of the discards pile => number of cards in it
+     */
     public int discardsSize() {
         return discardsSize;
     }

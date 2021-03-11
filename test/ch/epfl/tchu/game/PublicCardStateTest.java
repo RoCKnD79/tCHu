@@ -55,6 +55,19 @@ public class PublicCardStateTest {
     }
 
     @Test
+    void outOfBoundsSlotThrowsException() {
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.GREEN);
+        cards.add(Card.BLUE);
+        cards.add(Card.BLUE);
+        cards.add(Card.BLUE);
+        cards.add(Card.BLUE);
+        PublicCardState pcs = new PublicCardState(cards, 5, 7);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {pcs.faceUpCard(6);});
+    }
+
+    @Test
     void returnsCorrectDeckSize() {
         List<Card> cards = new ArrayList<>();
         cards.add(Card.GREEN);
