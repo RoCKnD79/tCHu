@@ -3,32 +3,52 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.SortedBag;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
 public final class CardState extends PublicCardState{
 
 
     private final Deck<Card> deck;
     private final SortedBag<Card> discards;
+    private final SortedBag<Card> emptyDiscards = SortedBag.of();
 
-
-    private CardState(List<Card> faceUpCards, SortedBag<Card> discards, Deck<Card> deck) throws IllegalArgumentException {
+    /**
+     * Constructor for cardState
+     * @param faceUpCards, cards that are face up
+     * @param discards, discard sorted list
+     * @param deck, "pioche"
+     */
+    private CardState(List<Card> faceUpCards, SortedBag<Card> discards, Deck<Card> deck) {
         super(faceUpCards, deck.size(), discards.size());
         this.deck = deck;
-        this.discards = discards;
+        this.discards = SortedBag.of(discards);
     }
 
-    public CardState of(Deck<Card> deck) throws IllegalArgumentException{
+    /**
+     * Creates a card state.
+     * @param deck, a deck
+     * @return a new cardstate with an empty discard list, a new deck, and a new face up cards
+     * @throws IllegalArgumentException, if deck contains less than 5 cards
+     */
+    public static CardState of(Deck<Card> deck) throws IllegalArgumentException{
         if(deck.size() < 5){
             throw new IllegalArgumentException("Deck contains less than 5 cards");
         }
-
-    return new CardState(deck.topCards(5).toList(),null, deck.withoutTopCards(5));
-
+        SortedBag<Card> emptyDiscards = SortedBag.of();
+    return new CardState(deck.topCards(5).toList(), emptyDiscards, deck.withoutTopCards(5));
     }
 
+    /**
+     * replaces the card in slot with the card on top of the deck
+     * @param slot, slot of the card that will be replaced
+     * @return new Card state with replaced face up card
+     * @throws IndexOutOfBoundsException if the slot is higher than 5 or lower than 0
+     * @throws IllegalArgumentException, if the deck is empty
+     */
     public CardState withDrawnFaceUp(int slot) throws IndexOutOfBoundsException, IllegalArgumentException{
         if ((slot >= 5) || (slot < 0)){
             throw new IndexOutOfBoundsException("slot index is not between 0 and 5");
@@ -38,42 +58,80 @@ public final class CardState extends PublicCardState{
         }
         List<Card> newFaceUpCards = new ArrayList<>(this.faceUpCards());
         newFaceUpCards.set(slot, deck.topCard());
-        return new CardState(deck.topCards(5).toList(),null, deck.withoutTopCard());
+        return new CardState(newFaceUpCards,emptyDiscards, deck.withoutTopCard());
     }
 
+    /**
+     * Gives the card on top of the deck
+     * @return the top card of the deck
+     * @throws IllegalArgumentException, if the deck is empty
+     */
     public Card topDeckCard() throws IllegalArgumentException{
-        if (deck.isEmpty() == true){
+        if (deck.isEmpty()){
             throw new IllegalArgumentException("deck is empty");
         }
     return deck.topCard();
     }
 
+    /**
+     * creates a cardstate but without the top card card in the deck
+     * @return new card state without top card
+     * @throws IllegalArgumentException, if the deck is empty
+     */
     public CardState withoutTopDeckCard() throws IllegalArgumentException{
-        if (deck.isEmpty() == true){
+        if (deck.isEmpty()){
             throw new IllegalArgumentException("deck is empty");
         }
-        return new CardState(deck.topCards(5).toList(), null, deck.withoutTopCard());
+        return new CardState(deck.topCards(5).toList(), emptyDiscards, deck.withoutTopCard());
     }
 
+    /**
+     * puts all of the discard cards in an shuffled manner and creates a new deck from these shuffled discards cards
+     * @param rng, random rng
+     * @return a new Cardsate with a new deck
+     * @throws IllegalArgumentException, if the deck isn't empty
+     */
     public CardState withDeckRecreatedFromDiscards(Random rng) throws IllegalArgumentException{
-        if (deck.isEmpty() == true){
-            throw new IllegalArgumentException("deck is empty");
+        if(!deck.isEmpty()){
+            throw new IllegalArgumentException("deck is not empty");
         }
-        Collections.shuffle(discards.toList(), rng);
-        return new CardState(deck.topCards(5).toList(), discards, deck);
+        Random random = new Random();
+        Deck newDeckFromDiscards = Deck.of(discards, random);
+        return new CardState(newDeckFromDiscards.topCards(5).toList(), emptyDiscards, newDeckFromDiscards);
     }
 
+    /**
+     *adds new cards to the discard list
+     * @param additionalDiscards, discards to add to the list
+     * @return a new cardstate with a new discard list
+     */
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
-    List<Card> discardsWithAdditional = discards.toList();
-    for(Card c : additionalDiscards){
-        discardsWithAdditional.add(c);
-    }
+
+
+        List<Card> discardsWithAdditional = discards.toList();
+
+        for(Card c : additionalDiscards){
+            discardsWithAdditional.add(c);
+        }
+
         SortedBag.Builder discardSortedBuilder = new SortedBag.Builder();
         for(Card c : discardsWithAdditional){
             discardSortedBuilder.add(c);
         }
-        SortedBag<Card> discardsSorted = discardSortedBuilder.build();
-    return new CardState(deck.topCards(5).toList(), discardsSorted, deck);
+        SortedBag<Card> discardsWithAddedCards = discardSortedBuilder.build();
+
+
+    return new CardState(deck.topCards(5).toList(), discardsWithAddedCards, deck);
 
     }
+/*
+    public List<Card> getFaceUpCards(){
+        return faceUpCards();
+    }
+    public Deck getDeck(){
+        return deck;
+    }
+    public SortedBag<Card> getDiscards(){
+        return discards;
+    }*/
 }

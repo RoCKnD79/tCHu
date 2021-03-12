@@ -2,82 +2,121 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+
+/**
+ * @author Christopher Soriano (326354)
+ */
 public final class Deck<C extends Comparable<C>> {
-//Jai lu sur piazb que un deck ne contient pas ses cartes dans une SortedBag étant donné que les cartes ne doivent pas être triées.
-private final List<C> cardsSorted;
-Random rng = new Random();
+private final List<C> cards;
 
-
-
-//private final List<C> shuffledCards;
-
-
-
-    private Deck(List<C> cards) { //(SortedBag<C> cards : j'hésite entre les deux ){
-
-
-        this.cardsSorted = cards;
+    /**
+     * Constructor for deck
+     * @param cards, cards that form the deck
+     */
+    private Deck(List<C> cards) {
+        this.cards = cards;
     }
 
+    /**
+     * shuffles cards entered in param and creates a new deck with these cards
+     * @param cards, cards that form the deck
+     * @param rng, random rng
+     * @param <C>, type parameter
+     * @return new Deck with cards that are shuffled
+     */
     public static <C extends Comparable<C>> Deck<C> of(SortedBag<C> cards, Random rng){
         List<C> shuffledCards = new ArrayList<>(cards.toList());
-        Collections.shuffle(shuffledCards);
-
-
-        return  (new Deck(shuffledCards));
+        Collections.shuffle(shuffledCards, rng);
+        return  (new Deck<>(shuffledCards));
     }
 
+    /**
+     * size method for deck, gives the size of the deck
+     * @return size of deck
+     */
     public int size(){
-        return cardsSorted.size();
+        return cards.size();
     }
 
-    //je suis pas sûr la parce que est ce que lorsqu'un deck est vide il est null ?
+    /**
+     * check if deck is empty
+     * @return true if deck is empty
+     */
     public boolean isEmpty(){
-        if (this.equals(null)){
-            return true;
-        }
-        return false;
+        return (this.size() == 0);
     }
 
+    /**
+     * Method that gets the top card of the deck
+     * @return the top card of the deck
+     * @throws IllegalArgumentException if
+     */
     public C topCard() throws IllegalArgumentException{
-    return cardsSorted.get(size());
+        if (this.isEmpty()){
+            throw new IllegalArgumentException("Deck is empty");
+        }
+    return cards.get(size()-1);
     }
 
-    public Deck<C> withoutTopCard(){
-        List<C> cardsAll = new ArrayList<>(cardsSorted);
-        cardsAll.remove(size());
-        return (new Deck(cardsAll));
+    /**
+     * creates new deck that is equal to the original deck, but without the top card
+     * @return new deck without top card
+     */
+    public Deck<C> withoutTopCard() throws IllegalArgumentException{
+        if (this.isEmpty()){
+            throw new IllegalArgumentException("Deck is empty");
+        }
+        List<C> cardsAll = new ArrayList<>(cards);
+        cardsAll.remove(size()-1);
+        return (new Deck<>(cardsAll));
     }
 
+    /**
+     * creates a new sorted bag with the a certain number of top cards from the deck
+     * @param count, number of top cards we want
+     * @return a sortedBag containing the topCards
+     * @throws IllegalArgumentException if count is negative or higher than size of deck
+     */
     public SortedBag<C> topCards(int count) throws IllegalArgumentException{
         if (count < 0 || count > this.size()){
             throw new IllegalArgumentException("count isn't in between 0 and size of Deck");
         }
-        List<C> topCards = new ArrayList<>(cardsSorted.subList(cardsSorted.size() - count, cardsSorted.size()));
-       SortedBag.Builder topCardsSortedBuilder = new SortedBag.Builder();
+        List<C> topCards = new ArrayList<>(cards.subList(cards.size() - count, cards.size()));
+
+
+       SortedBag.Builder<C> topCardsSortedBuilder = new SortedBag.Builder<>();
        for(C c : topCards){
            topCardsSortedBuilder.add(c);
        }
-       SortedBag<C> cards = topCardsSortedBuilder.build();
-       return cards;
+       SortedBag<C> newCards = topCardsSortedBuilder.build();
+       return newCards;
 
     }
 
+    /**
+     * creates a new deck, equal to the original but without the top cards
+     * @param count, number of top cards we want to remove from the deck
+     * @return a new deck without the top cars
+     */
     public Deck<C> withoutTopCards(int count){
         if (count < 0 || count > this.size()){
             throw new IllegalArgumentException("count isn't in between 0 and size of Deck");
         }
-        List<C> withoutTopCards = new ArrayList<>(cardsSorted.subList(0, cardsSorted.size()- count));
+        List<C> withoutTopCards = new ArrayList<>(cards.subList(0, cards.size()- count));
 
-        return (new Deck(withoutTopCards));
-
-
+        return (new Deck<>(withoutTopCards));
     }
+
+
+  /* public List<C> getCardsList(){
+        return cards;
+    }*/
+
+
 }
 
