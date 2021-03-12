@@ -11,6 +11,11 @@ import java.util.Random;
 /**
  * @author Christopher Soriano (326354)
  */
+
+//IMMUTABLE CLASS
+    /*
+    Represents a deck of any type of Cards
+     */
 public final class Deck<C extends Comparable<C>> {
 private final List<C> cards;
 
