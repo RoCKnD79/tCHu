@@ -57,7 +57,7 @@ public final class CardState extends PublicCardState{
      * @throws IndexOutOfBoundsException if the slot is higher than 5 or lower than 0
      * @throws IllegalArgumentException, if the deck is empty
      */
-    public CardState withDrawnFaceUp(int slot) throws IndexOutOfBoundsException, IllegalArgumentException{
+    public CardState withDrawnFaceUpCard(int slot) throws IndexOutOfBoundsException, IllegalArgumentException{
         if ((slot >= 5) || (slot < 0)){
             throw new IndexOutOfBoundsException("slot index is not between 0 and 5");
         }
@@ -90,7 +90,7 @@ public final class CardState extends PublicCardState{
         if (deck.isEmpty()){
             throw new IllegalArgumentException("deck is empty");
         }
-        return new CardState(deck.topCards(5).toList(), emptyDiscards, deck.withoutTopCard());
+        return new CardState(faceUpCards(), emptyDiscards, deck.withoutTopCard());
     }
 
     /**
@@ -100,12 +100,13 @@ public final class CardState extends PublicCardState{
      * @throws IllegalArgumentException, if the deck isn't empty
      */
     public CardState withDeckRecreatedFromDiscards(Random rng) throws IllegalArgumentException{
+
         if(!deck.isEmpty()){
             throw new IllegalArgumentException("deck is not empty");
         }
-        Random random = new Random();
-        Deck newDeckFromDiscards = Deck.of(discards, random);
-        return new CardState(newDeckFromDiscards.topCards(5).toList(), emptyDiscards, newDeckFromDiscards);
+        Deck newDeckFromDiscards = Deck.of(discards, rng);
+        ;
+        return new CardState(faceUpCards(), emptyDiscards, newDeckFromDiscards);
     }
 
     /**
@@ -115,7 +116,7 @@ public final class CardState extends PublicCardState{
      */
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
 
-
+        System.out.println("additional discards size : " + additionalDiscards.size());
         List<Card> discardsWithAdditional = discards.toList();
 
         for(Card c : additionalDiscards){
@@ -127,9 +128,9 @@ public final class CardState extends PublicCardState{
             discardSortedBuilder.add(c);
         }
         SortedBag<Card> discardsWithAddedCards = discardSortedBuilder.build();
+        System.out.println("discarded with added cards size : " +discardsWithAddedCards.size());
 
-
-    return new CardState(deck.topCards(5).toList(), discardsWithAddedCards, deck);
+    return new CardState(faceUpCards(), discardsWithAddedCards, deck);
 
     }
 /*
