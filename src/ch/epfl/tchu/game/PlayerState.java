@@ -4,6 +4,8 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Christopher Soriano (326354)
@@ -118,6 +120,7 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(this.tickets, withAddedCard, this.routes);
     }
 
+    //TODO
     private boolean canClaimRoute(Route route) {
         /*Ici, il faut mettre deux if séparés car possibleClaimCards ne doit être appelée que si le joueur a assez de wagons (piazza)*/
 
@@ -129,9 +132,50 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     private List<SortedBag<Card>> possibleClaimCards(Route route) throws IllegalArgumentException{
+        List<SortedBag<Card>> list = new ArrayList<>();
+        Set<Card> setOfCardsOwnedByPlayer = new TreeSet<>(cards.toSet());
         if((carCount < route.length())){
             throw new IllegalArgumentException("Player doesn't have enough cars to get the road");
         }
+        if (route.level().equals(Route.Level.OVERGROUND)){
+            if (route.color() == null){
+               for(Card c : setOfCardsOwnedByPlayer){
+                   if(cards.countOf(c) == route.length()) {
+                       if(c.equals(Card.LOCOMOTIVE)) {
+                           continue;
+                       }
+                       list.add(SortedBag.of(route.length(), c));
+                   }
+               }
+            }else{
+                if ((cards.contains(Card.of(route.color()))) && (cards.countOf(Card.of(route.color()))) == route.length()){
+                    list.add(SortedBag.of(route.length(), Card.of(route.color())));
+                }
+            }
+        }else{
+            if(route.color() == null){
+                for(Card c : setOfCardsOwnedByPlayer){
+                    for (int i = 0; i <= route.length(); ++i) {
+                        /*if(!(c.equals(Card.LOCOMOTIVE))) {
+                            list.add(SortedBag.of(route.length() - i, c, i, Card.LOCOMOTIVE));
+                        }*/
+                        if(cards.countOf(c) < route.length()-i || cards.countOf(Card.LOCOMOTIVE) < i) {
+                            continue;
+                        }
+                    }
+                }
+            }else{
+                if ((cards.contains(Card.of(route.color()))) && (cards.countOf(Card.of(route.color()))) == route.length()){
+                    for(int j = 0; j <= cards.countOf(Card.LOCOMOTIVE); ++j) {
+                        for (int i = 0; i <= route.length(); ++i) {
+                            list.add(SortedBag.of(length - i, Card.of(color), i, Card.LOCOMOTIVE));
+                        }
+                    }
+                }
+            }
+            }
+        }
+
        return route.possibleClaimCards();
     }
 
