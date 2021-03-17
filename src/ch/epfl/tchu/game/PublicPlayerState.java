@@ -14,13 +14,12 @@ import java.util.List;
     - number of construction points
     */
 
-public final class PublicPlayerState {
+public class PublicPlayerState {
 
     public final int ticketCount;
     public final int cardCount;
     public final List<Route> routes;
-    public final int carCount = carCount();
-    public final int claimPoints = claimPoints();
+
 
     /**
      * Constructor of a player's card state
@@ -64,16 +63,21 @@ public final class PublicPlayerState {
 
     public int carCount(){
         int numberOfCars = 40;
-        for(Route r : routes){
-           numberOfCars -= r.length();
+        if(routes != null) {
+            for (Route r : routes) {
+                numberOfCars -= r.length();
+            }
         }
         return numberOfCars;
     }
 
     public int claimPoints(){
         int numberOfPoints = 0;
-        for(Route r : routes){
-            numberOfPoints += r.claimPoints();
+
+        if(routes != null) {
+            for (Route r : this.routes) {
+                numberOfPoints += r.claimPoints();
+            }
         }
         return numberOfPoints;
     }
