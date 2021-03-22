@@ -19,20 +19,20 @@ public interface Player {
      * @param ownId, id of the player
      * @param playerNames, map linking ids to names
      */
-    public abstract void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames);
+    void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames);
 
     /**
      *called when information is given to players
      * @param info, the information given
      */
-    public abstract void receiveInfo(String info);
+    void receiveInfo(String info);
 
     /**
      *informs player of his new state
      * @param newState, new state of the player
      * @param ownState, own state of the palyer
      */
-    public abstract void updateState(PublicGameState newState, PlayerState ownState);
+    void updateState(PublicGameState newState, PlayerState ownState);
 
     /**
      *communicates to player the five tickets that were distributed to him at the beginning of the game
@@ -53,9 +53,34 @@ public interface Player {
     TurnKind nextTurn();
 
     /**
-     *
-     * @param options
-     * @return
+     *called when a player chooses to draw new tickets in game
+     * @param options, sorted bag of the new tickets
+     * @return the tickets that the player wants to keep
      */
     SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options);
+
+    /**
+     * called when a player has drawn a new card
+     * @return a number between 0 and 4 if the card that is drawn is from the slots, of between Constants.DECK_SLOT
+     */
+    int drawSlot();
+
+    /**
+     * called when a player decides to try and take control of a route, to know which route he wants
+     * @return the route that the player wants to take control of.
+     */
+    Route claimedRoute();
+
+    /**
+     *called when a player tries to take control of a road to know which cards he is using initially
+     * @return a sorted list of the cards he wants to use to claim the route
+     */
+    SortedBag<Card> initialClaimCards();
+
+    /**
+     * called when a player wants to take control of a tunnel, gets which additional cards he wants to use to take control of that tunnel
+     * @param options, list of the different options of cards he can use
+     * @return the additional cards he wants to use, if empty, it means the player does not want (or can't) to take control of the tunnel
+     */
+    SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options);
 }
