@@ -18,11 +18,12 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Constructor of player state
+     *
      * @param tickets, tickets of the player
-     * @param cards, cards of the player
-     * @param routes, routes of the player
+     * @param cards,   cards of the player
+     * @param routes,  routes of the player
      */
-    public PlayerState(SortedBag<Ticket> tickets, SortedBag<Card> cards, List<Route> routes){
+    public PlayerState(SortedBag<Ticket> tickets, SortedBag<Card> cards, List<Route> routes) {
         super(tickets.size(), cards.size(), routes);
         this.tickets = tickets;
         this.cards = cards;
@@ -31,13 +32,14 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Method that "initializes" the player's state with his initial card given at the beginning at the game
+     *
      * @param initialCards, sorted list of player's initial cards
      * @return a new player state with the initial cards
      * @throws IllegalArgumentException, if there are more or less than 4 initial cards
      */
-    public static PlayerState initial(SortedBag<Card> initialCards) throws IllegalArgumentException{
-        if (initialCards.size() != 4){
-            throw new IllegalArgumentException("There are more or less than 4 initial cards");
+    public static PlayerState initial(SortedBag<Card> initialCards) throws IllegalArgumentException {
+        if (initialCards.size() != 4) {
+            throw new IllegalArgumentException("There must exactly be 4 initial cards");
         }
         SortedBag<Ticket> tickets = SortedBag.of();
         List<Route> routes = new ArrayList<>();
@@ -48,8 +50,8 @@ public final class PlayerState extends PublicPlayerState {
      * gives the tickets of the player
      * @return tickets of player
      */
-    private SortedBag<Ticket> ticket(){
-        return tickets;
+    public SortedBag<Ticket> tickets() {
+        return SortedBag.of(tickets);
     }
 
     /**
@@ -57,28 +59,15 @@ public final class PlayerState extends PublicPlayerState {
      * @param newTickets, tickets that are added to the original list of tickets
      * @return new PlayerState with additional tickets
      */
-    private PlayerState withAddedTickets(SortedBag<Ticket> newTickets){
-
-        List<Ticket> tickets = this.tickets.toList();
-
-        for(Ticket c : newTickets){
-            tickets.add(c);
-        }
-
-        SortedBag.Builder<Ticket> ticketSortedBuilder = new SortedBag.Builder<>();
-        for(Ticket c : tickets){
-            ticketSortedBuilder.add(c);
-        }
-        SortedBag<Ticket> withAddedTickets = ticketSortedBuilder.build();
-
-        return new PlayerState(withAddedTickets, this.cards, this.routes);
+    public PlayerState withAddedTickets(SortedBag<Ticket> newTickets) {
+        return new PlayerState(tickets.union(newTickets), this.cards, this.routes);
     }
 
     /**
-     * Method that gives the cards that the player has
-     * @return cards of the palyer
+     * Method that returns the cards that the player has
+     * @return cards of the player
      */
-    private SortedBag<Card> cards(){
+    public SortedBag<Card> cards() {
         return this.cards;
     }
 
@@ -87,17 +76,9 @@ public final class PlayerState extends PublicPlayerState {
      * @param card, the card to add to original list of cards
      * @return a new PlayerState with card added to original list
      */
-    private PlayerState withAddedCard(Card card){
-        List<Card> cards = this.cards.toList();
-        cards.add(card);
-
-        SortedBag.Builder<Card> cardSortedBuilder = new SortedBag.Builder<>();
-        for(Card c : cards){
-            cardSortedBuilder.add(c);
-        }
-        SortedBag<Card> withAddedCard = cardSortedBuilder.build();
-
-        return new PlayerState(this.tickets, withAddedCard, this.routes);
+    public PlayerState withAddedCard(Card card) {
+        SortedBag<Card> newCard = SortedBag.of(1, card);
+        return new PlayerState(this.tickets, cards.union(newCard), this.routes);
     }
 
     /**
@@ -105,107 +86,171 @@ public final class PlayerState extends PublicPlayerState {
      * @param additionalCards, the sorted list of cards to add to original list of cards
      * @return a new PlayerState with additional cards added to original list
      */
-    private PlayerState withAddedCards(SortedBag<Card> additionalCards){
-        List<Card> cards = this.cards.toList();
-        for(Card c : additionalCards) {
-            cards.add(c);
-        }
-
-        SortedBag.Builder<Card> cardSortedBuilder = new SortedBag.Builder<>();
-        for(Card c : cards){
-            cardSortedBuilder.add(c);
-        }
-        SortedBag<Card> withAddedCard = cardSortedBuilder.build();
-
-        return new PlayerState(this.tickets, withAddedCard, this.routes);
+    public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
+        return new PlayerState(this.tickets, cards.union(additionalCards), this.routes);
     }
 
-    //TODO
-    private boolean canClaimRoute(Route route) {
-        /*Ici, il faut mettre deux if séparés car possibleClaimCards ne doit être appelée que si le joueur a assez de wagons (piazza)*/
-
-        if ((carCount >= route.length())){
-            if (route.possibleClaimCards() //TODO)//
-            return true;
-        }
-        return false;
+    /**
+     * tests if given route can be claimed with the cards the player has
+     * @param route the player wants to claim
+     * @return true if claim is possible
+     */
+    public boolean canClaimRoute(Route route) {
+        return (this.carCount() >= route.length() && possibleClaimCards(route).size() != 0);
     }
 
-    private List<SortedBag<Card>> possibleClaimCards(Route route) throws IllegalArgumentException{
+    /**
+     * calculates a list of all possible card combinations the player can use to claim the given route
+     * @param route, route we want to claim
+     * @return list of all possible claim card combinations
+     */
+    public List<SortedBag<Card>> possibleClaimCards(Route route) {
+
+        int length = route.length();
+
+        if (this.carCount() < length) {
+            throw new IllegalArgumentException("Number of cars must be at least " + length);
+        }
+
+        Set<Card> availableCards = cards.toSet();
         List<SortedBag<Card>> list = new ArrayList<>();
-        Set<Card> setOfCardsOwnedByPlayer = new TreeSet<>(cards.toSet());
-        if((carCount < route.length())){
-            throw new IllegalArgumentException("Player doesn't have enough cars to get the road");
-        }
-        if (route.level().equals(Route.Level.OVERGROUND)){
-            if (route.color() == null){
-               for(Card c : setOfCardsOwnedByPlayer){
-                   if(cards.countOf(c) == route.length()) {
-                       if(c.equals(Card.LOCOMOTIVE)) {
-                           continue;
-                       }
-                       list.add(SortedBag.of(route.length(), c));
-                   }
-               }
-            }else{
-                if ((cards.contains(Card.of(route.color()))) && (cards.countOf(Card.of(route.color()))) == route.length()){
-                    list.add(SortedBag.of(route.length(), Card.of(route.color())));
-                }
-            }
-        }else{
-            if(route.color() == null){
-                for(Card c : setOfCardsOwnedByPlayer){
-                    for (int i = 0; i <= route.length(); ++i) {
-                        /*if(!(c.equals(Card.LOCOMOTIVE))) {
-                            list.add(SortedBag.of(route.length() - i, c, i, Card.LOCOMOTIVE));
-                        }*/
-                        if(cards.countOf(c) < route.length()-i || cards.countOf(Card.LOCOMOTIVE) < i) {
-                            continue;
-                        }
-                    }
-                }
-            }else{
-                if ((cards.contains(Card.of(route.color()))) && (cards.countOf(Card.of(route.color()))) == route.length()){
-                    for(int j = 0; j <= cards.countOf(Card.LOCOMOTIVE); ++j) {
-                        for (int i = 0; i <= route.length(); ++i) {
-                            list.add(SortedBag.of(length - i, Card.of(color), i, Card.LOCOMOTIVE));
-                        }
-                    }
-                }
-            }
-            }
-        }
 
-       return route.possibleClaimCards();
+        if (route.level().equals(Route.Level.OVERGROUND) || !cards.contains(Card.LOCOMOTIVE)) {
+            if (route.color() == null) {
+                for (Card c : availableCards) {
+                    if (c.equals(Card.LOCOMOTIVE)) continue;
+                    if (cards.countOf(c) >= length) {
+                        list.add(SortedBag.of(length, c));
+                    }
+                }
+            } else {
+                if (cards.countOf(Card.of(route.color())) >= length) {
+                    list.add(SortedBag.of(length, Card.of(route.color())));
+                }
+            }
+
+        } else { //case where route is a tunnel (=> Level.UNDERGROUND) and player has locomotive cards
+            if (route.color() == null) {
+                for (int i = 0; i <= length; ++i) {
+                    for (Card c : availableCards) {
+                        if (c.equals(Card.LOCOMOTIVE)) continue;
+                        if (cards.countOf(c) >= length - i && cards.countOf(Card.LOCOMOTIVE) >= i) {
+                            list.add(SortedBag.of(length - i, c, i, Card.LOCOMOTIVE));
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i <= length; ++i) {
+                    if (cards.countOf(Card.of(route.color())) >= length - i || cards.countOf(Card.LOCOMOTIVE) >= i) {
+                        list.add(SortedBag.of(length - i, Card.of(route.color()), i, Card.LOCOMOTIVE));
+                    }
+                }
+            }
+
+        }
+        return list;
     }
 
-    private List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) throws IllegalArgumentException {
+
+    /**
+     * if initial cards are only locomotive cards, then the player will only be able to play additionalCardsCount locomotive cards
+     *      (if he has the sufficient amount of locomotive cards available)
+     * if initial cards are composed of (only color cards) OR (color cards and locomotives), then the player will be able to play
+     *      additionalCardsCount cards of different combinations,
+     *      ex: if additionalCardsCount is 2 and the player initially used 1 blue and 1 locomotive,
+     *          then the player may play {2xB}, {1xB, 1xL} or {2xL}
+     * @param additionalCardsCount, number of additional cards the player will need to play
+     * @param initialCards, the cards the player played initially to claim the tunnel, before drawing the additional cards
+     * @param drawnCards, the 3 cards drawn by the player after he played his initialCards to begin claiming a tunnel
+     * @return a List of possible additional cards the player is able to play in order to finish claiming the tunnel
+     * @throws IllegalArgumentException if the number of additionalCards (=> additionalCardsCount) is < 1 or > 3
+     *                                  if initialCards is empty or more than 2 types of cards (2 types because at most
+     *                                                  you can use both a certain color and locomotive cards to claim a tunnel)
+     *                                  if the number of drawnCards isn't exactly 3
+     */
+    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) throws IllegalArgumentException {
+
         if ((additionalCardsCount < 1) || (additionalCardsCount > 3)) {
             throw new IllegalArgumentException("additionnal card count is not between 1 and 3 included");
         }
-        if (initialCards.isEmpty()) ||() //TODO )
-        {
-
-        throw new IllegalArgumentException("inital cards list is empty or contains two different type of cards");
+        if (initialCards.isEmpty() || initialCards.toSet().size() > 2){
+            throw new IllegalArgumentException("inital cards list is empty or contains two different type of cards");
         }
         if(drawnCards.size() != 3){
             throw new IllegalArgumentException("the number of drawn cards is not equal to 3");
         }
 
-        //removes intial cards from hand of player (in a new list !)
-        List<Card> playersCardsWithoutInitial = SortedBag.of(cards).toList();
-        for(Card c : initialCards){
-            playersCardsWithoutInitial.remove(c);
+        List<SortedBag<Card>> list = new ArrayList<>();
+        SortedBag<Card> cardsLeft = cards.difference(initialCards);
+
+        if(cardsLeft.size() < additionalCardsCount) {
+            System.out.println("not enough cards");
+            return List.of();
         }
 
-        //Ce n'est pas un multiensemble ? je sai spas ce que c'est un multiensemble
-        List<Card> playableCards = new ArrayList<>();
-        for(Card c : playersCardsWithoutInitial){
-            if((c.color().equals(initialCards.get(0).color())) || c.equals(Card.LOCOMOTIVE)){
-                playableCards.add(c);
+        if(initialCards.countOf(Card.LOCOMOTIVE) == initialCards.size()) {
+            if(cardsLeft.countOf(Card.LOCOMOTIVE) >= additionalCardsCount) {
+                return List.of(SortedBag.of(additionalCardsCount, Card.LOCOMOTIVE));
+            }
+        } else {
+            for (int i = 0; i <= additionalCardsCount; ++i) {
+                for (Card c : initialCards.toSet()) {
+                    if (c.equals(Card.LOCOMOTIVE)) continue;
+                    if (cardsLeft.countOf(c) >= additionalCardsCount - i && cards.countOf(Card.LOCOMOTIVE) >= i) {
+                        list.add(SortedBag.of(additionalCardsCount - i, c, i, Card.LOCOMOTIVE));
+                    }
+                }
             }
         }
 
-
+        return list;
     }
+
+    /**
+     *
+     * @param route, claimed route
+     * @param claimCards, cards used to claim route
+     * @return new PlayerState instance with player's routes and cards updated
+     */
+    public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards) {
+        List<Route> temp = new ArrayList<>(routes);
+        temp.add(route);
+        return new PlayerState(tickets, cards.difference(claimCards), temp);
+    }
+
+    /**
+     * @return number of points the player can gain (or lose) with the tickets he has (depends on the routes he has)
+     */
+    public int ticketPoints() {
+        int largestId = 0;
+        for(Route r : routes) {
+            int max = Math.max(r.station1().id(), r.station2().id());
+            if(max > largestId) {
+                largestId = max;
+            }
+        }
+
+        StationPartition.Builder partitionBuild = new StationPartition.Builder(largestId + 1);
+
+        for(Route r : routes) {
+            partitionBuild.connect(r.station1(), r.stationOpposite(r.station1()));
+        }
+
+        StationPartition partition = partitionBuild.build();
+
+        int ticketPoints = 0;
+        for(Ticket t : tickets) {
+            ticketPoints += t.points(partition);
+        }
+
+        return ticketPoints;
+    }
+
+    /**
+     * @return total points the player won/lost => claim points + ticket points
+     */
+    public int finalPoints() {
+        return claimPoints() + ticketPoints();
+    }
+
 }

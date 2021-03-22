@@ -104,8 +104,8 @@ public final class CardState extends PublicCardState{
         if(!deck.isEmpty()){
             throw new IllegalArgumentException("deck is not empty");
         }
-        Deck newDeckFromDiscards = Deck.of(discards, rng);
-        ;
+        Deck<Card> newDeckFromDiscards = Deck.of(discards, rng);
+
         return new CardState(faceUpCards(), emptyDiscards, newDeckFromDiscards);
     }
 
@@ -116,19 +116,19 @@ public final class CardState extends PublicCardState{
      */
     public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
 
-        System.out.println("additional discards size : " + additionalDiscards.size());
+        //System.out.println("additional discards size : " + additionalDiscards.size());
         List<Card> discardsWithAdditional = discards.toList();
 
         for(Card c : additionalDiscards){
             discardsWithAdditional.add(c);
         }
 
-        SortedBag.Builder discardSortedBuilder = new SortedBag.Builder();
+        SortedBag.Builder<Card> discardSortedBuilder = new SortedBag.Builder<>();
         for(Card c : discardsWithAdditional){
             discardSortedBuilder.add(c);
         }
         SortedBag<Card> discardsWithAddedCards = discardSortedBuilder.build();
-        System.out.println("discarded with added cards size : " +discardsWithAddedCards.size());
+        //System.out.println("discarded with added cards size : " +discardsWithAddedCards.size());
 
     return new CardState(faceUpCards(), discardsWithAddedCards, deck);
 

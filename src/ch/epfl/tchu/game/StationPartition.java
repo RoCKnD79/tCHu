@@ -70,7 +70,7 @@ public final class StationPartition implements StationConnectivity {
                 throw new IndexOutOfBoundsException("Station ID cannot be >= than " + stationCount +
                         " (number passed in argument in the constructor of Builder)");
             }
-            repArrayBuild[s2.id()] = representative(s1.id());
+            repArrayBuild[s1.id()] = s2.id();
 
             return this;
         }
@@ -80,15 +80,9 @@ public final class StationPartition implements StationConnectivity {
          * @return an instance of StationPartition
          */
         public StationPartition build() {
-
+            System.out.println(stationCount);
             for(int i = 0; i < stationCount; ++i) {
-                boolean valueChange = false;
-                do {
-                    if(repArrayBuild[i] != representative(repArrayBuild[i])) {
-                        repArrayBuild[i] = representative(repArrayBuild[i]);
-                        valueChange = true;
-                    }
-                } while(valueChange);
+                repArrayBuild[i] = representative(i);
             }
 
             return new StationPartition(repArrayBuild);
@@ -99,7 +93,20 @@ public final class StationPartition implements StationConnectivity {
          * @return the representative of the station in question
          */
         private int representative(int id) {
-            return repArrayBuild[id];
+            boolean valueChange = false;
+            int repID = repArrayBuild[id];
+
+            do {
+                valueChange = false;
+                if (repID != repArrayBuild[repID]) {
+                    repID = repArrayBuild[repID];
+                    valueChange = true;
+                }
+            } while (valueChange);
+
+            //displayArray(repArrayBuild);
+
+            return repID;
         }
 
         /**

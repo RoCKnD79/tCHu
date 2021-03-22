@@ -3,9 +3,7 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.SortedBag;
 
 import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class Route {
 
@@ -166,17 +164,17 @@ public final class Route {
         if((drawnCards.size() != 3) || (this.level().equals(Level.OVERGROUND))){
             throw new IllegalArgumentException("size of drawn Cards is not equal to 3 or the route is not a tunnel");
         }
-        System.out.println(claimCards.get(0) + " : possible claim card 1");
+        //System.out.println(claimCards.get(0) + " : possible claim card 1");
         for(int i = 0; i < drawnCards.size(); ++i){
 
-            System.out.println("drawn cards : " +drawnCards.get(i));
+            //System.out.println("drawn cards : " +drawnCards.get(i));
             if(drawnCards.get(i).equals(claimCards.get(0)) || drawnCards.get(i).equals(Card.LOCOMOTIVE)){
 
                 additionalClaimCardsNumber += 1;
 
             }
         }
-        System.out.println("additionnal claim cards number : " + additionalClaimCardsNumber);
+        //System.out.println("additionnal claim cards number : " + additionalClaimCardsNumber);
         return additionalClaimCardsNumber;
     }
 

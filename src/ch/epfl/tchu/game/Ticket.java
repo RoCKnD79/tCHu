@@ -55,7 +55,7 @@ public final class Ticket implements Comparable<Ticket> {
                 if (maxPts < trips.get(h).points()) {
                     maxPts = trips.get(h).points();
                 }
-            max = true;
+                max = true;
             }else {
                 if (minPts > trips.get(h).points()) {
                     minPts = trips.get(h).points();
@@ -63,33 +63,6 @@ public final class Ticket implements Comparable<Ticket> {
 
             }
         }
-
-
-        /*for (int j = 0; j < trips.size(); ++j) {
-            if((connectivity.connected(trips.get(j).from(), trips.get(j).to()) == false)){
-                if (minPts > trips.get(j).points()) {
-                    minPts = trips.get(j).points();
-                }
-            }
-        }*/
-
-        /*for (int i = 0; i < trips.size(); ++i) {
-            if (connectivity.connected(trips.get(i).from(), trips.get(i).to()) == true) {
-                return trips.get(i).points();
-                //return maxPts;
-            } else if((connectivity.connected(trips.get(i).from(), trips.get(i).to()) == false)){
-                return -trips.get(i).points();
-                //return -minPts;*/
-            /*}else{
-                for(int u = 0; u < trips.size(); ++u) {
-                    if (connectivity.connected(trips.get(u).from(), trips.get(u).to()) == true) {
-                        return trips.get(u).points();
-                    }
-                }
-            }*/
-            //}
-
-        //}
 
         if (max == false){
             return -minPts;

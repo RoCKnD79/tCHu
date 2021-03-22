@@ -16,9 +16,9 @@ import java.util.List;
 
 public class PublicPlayerState {
 
-    public final int ticketCount;
-    public final int cardCount;
-    public final List<Route> routes;
+    private final int ticketCount;
+    private final int cardCount;
+    private final List<Route> routes;
 
 
     /**
@@ -57,6 +57,7 @@ public class PublicPlayerState {
      * gives a list of the routes the player owns
      * @return list of routes
      */
+    //TODO List.copyOf(routes) ?
     public List<Route> routes(){
         return routes;
     }
