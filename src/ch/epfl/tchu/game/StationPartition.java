@@ -25,6 +25,10 @@ public final class StationPartition implements StationConnectivity {
      */
     @Override
     public boolean connected(Station s1, Station s2) {
+        System.out.println();
+        for(int i : repArray) {
+            System.out.print(i + ", ");
+        }
         if(s1.id() >= repArray.length || s2.id() >= repArray.length) {
             if (s1.id() == s2.id()) {
                 return true;
@@ -41,7 +45,7 @@ public final class StationPartition implements StationConnectivity {
     public static final class Builder {
 
         private int stationCount;
-        private int[] repArrayBuild;
+        private int[] r;
 
         /**
          * @param stationCount = max(id1, id2,..., idN) + 1 where id1, id2,..., idN are the ids of the stations
@@ -53,9 +57,9 @@ public final class StationPartition implements StationConnectivity {
             }
             this.stationCount = stationCount;
 
-            repArrayBuild = new int[stationCount];
-            for(int i = 0; i < repArrayBuild.length; ++i) {
-                repArrayBuild[i] = i;
+            r = new int[stationCount];
+            for(int i = 0; i < r.length; ++i) {
+                r[i] = i;
             }
         }
 
@@ -65,48 +69,109 @@ public final class StationPartition implements StationConnectivity {
          * @return the current instance of the builder, which will have its repArrayBuild modified (in most of the cases)
          * @throws IndexOutOfBoundsException, if the id of the station given in argument is >= stationCount
          */
-        public Builder connect(Station s1, Station s2) throws IndexOutOfBoundsException {
+        /*public Builder connect(Station s1, Station s2) throws IndexOutOfBoundsException {
             if(s1.id() >= stationCount || s2.id() >= stationCount) {
                 throw new IndexOutOfBoundsException("Station ID cannot be >= than " + stationCount +
                         " (number passed in argument in the constructor of Builder)");
             }
-            repArrayBuild[s1.id()] = s2.id();
+            if(repArrayBuild[s1.id()] == s1.id()) {
+                repArrayBuild[s1.id()] = s2.id();
+            } else {
+                int temp = repArrayBuild[s1.id()];
+                repArrayBuild[s1.id()] = s2.id();
+                repArrayBuild[temp] = s2.id();
+            }
 
             return this;
-        }
+        }*/
 
         /**
          * This is basically the method which will allow us to initialize an instance of type StationPartition
          * @return an instance of StationPartition
          */
-        public StationPartition build() {
+        /*public StationPartition build() {
             System.out.println(stationCount);
             for(int i = 0; i < stationCount; ++i) {
                 repArrayBuild[i] = representative(i);
             }
 
             return new StationPartition(repArrayBuild);
-        }
+        }*/
 
         /**
-         * @param id, the id of the station whose representative we would like to know
+         * @param , the id of the station whose representative we would like to know
          * @return the representative of the station in question
          */
-        private int representative(int id) {
-            boolean valueChange = false;
+        /*private int representative(int id) {
+            boolean valueChange;
             int repID = repArrayBuild[id];
 
             do {
                 valueChange = false;
+                if(repArrayBuild[repID] == id) {
+                    repArrayBuild[repID] = repID;
+                }
                 if (repID != repArrayBuild[repID]) {
                     repID = repArrayBuild[repID];
                     valueChange = true;
                 }
+                System.out.println("a");
             } while (valueChange);
 
             //displayArray(repArrayBuild);
 
             return repID;
+        }*/
+
+        public Builder connect(Station s1, Station s2) throws IndexOutOfBoundsException {
+            if (s1.id() >= stationCount || s2.id() >= stationCount) {
+                throw new IndexOutOfBoundsException("Station ID cannot be >= than " + stationCount +
+                        " (number passed in argument in the constructor of Builder)");
+            }
+
+            /*if(r[s1.id()] == s1.id()) {
+                if(r[s2.id()] != s1.id()){
+                    r[s1.id()] = s2.id();
+                }
+            } else {
+                r[r[s1.id()]] = s1.id();
+                r[s1.id()] = s2.id();
+            }*/
+
+            if(r[s1.id()] == s1.id()) {
+                int temp = representative(s2.id());
+                if(temp != s1.id()) {
+                    r[s1.id()] = temp;
+                }
+            } else {
+                r[r[s1.id()]] = s1.id();
+                r[s1.id()] = s2.id();
+            }
+
+            //displayArray(r);
+
+            return this;
+        }
+
+        public StationPartition build() {
+            for(int i = 0; i < r.length; ++i) {
+                r[i] = representative(i);
+            }
+
+            return new StationPartition(r);
+        }
+
+        private int representative(int id) {
+            boolean valueChange;
+            int repId = r[id];
+            do {
+                valueChange = false;
+                if(repId != r[repId]) {
+                    repId = r[repId];
+                    valueChange = true;
+                }
+            } while(valueChange);
+            return repId;
         }
 
         /**
