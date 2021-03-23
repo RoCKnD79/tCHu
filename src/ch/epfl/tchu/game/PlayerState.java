@@ -131,17 +131,12 @@ public final class PlayerState extends PublicPlayerState {
 
         } else { //case where route is a tunnel (=> Level.UNDERGROUND) and player has locomotive cards
             if (route.color() == null) {
-                for (int i = 0; i <= length; ++i) {
-                    for (Card c : availableCards) {
-                        if (c.equals(Card.LOCOMOTIVE)) continue;
-                        if (cards.countOf(c) >= length - i && cards.countOf(Card.LOCOMOTIVE) >= i) {
-                            list.add(SortedBag.of(length - i, c, i, Card.LOCOMOTIVE));
-                        }
-                    }
+                if (cards.countOf(Card.LOCOMOTIVE) >= length) {
+                    list.add(SortedBag.of(length, Card.LOCOMOTIVE));
                 }
             } else {
                 for (int i = 0; i <= length; ++i) {
-                    if (cards.countOf(Card.of(route.color())) >= length - i || cards.countOf(Card.LOCOMOTIVE) >= i) {
+                    if (cards.countOf(Card.of(route.color())) >= length - i && cards.countOf(Card.LOCOMOTIVE) >= i) {
                         list.add(SortedBag.of(length - i, Card.of(route.color()), i, Card.LOCOMOTIVE));
                     }
                 }
