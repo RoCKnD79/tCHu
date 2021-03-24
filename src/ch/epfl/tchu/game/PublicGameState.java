@@ -20,7 +20,7 @@ public class PublicGameState {
      * @param cardState, public state of the cards of the game
      * @param currentPlayerId, id of current player
      * @param playerState, public states of each player
-     * @param lastPlayer, id of the last player that played (can be null)
+     * @param lastPlayer, id of the player that'll play last in the game
      */
     public PublicGameState(int ticketsCount, PublicCardState cardState, PlayerId currentPlayerId,
                            Map<PlayerId, PublicPlayerState> playerState, PlayerId lastPlayer) {
