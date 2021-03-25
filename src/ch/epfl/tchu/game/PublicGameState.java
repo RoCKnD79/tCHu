@@ -28,6 +28,9 @@ public class PublicGameState {
         if (ticketsCount < 0) {
             throw new IllegalArgumentException("ticketsCount must be >= 0");
         }
+        if (playerState.size() != 2) {
+            throw new IllegalArgumentException("playerState must contain 2 key/value pairs");
+        }
 
         this.ticketsCount = ticketsCount;
         this.cardState = Objects.requireNonNull(cardState);
@@ -91,13 +94,8 @@ public class PublicGameState {
      * @return a list with all the routes that have been claimed during the game
      */
     public List<Route> claimedRoutes() {
-        PublicPlayerState player1 = playerState(currentPlayerId);
-        List<Route> list = new ArrayList<>(player1.routes());
-        PublicPlayerState player2;
-        if(lastPlayer != null) {
-            player2 = playerState(lastPlayer);
-            list.addAll(player2.routes());
-        }
+        List<Route> list = new ArrayList<>(playerState(currentPlayerId).routes());
+        list.addAll(playerState(currentPlayerId.next()).routes());
         return list;
     }
 
