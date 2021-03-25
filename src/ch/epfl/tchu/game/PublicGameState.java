@@ -58,6 +58,13 @@ public class PublicGameState {
     }
 
     /**
+     * @return true if there are at least 5 cards available when adding up the number of cards in deck and discard
+     */
+    public boolean canDrawCards() {
+        return (cardState.deckSize() + cardState.discardsSize()) >= 5;
+    }
+
+    /**
      * @return Id of the player calling the method
      */
     public PlayerId currentPlayerId() {

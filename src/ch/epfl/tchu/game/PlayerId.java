@@ -16,10 +16,7 @@ public enum PlayerId {
      * @return PLAYER_2 if called through PLAYER_1 and PLAYER_1 otherwise
      */
     public PlayerId next() {
-        if(this.equals(PLAYER_1)) {
-            return PLAYER_2;
-        }
-        return PLAYER_1;
+        return this.equals(PLAYER_1) ? PLAYER_2 : PLAYER_1;
     }
 
 }
