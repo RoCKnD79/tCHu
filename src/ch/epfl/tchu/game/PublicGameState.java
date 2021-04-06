@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
+
 public class PublicGameState {
 
     private final int ticketsCount;
@@ -57,7 +61,7 @@ public class PublicGameState {
      * @return, PublicCardState of the game
      */
     public PublicCardState cardState() {
-        return new PublicCardState(cardState.faceUpCards(), cardState.deckSize(), cardState.discardsSize());
+        return cardState;
     }
 
     /**
@@ -79,8 +83,7 @@ public class PublicGameState {
      * @return PublicPlayerState of the player whose Id is playerId
      */
     public PublicPlayerState playerState(PlayerId playerId) {
-        PublicPlayerState temp = playerState.get(playerId);
-        return new PublicPlayerState(temp.ticketCount(), temp.cardCount(), temp.routes());
+        return playerState.get(playerId);
     }
 
     /**
@@ -103,7 +106,7 @@ public class PublicGameState {
      * @return lastPlayer
      */
     public PlayerId lastPlayer() {
-        return lastPlayer == null ? null : lastPlayer;
+        return lastPlayer;
     }
 
 }

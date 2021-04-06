@@ -90,7 +90,8 @@ public final class CardState extends PublicCardState{
         if (deck.isEmpty()){
             throw new IllegalArgumentException("deck is empty");
         }
-        return new CardState(faceUpCards(), emptyDiscards, deck.withoutTopCard());
+        //return new CardState(faceUpCards(), emptyDiscards, deck.withoutTopCard());
+        return new CardState(faceUpCards(), discards, deck.withoutTopCard());
     }
 
     /**
@@ -128,8 +129,9 @@ public final class CardState extends PublicCardState{
             discardSortedBuilder.add(c);
         }
         SortedBag<Card> discardsWithAddedCards = discardSortedBuilder.build();
+        //System.out.println("discardsSize (cs): " + discardsSize());
         //System.out.println("discarded with added cards size : " +discardsWithAddedCards.size());
-
+        //System.out.println("discardsWithAddedCards (cs): " + discardsWithAddedCards.size());
     return new CardState(faceUpCards(), discardsWithAddedCards, deck);
 
     }

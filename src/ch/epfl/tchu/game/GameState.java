@@ -4,6 +4,9 @@ import ch.epfl.tchu.SortedBag;
 
 import java.util.*;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
 public final class GameState extends PublicGameState {
 
     private final Deck<Ticket> tickets;
@@ -61,6 +64,7 @@ public final class GameState extends PublicGameState {
     }
 
 
+
     //-----------------------FIRST GROUP OF METHODS: CONCERNING CARDS AND TICKETS-----------------------
 
     /**
@@ -106,7 +110,7 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * @return card on top of deck
+     * @return returns the card on top of deck without removing it from the deck
      * @throws IllegalArgumentException if deck is empty
      */
     public Card topCard() {
@@ -124,6 +128,7 @@ public final class GameState extends PublicGameState {
         if(allCardState.deckSize() == 0) {
             throw new IllegalArgumentException("Deck is empty");
         }
+        //System.out.println("after withoutTopCard (gs): " + allCardState.discardsSize());
         return new GameState(tickets, allCardState.withoutTopDeckCard(), map, currentPlayerId(), lastPlayer());
     }
 
@@ -132,6 +137,8 @@ public final class GameState extends PublicGameState {
      * @return new GameState with discardedCards added to the discards pile
      */
     public GameState withMoreDiscardedCards(SortedBag<Card> discardedCards) {
+        //CardState newCardState = allCardState.withMoreDiscardedCards(discardedCards);
+        //System.out.println("discardSize (gs, withMoreDiscC): " + newCardState.discardsSize());
         return new GameState(tickets, allCardState.withMoreDiscardedCards(discardedCards), map,
                 currentPlayerId(), lastPlayer());
     }
@@ -142,10 +149,15 @@ public final class GameState extends PublicGameState {
      *          otherwise, return just current instance (this)
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
+        //System.out.println("isDeckempty ? " + allCardState.isDeckEmpty());
         return allCardState.isDeckEmpty()
                 ? new GameState(tickets, allCardState.withDeckRecreatedFromDiscards(rng), map,
                   currentPlayerId(), lastPlayer())
                 : this;
+        /*
+        : new GameState(tickets, allCardState, map,
+                currentPlayerId(), lastPlayer());
+         */
     }
 
 
@@ -252,7 +264,7 @@ public final class GameState extends PublicGameState {
      * @return new GameState prepared for next turn, changing current player and possibly selecting a lastPlayer
      */
     public GameState forNextTurn() {
-        PlayerId lastPlayer = null;
+        PlayerId lastPlayer = lastPlayer();
         if(lastTurnBegins()) {
             lastPlayer = currentPlayerId();
         }
