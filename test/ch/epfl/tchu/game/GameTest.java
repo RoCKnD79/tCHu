@@ -3,17 +3,14 @@ package ch.epfl.tchu.game;
 import ch.epfl.tchu.SortedBag;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GameTest {
-    private Map<PlayerId, String> playerNames;
-    private Map<PlayerId, Player> players;
+    private Map<PlayerId, String> playerNames = new HashMap<>();
+    private Map<PlayerId, Player> players = new HashMap<>();
 
     @Test
-    void playTest{
+    void playTest(){
         playerNames.put(PlayerId.PLAYER_1, "Chris");
         playerNames.put(PlayerId.PLAYER_2, "ManRo");
         players.put(PlayerId.PLAYER_1, new TestPlayer(1, ChMap.routes()));
@@ -31,7 +28,7 @@ public class GameTest {
         private int turnCounter;
         private PlayerState ownState;
         private PublicGameState gameState;
-
+        private SortedBag<Ticket> initialTickets;
 
 
 
@@ -63,12 +60,18 @@ public class GameTest {
 
         @Override
         public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-
+            initialTickets = tickets;
         }
 
         @Override
         public SortedBag<Ticket> chooseInitialTickets() {
-            return null;
+
+            SortedBag.Builder<Ticket> sbb = new SortedBag.Builder<>();
+            sbb.add(initialTickets.get(0));
+            sbb.add(initialTickets.get(1));
+            sbb.add(initialTickets.get(2));
+
+            return sbb.build();
         }
 
         @Override
