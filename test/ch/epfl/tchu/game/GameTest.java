@@ -8,6 +8,7 @@ import java.util.*;
 public class GameTest {
     private Map<PlayerId, String> playerNames = new HashMap<>();
     private Map<PlayerId, Player> players = new HashMap<>();
+    private static List<Route> claimableRoutes = new ArrayList<>();
 
     @Test
     void playTest(){
@@ -81,19 +82,56 @@ public class GameTest {
                 throw new Error("Trop de tours joués !");
 
             // Détermine les routes dont ce joueur peut s'emparer
-            List<Route> claimableRoutes = new ArrayList<>(ChMap.routes());
-            for(Route r : gameState.claimedRoutes()){
-                if (claimableRoutes.contains(r)){ claimableRoutes.remove(r);}
+            List<Route> allClaimableRoutes = new ArrayList<>(ChMap.routes());
+
+
+
+            //System.out.println("size of allclaimableroutes : " + allClaimableRoutes.size());
+            for(Route r : allClaimableRoutes){
+               /* System.out.println("all possible claim cards : " + r.possibleClaimCards());
+                System.out.println("players claim cards specific to road : " +ownState.possibleClaimCards(r));*/
+                /*if (r.possibleClaimCards().contains(ownState.possibleClaimCards(r))){
+                    claimableRoutes.add(r);
+                }*/
+               /* for(int i = 0; i <ownState.possibleClaimCards(r).size(); ++i){
+                for(SortedBag<Card> c : r.possibleClaimCards()){
+                    if (c.equals(ownState.possibleClaimCards(r).get(i))){
+                        claimableRoutes.add(r);
+                        //System.out.println("route added : " + claimableRoutes);
+                    }
+                }
+                }*/
+
+                for(SortedBag<Card> listOfCards : r.possibleClaimCards()) {
+                    for (int i = 0; i < ownState.possibleClaimCards(r).size(); ++i) {
+                        if (listOfCards.contains(ownState.possibleClaimCards(r).get(i))){
+                            claimableRoutes.add(r);
+                    }
+                }
+                }
             }
+            //System.out.println("claimable routes size before : " + claimableRoutes.size());
+            System.out.println("claimed routes size : " + gameState.claimedRoutes().size());
+            for(Route r : gameState.claimedRoutes()){
+               // System.out.println("claimed route is in all claimableRoutes : " + claimableRoutes.contains(r));
+                claimableRoutes.remove(r);
+                //System.out.println("claimed route is STILL in all claimableRoutes : " + claimableRoutes.contains(r));
+            }
+            System.out.println("claimable routes size after : " + claimableRoutes.size());
+
             if (claimableRoutes.isEmpty()) {
                 return TurnKind.DRAW_CARDS;
             } else {
+                System.out.println("claimable routes size : " + claimableRoutes.size());
                 int routeIndex = rng.nextInt(claimableRoutes.size());
                 Route route = claimableRoutes.get(routeIndex);
+                System.out.println("players possible claim cards for route : " + ownState.possibleClaimCards(route));
                 List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
                 routeToClaim = route;
+                System.out.println("cards size" + cards.size());
                 initialClaimCards = cards.get(0);
+
                 return TurnKind.CLAIM_ROUTE;
             }
         }
@@ -105,22 +143,34 @@ public class GameTest {
 
         @Override
         public int drawSlot() {
-            return 0;
+            return rng.nextInt(6)-1;
         }
 
         @Override
         public Route claimedRoute() {
-            return null;
+            return claimableRoutes.get(0);
         }
 
         @Override
         public SortedBag<Card> initialClaimCards() {
-            return null;
+            return claimedRoute().possibleClaimCards().get(0);
         }
 
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
-            return null;
+
+            List<Card> additionalCards = new ArrayList<>();
+            for(Card c : ownState.cards()){
+                for(int i = 0; i < options.size(); ++i){
+                    for(int j = 0; j < options.get(i).size(); ++j) {
+                        if (additionalCards.size() < 3) {
+                            if (c.equals(options.get(i).get(j))) {
+                                additionalCards.add(c);
+                            }
+                        }
+                    }
+            }}
+            return SortedBag.of(additionalCards);
         }
     }
 }

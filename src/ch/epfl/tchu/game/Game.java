@@ -83,6 +83,9 @@ public final class Game {
                 case DRAW_CARDS:
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot1 = currentPlayer.drawSlot();
+                    /*System.out.println(cardSlot1);
+                    System.out.println(currentPlayerState.cards());
+                    System.out.println(currentPlayerState.routes());*/
                     if (cardSlot1 != Constants.DECK_SLOT){
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCards().get(cardSlot1)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot1);
@@ -103,7 +106,7 @@ public final class Game {
                 case CLAIM_ROUTE:
                     Route routeToBeClaimed = currentPlayer.claimedRoute();
                     SortedBag<Card> cardInitiallyUsedToClaim = currentPlayer.initialClaimCards();
-
+                    //System.out.println(routeToBeClaimed.level());
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if(currentPlayerState.canClaimRoute(routeToBeClaimed)){
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
@@ -121,18 +124,24 @@ public final class Game {
                                gameState = gameState.withoutTopCard();
                             }
                             SortedBag<Card> cardsDrawnSorted = SortedBag.of(cardsDrawn);
-                            SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleClaimCards(routeToBeClaimed)));
-                            if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted))){
-                                informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
-                            }else{
-                                List<Card> listOfCardsUsed = additionalCardsChosen.toList();
-                                informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted,listOfCardsUsed.size()), players);
-                                for(Card c : cardInitiallyUsedToClaim){
-                                    listOfCardsUsed.add(c);
+
+                            if (routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted) == 0){
+                                gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
+                                informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
+                            }else {
+                                SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleClaimCards(routeToBeClaimed)));
+                                if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted))) {
+                                    informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                                } else {
+                                    List<Card> listOfCardsUsed = additionalCardsChosen.toList();
+                                    informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted, listOfCardsUsed.size()), players);
+                                    for (Card c : cardInitiallyUsedToClaim) {
+                                        listOfCardsUsed.add(c);
+                                    }
+                                    SortedBag<Card> allCardsUsedToClaim = SortedBag.of(listOfCardsUsed);
+                                    gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
+                                    informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
                                 }
-                                SortedBag<Card> allCardsUsedToClaim = SortedBag.of(listOfCardsUsed);
-                                gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
-                                informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
                             }
                         }
                     }
