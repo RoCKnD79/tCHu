@@ -85,29 +85,15 @@ public class GameTest {
             List<Route> allClaimableRoutes = new ArrayList<>(ChMap.routes());
 
 
-
+            claimableRoutes.clear();
             //System.out.println("size of allclaimableroutes : " + allClaimableRoutes.size());
-            for(Route r : allClaimableRoutes){
-               /* System.out.println("all possible claim cards : " + r.possibleClaimCards());
-                System.out.println("players claim cards specific to road : " +ownState.possibleClaimCards(r));*/
-                /*if (r.possibleClaimCards().contains(ownState.possibleClaimCards(r))){
-                    claimableRoutes.add(r);
-                }*/
-               /* for(int i = 0; i <ownState.possibleClaimCards(r).size(); ++i){
-                for(SortedBag<Card> c : r.possibleClaimCards()){
-                    if (c.equals(ownState.possibleClaimCards(r).get(i))){
-                        claimableRoutes.add(r);
-                        //System.out.println("route added : " + claimableRoutes);
-                    }
-                }
-                }*/
-
+            for(Route r : allClaimableRoutes) {
                 for(SortedBag<Card> listOfCards : r.possibleClaimCards()) {
                     for (int i = 0; i < ownState.possibleClaimCards(r).size(); ++i) {
                         if (listOfCards.contains(ownState.possibleClaimCards(r).get(i))){
                             claimableRoutes.add(r);
+                        }
                     }
-                }
                 }
             }
             //System.out.println("claimable routes size before : " + claimableRoutes.size());
