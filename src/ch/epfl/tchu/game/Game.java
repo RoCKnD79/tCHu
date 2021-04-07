@@ -25,7 +25,7 @@ public final class Game {
         Collections.shuffle(bothIdsList, rng);
     }
 
-    public void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) throws IllegalArgumentException {
+    public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) throws IllegalArgumentException {
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
         }
@@ -39,14 +39,10 @@ public final class Game {
 
         informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
 
-
-
-        //TODO ici je propose la meme liste de tickets aux deux joueur, je pense que je suis censé utiliser des tickets différents, ca me parait plus logique
-
-        SortedBag<Ticket> player1InitialTickets = SortedBag.of(gameState.topTickets(5));
-        gameState = gameState.withoutTopTickets(5);
-        SortedBag<Ticket> player2InitialTickets = SortedBag.of(gameState.topTickets(5));
-        gameState = gameState.withoutTopTickets(5);
+        SortedBag<Ticket> player1InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
+        gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
+        SortedBag<Ticket> player2InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
+        gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
         player1.setInitialTicketChoice(player1InitialTickets);
         player2.setInitialTicketChoice(player2InitialTickets);
 
@@ -55,8 +51,11 @@ public final class Game {
         SortedBag<Ticket> player1Tickets = player1.chooseInitialTickets();
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
 
-        informBothPlayers(this.player1Info.keptTickets(player2Tickets.size()), players);
-        informBothPlayers(this.player2Info.keptTickets(player1Tickets.size()), players);
+        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
+        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
+
+        informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
+        informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
 
 
         while (!((gameState.lastTurnBegins()) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))){
@@ -75,8 +74,8 @@ public final class Game {
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
-                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(gameState.topTickets(3));
-                    gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(3), chosenTickets);
+                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT));
+                    gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT), chosenTickets);
                     informBothPlayers(currentPlayerInfo.drewTickets(chosenTickets.size()), players);
                     informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
                     break;
@@ -84,7 +83,7 @@ public final class Game {
                 case DRAW_CARDS:
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot1 = currentPlayer.drawSlot();
-                    if (cardSlot1 <= 4){
+                    if (cardSlot1 != Constants.DECK_SLOT){
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCards().get(cardSlot1)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot1);
                     }else{
@@ -94,7 +93,7 @@ public final class Game {
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
                     int cardSlot2 = currentPlayer.drawSlot();
-                    if (cardSlot2 <= 4){
+                    if (cardSlot2 != Constants.DECK_SLOT){
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     }else{
                         gameState = gameState.withBlindlyDrawnCard();
@@ -116,7 +115,7 @@ public final class Game {
                         informBothPlayers(currentPlayerInfo.attemptsTunnelClaim(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                         if(currentPlayerState.canClaimRoute(routeToBeClaimed)){
                             List<Card> cardsDrawn = new ArrayList<>();
-                            for(int i = 0; i < 3; ++i) {
+                            for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                                 gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                                cardsDrawn.add(gameState.topCard());
                                gameState = gameState.withoutTopCard();
@@ -172,11 +171,11 @@ public final class Game {
         }
     }
 
-    public void informBothPlayerOfAGameStateChange(Map<PlayerId, Player> players, PlayerState player1State, PlayerState player2State, PublicGameState newGameState){
+    public static void informBothPlayerOfAGameStateChange(Map<PlayerId, Player> players, PlayerState player1State, PlayerState player2State, PublicGameState newGameState){
         players.get(PlayerId.PLAYER_1).updateState(newGameState, player1State);
         players.get(PlayerId.PLAYER_2).updateState(newGameState, player2State);
     }
-    public void informBothPlayers(String string, Map<PlayerId, Player> players ){
+    public static void informBothPlayers(String string, Map<PlayerId, Player> players ){
         players.get(PlayerId.PLAYER_1).receiveInfo(string);
         players.get(PlayerId.PLAYER_2).receiveInfo(string);
     }

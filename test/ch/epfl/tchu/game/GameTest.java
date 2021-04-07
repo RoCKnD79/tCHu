@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class GameTest {
 
     @Test
     void playTest{
-
+        TestPlayer testPlayer = new TestPlayer()
     }
     private static final class TestPlayer implements Player {
         private static final int TURN_LIMIT = 1000;
@@ -22,6 +23,8 @@ public class GameTest {
         private int turnCounter;
         private PlayerState ownState;
         private PublicGameState gameState;
+        private Map<PlayerId, String> playerNames;
+        private Map<PlayerId, Player> players;
 
         // Lorsque nextTurn retourne CLAIM_ROUTE
         private Route routeToClaim;
@@ -31,12 +34,36 @@ public class GameTest {
             this.rng = new Random(randomSeed);
             this.allRoutes = List.copyOf(allRoutes);
             this.turnCounter = 0;
+            playerNames.put(PlayerId.PLAYER_1, "Chris");
+            playerNames.put(PlayerId.PLAYER_2, "ManRo");
+            players.put(PlayerId.PLAYER_1, Player )
+            Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), rng);
+        }
+
+        @Override
+        public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
+
+        }
+
+        @Override
+        public void receiveInfo(String info) {
+
         }
 
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
             this.gameState = newState;
             this.ownState = ownState;
+        }
+
+        @Override
+        public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
+
+        }
+
+        @Override
+        public SortedBag<Ticket> chooseInitialTickets() {
+            return null;
         }
 
         @Override
@@ -61,6 +88,31 @@ public class GameTest {
                 initialClaimCards = cards.get(0);
                 return TurnKind.CLAIM_ROUTE;
             }
+        }
+
+        @Override
+        public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
+            return null;
+        }
+
+        @Override
+        public int drawSlot() {
+            return 0;
+        }
+
+        @Override
+        public Route claimedRoute() {
+            return null;
+        }
+
+        @Override
+        public SortedBag<Card> initialClaimCards() {
+            return null;
+        }
+
+        @Override
+        public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
+            return null;
         }
     }
 }
