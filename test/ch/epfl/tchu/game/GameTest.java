@@ -9,11 +9,19 @@ import java.util.Map;
 import java.util.Random;
 
 public class GameTest {
+    private Map<PlayerId, String> playerNames;
+    private Map<PlayerId, Player> players;
 
     @Test
     void playTest{
-        TestPlayer testPlayer = new TestPlayer()
+        playerNames.put(PlayerId.PLAYER_1, "Chris");
+        playerNames.put(PlayerId.PLAYER_2, "ManRo");
+        players.put(PlayerId.PLAYER_1, new TestPlayer(1, ChMap.routes()));
+        players.put(PlayerId.PLAYER_2, new TestPlayer(1, ChMap.routes()));
+        Random rng = new Random();
+        Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), rng);
     }
+
     private static final class TestPlayer implements Player {
         private static final int TURN_LIMIT = 1000;
 
@@ -23,8 +31,9 @@ public class GameTest {
         private int turnCounter;
         private PlayerState ownState;
         private PublicGameState gameState;
-        private Map<PlayerId, String> playerNames;
-        private Map<PlayerId, Player> players;
+
+
+
 
         // Lorsque nextTurn retourne CLAIM_ROUTE
         private Route routeToClaim;
@@ -34,10 +43,6 @@ public class GameTest {
             this.rng = new Random(randomSeed);
             this.allRoutes = List.copyOf(allRoutes);
             this.turnCounter = 0;
-            playerNames.put(PlayerId.PLAYER_1, "Chris");
-            playerNames.put(PlayerId.PLAYER_2, "ManRo");
-            players.put(PlayerId.PLAYER_1, Player )
-            Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), rng);
         }
 
         @Override
