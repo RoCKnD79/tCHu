@@ -68,9 +68,11 @@ public final class Game {
         informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
 
-
-        while (!((gameState.lastTurnBegins()) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))){
-
+        boolean lastTurnBegins = false;
+        //while (!((gameState.lastTurnBegins()) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))){
+        //while (!((lastTurnBegins) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))) {
+        while(!gameState.currentPlayerId().equals((gameState.lastPlayer()))) {
+            System.out.println("asdj asohdoa sjdoa");
             Player currentPlayer = players.get(gameState.currentPlayerId());
             Info currentPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId()));
             PlayerState currentPlayerState = gameState.currentPlayerState();
@@ -78,11 +80,16 @@ public final class Game {
             Info secondPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId().next()));
 
             if (gameState.lastTurnBegins()){
+                System.out.println("------------------------------------------------------------LAST TURN");
+                lastTurnBegins = true;
                 informBothPlayers(secondPlayerInfo.lastTurnBegins(secondPlayerState.carCount()), players);
             }
             informBothPlayers(currentPlayerInfo.canPlay(), players);
 
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+
+
+            System.out.println("\n--------------STATS BEFORE NEXT TURN----------------");
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
                     System.out.println("case = DRAW_TICKETS");
@@ -158,11 +165,13 @@ public final class Game {
                                 System.out.println("Tunnel was claimed, easy way");
                             }else {
                                 SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim, cardsDrawnSorted)));
+
                                 if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != numberOfAdditionalCards)) {
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                                     System.out.println("Tunnel was not claimed, because chosen or couldn't");
                                     gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 } else {
+
                                     List<Card> listOfCardsUsed = additionalCardsChosen.toList();
                                     informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted, listOfCardsUsed.size()), players);
                                     for (Card c : cardInitiallyUsedToClaim) {
@@ -172,6 +181,8 @@ public final class Game {
                                     gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
                                     gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                     informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
+                                    System.out.println("size additional cards: " + additionalCardsChosen.size());
+                                    System.out.println("allCardsUsedToClaim: " + allCardsUsedToClaim.size());
                                     System.out.println("Tunnel was claimed, with drawn cards");
                                 }
                             }
@@ -185,6 +196,8 @@ public final class Game {
                }
                gameState = gameState.forNextTurn();
             }
+
+        System.out.println("fin");
 
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 
