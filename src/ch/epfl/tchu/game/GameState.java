@@ -150,10 +150,17 @@ public final class GameState extends PublicGameState {
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
         //System.out.println("isDeckempty ? " + allCardState.isDeckEmpty());
-        return allCardState.isDeckEmpty()
+        /*return allCardState.isDeckEmpty()
                 ? new GameState(tickets, allCardState.withDeckRecreatedFromDiscards(rng), map,
                   currentPlayerId(), lastPlayer())
-                : this;
+                : this;*/
+
+        if (allCardState.isDeckEmpty()){
+            return new GameState(tickets, allCardState.withDeckRecreatedFromDiscards(rng), map,
+                    currentPlayerId(), lastPlayer());
+        }else{
+            return this;
+        }
         /*
         : new GameState(tickets, allCardState, map,
                 currentPlayerId(), lastPlayer());
@@ -215,7 +222,7 @@ public final class GameState extends PublicGameState {
      */
     public GameState withDrawnFaceUpCard(int slot) {
         if(!canDrawCards()) {
-            throw new IllegalArgumentException("not enough cards in deck or discard in order to draw new cards");
+            throw new IllegalArgumentException("there are not 5 cards in total between deck and discards");
         }
 
         Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
@@ -229,7 +236,13 @@ public final class GameState extends PublicGameState {
      * @return draws card from the top of the deck
      */
     public GameState withBlindlyDrawnCard() {
-        return withDrawnFaceUpCard(0);
+
+        Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
+        temp.put(currentPlayerId(), map.get(currentPlayerId()).withAddedCard(this.topCard()));
+        temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
+
+        return new GameState(tickets, allCardState.withoutTopDeckCard(), temp, currentPlayerId(), lastPlayer());
+        //return withDrawnFaceUpCard(0);
     }
 
     /**
@@ -238,12 +251,12 @@ public final class GameState extends PublicGameState {
      * @return a new GameState with modified PlayerState of the person who claimed the route
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
-        //TODO passer une condition if canClaimRoute() ????
+
         Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
         temp.put(currentPlayerId(), map.get(currentPlayerId()).withClaimedRoute(route, cards));
         temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
 
-        return new GameState(tickets, allCardState, temp, currentPlayerId(), lastPlayer());
+        return new GameState(tickets, allCardState.withMoreDiscardedCards(cards), temp, currentPlayerId(), lastPlayer());
     }
 
 
@@ -258,8 +271,8 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * ends the round of current player and informs us that the next player becomes the currentplayer
-     * if current player has <= 2 cars then he is designated as last player and will play last in the next turn
+     * ends the round of current player and s last playeinforms us that the next player becomes the currentplayer
+     *      * if current player has <= 2 cars then he is designated ar and will play last in the next turn
      * (which will be the last round of the game)
      * @return new GameState prepared for next turn, changing current player and possibly selecting a lastPlayer
      */
