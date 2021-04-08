@@ -25,6 +25,17 @@ public final class Game {
         Collections.shuffle(bothIdsList, rng);
     }
 
+    /**
+     * makes the players play a game of tCHu
+     * note that the methods are all called in the right order following the rules of tCHu.
+     * this method's main role is to figure out what kind of turn each player wants to play, and then call
+     *
+     * @param players, map from playerIds to Players
+     * @param playerNames, map from playerIds to player Names
+     * @param tickets, sorted bag of tickets for the game
+     * @param rng, attribute of Random
+     * @throws IllegalArgumentException, if players size is inferior to 2, or if playerNames is also inferior to two.
+     */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) throws IllegalArgumentException {
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
@@ -74,6 +85,7 @@ public final class Game {
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
+                    System.out.println("case draw tickets");
                     SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT));
                     gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT), chosenTickets);
                     informBothPlayers(currentPlayerInfo.drewTickets(chosenTickets.size()), players);
@@ -81,29 +93,45 @@ public final class Game {
                     break;
 
                 case DRAW_CARDS:
+                    System.out.println("case draw card, deck size : " + gameState.cardState().deckSize() + "discard size : " + gameState.cardState().discardsSize());
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot1 = currentPlayer.drawSlot();
                     /*System.out.println(cardSlot1);
                     System.out.println(currentPlayerState.cards());
                     System.out.println(currentPlayerState.routes());*/
                     if (cardSlot1 != Constants.DECK_SLOT){
+                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCards().get(cardSlot1)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot1);
                     }else{
+                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
                         gameState = gameState.withBlindlyDrawnCard();
                     }
-                    gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+
+                    System.out.println("deck size : " + gameState.cardState().deckSize());
                     informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+                    gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot2 = currentPlayer.drawSlot();
                     if (cardSlot2 != Constants.DECK_SLOT){
+                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     }else{
+                        System.out.println("discard size before : " +gameState.cardState().discardsSize());
+                        System.out.println("deck size before : " + gameState.cardState().deckSize());
+                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+                        System.out.println("discard size after : " +gameState.cardState().discardsSize());
+                        System.out.println("deck size after : " + gameState.cardState().deckSize());
                         gameState = gameState.withBlindlyDrawnCard();
                     }
+                    System.out.println( "current player cards : " +gameState.currentPlayerState().cards());
                     break;
 
                 case CLAIM_ROUTE:
+                    System.out.println("case claime route");
+                    System.out.println("deck size case : " + gameState.cardState().deckSize());
+                    System.out.println("discard size case : " + gameState.cardState().discardsSize());
+                    gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     Route routeToBeClaimed = currentPlayer.claimedRoute();
                     SortedBag<Card> cardInitiallyUsedToClaim = currentPlayer.initialClaimCards();
                     //System.out.println(routeToBeClaimed.level());
@@ -111,6 +139,7 @@ public final class Game {
                         if(currentPlayerState.canClaimRoute(routeToBeClaimed)){
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
                             informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
+                           // gameState = gameState.withMoreDiscardedCards(cardInitiallyUsedToClaim);
                         }
                         informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                     }
@@ -120,6 +149,8 @@ public final class Game {
                             List<Card> cardsDrawn = new ArrayList<>();
                             for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                                 gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+                                System.out.println("deck size : " + gameState.cardState().deckSize());
+                                System.out.println("discard size : " + gameState.cardState().discardsSize());
                                cardsDrawn.add(gameState.topCard());
                                gameState = gameState.withoutTopCard();
                             }
@@ -127,11 +158,14 @@ public final class Game {
 
                             if (routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted) == 0){
                                 gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
+                                gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                //gameState = gameState.withMoreDiscardedCards(cardInitiallyUsedToClaim);
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                             }else {
                                 SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleClaimCards(routeToBeClaimed)));
                                 if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted))) {
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                                    //gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 } else {
                                     List<Card> listOfCardsUsed = additionalCardsChosen.toList();
                                     informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted, listOfCardsUsed.size()), players);
@@ -140,10 +174,13 @@ public final class Game {
                                     }
                                     SortedBag<Card> allCardsUsedToClaim = SortedBag.of(listOfCardsUsed);
                                     gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
+                                    //gameState = gameState.withMoreDiscardedCards(allCardsUsedToClaim);
                                     informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
                                 }
                             }
+
                         }
+
                     }
                }
                gameState = gameState.forNextTurn();

@@ -66,7 +66,7 @@ public final class CardState extends PublicCardState{
         }
         List<Card> newFaceUpCards = new ArrayList<>(this.faceUpCards());
         newFaceUpCards.set(slot, deck.topCard());
-        return new CardState(newFaceUpCards,emptyDiscards, deck.withoutTopCard());
+        return new CardState(newFaceUpCards,discards, deck.withoutTopCard());
     }
 
     /**

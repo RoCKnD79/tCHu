@@ -77,6 +77,10 @@ public class GameTest {
 
         @Override
         public TurnKind nextTurn() {
+            System.out.println("deck size : " + gameState.cardState().deckSize());
+            System.out.println(("CurPla : " + gameState.currentPlayerState().cardCount()) + "SecPla : " + gameState.playerState(gameState.currentPlayerId().next()).cardCount());
+            System.out.println("discard size : " + gameState.cardState().discardsSize());
+           // System.out.println("each turn deck size : " + gameState.cardState().deckSize());
             turnCounter += 1;
             if (turnCounter > TURN_LIMIT)
                 throw new Error("Trop de tours joués !");
@@ -88,34 +92,36 @@ public class GameTest {
             claimableRoutes.clear();
             //System.out.println("size of allclaimableroutes : " + allClaimableRoutes.size());
             for(Route r : allClaimableRoutes) {
-                for(SortedBag<Card> listOfCards : r.possibleClaimCards()) {
-                    for (int i = 0; i < ownState.possibleClaimCards(r).size(); ++i) {
-                        if (listOfCards.contains(ownState.possibleClaimCards(r).get(i))){
-                            claimableRoutes.add(r);
+                if(ownState.carCount() >= r.length()) {
+                    for (SortedBag<Card> listOfCards : r.possibleClaimCards()) {
+                        for (int i = 0; i < ownState.possibleClaimCards(r).size(); ++i) {
+                            if (listOfCards.contains(ownState.possibleClaimCards(r).get(i))) {
+                                claimableRoutes.add(r);
+                            }
                         }
                     }
                 }
             }
             //System.out.println("claimable routes size before : " + claimableRoutes.size());
-            System.out.println("claimed routes size : " + gameState.claimedRoutes().size());
+            //System.out.println("claimed routes size : " + gameState.claimedRoutes().size());
             for(Route r : gameState.claimedRoutes()){
                // System.out.println("claimed route is in all claimableRoutes : " + claimableRoutes.contains(r));
                 claimableRoutes.remove(r);
                 //System.out.println("claimed route is STILL in all claimableRoutes : " + claimableRoutes.contains(r));
             }
-            System.out.println("claimable routes size after : " + claimableRoutes.size());
-
+           //System.out.println("claimable routes size after : " + claimableRoutes.size());
+           // System.out.println("Claimable routes size :" + claimableRoutes.size());
             if (claimableRoutes.isEmpty()) {
                 return TurnKind.DRAW_CARDS;
             } else {
-                System.out.println("claimable routes size : " + claimableRoutes.size());
+                //System.out.println("claimable routes size : " + claimableRoutes.size());
                 int routeIndex = rng.nextInt(claimableRoutes.size());
                 Route route = claimableRoutes.get(routeIndex);
-                System.out.println("players possible claim cards for route : " + ownState.possibleClaimCards(route));
+                //System.out.println("players possible claim cards for route : " + ownState.possibleClaimCards(route));
                 List<SortedBag<Card>> cards = ownState.possibleClaimCards(route);
 
                 routeToClaim = route;
-                System.out.println("cards size" + cards.size());
+                //System.out.println("cards size" + cards.size());
                 initialClaimCards = cards.get(0);
 
                 return TurnKind.CLAIM_ROUTE;
