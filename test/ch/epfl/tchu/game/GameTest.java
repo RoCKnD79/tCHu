@@ -80,6 +80,7 @@ public class GameTest {
             System.out.println("deck size : " + gameState.cardState().deckSize());
             System.out.println(("CurPla : " + gameState.currentPlayerState().cardCount()) + "SecPla : " + gameState.playerState(gameState.currentPlayerId().next()).cardCount());
             System.out.println("discard size : " + gameState.cardState().discardsSize());
+            System.out.println("number total cards : " + ((((gameState.cardState().discardsSize()) +  gameState.playerState(gameState.currentPlayerId().next()).cardCount()) + gameState.currentPlayerState().cardCount()) + gameState.cardState().deckSize() + 5));
            // System.out.println("each turn deck size : " + gameState.cardState().deckSize());
             turnCounter += 1;
             if (turnCounter > TURN_LIMIT)

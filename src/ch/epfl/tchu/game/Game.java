@@ -85,7 +85,7 @@ public final class Game {
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
-                    System.out.println("case draw tickets");
+                    System.out.println("case = DRAW_TICKETS");
                     SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT));
                     gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT), chosenTickets);
                     informBothPlayers(currentPlayerInfo.drewTickets(chosenTickets.size()), players);
@@ -93,7 +93,7 @@ public final class Game {
                     break;
 
                 case DRAW_CARDS:
-                    System.out.println("case draw card, deck size : " + gameState.cardState().deckSize() + "discard size : " + gameState.cardState().discardsSize());
+                    System.out.println("case = DRAW_CARDS");
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot1 = currentPlayer.drawSlot();
                     /*System.out.println(cardSlot1);
@@ -117,31 +117,28 @@ public final class Game {
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     }else{
-                        System.out.println("discard size before : " +gameState.cardState().discardsSize());
-                        System.out.println("deck size before : " + gameState.cardState().deckSize());
+
                         gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
-                        System.out.println("discard size after : " +gameState.cardState().discardsSize());
-                        System.out.println("deck size after : " + gameState.cardState().deckSize());
+
                         gameState = gameState.withBlindlyDrawnCard();
                     }
-                    System.out.println( "current player cards : " +gameState.currentPlayerState().cards());
+
                     break;
 
                 case CLAIM_ROUTE:
-                    System.out.println("case claime route");
-                    System.out.println("deck size case : " + gameState.cardState().deckSize());
-                    System.out.println("discard size case : " + gameState.cardState().discardsSize());
+                    System.out.println("case = CLAIMED");
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     Route routeToBeClaimed = currentPlayer.claimedRoute();
                     SortedBag<Card> cardInitiallyUsedToClaim = currentPlayer.initialClaimCards();
-                    //System.out.println(routeToBeClaimed.level());
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if(currentPlayerState.canClaimRoute(routeToBeClaimed)){
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
                             informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
-                           // gameState = gameState.withMoreDiscardedCards(cardInitiallyUsedToClaim);
+                            System.out.println("Route was claimed");
+                        }else {
+                            informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                            System.out.println("Route was NOT claimed");
                         }
-                        informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                     }
                     if ((routeToBeClaimed.level().equals(Route.Level.UNDERGROUND))){
                         informBothPlayers(currentPlayerInfo.attemptsTunnelClaim(routeToBeClaimed, cardInitiallyUsedToClaim), players);
@@ -149,23 +146,22 @@ public final class Game {
                             List<Card> cardsDrawn = new ArrayList<>();
                             for(int i = 0; i < Constants.ADDITIONAL_TUNNEL_CARDS; ++i) {
                                 gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
-                                System.out.println("deck size : " + gameState.cardState().deckSize());
-                                System.out.println("discard size : " + gameState.cardState().discardsSize());
                                cardsDrawn.add(gameState.topCard());
                                gameState = gameState.withoutTopCard();
                             }
                             SortedBag<Card> cardsDrawnSorted = SortedBag.of(cardsDrawn);
-
-                            if (routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted) == 0){
+                            int numberOfAdditionalCards = routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted);
+                            if (numberOfAdditionalCards == 0){
                                 gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
                                 gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
-                                //gameState = gameState.withMoreDiscardedCards(cardInitiallyUsedToClaim);
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
+                                System.out.println("Tunnel was claimed, easy way");
                             }else {
-                                SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleClaimCards(routeToBeClaimed)));
-                                if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted))) {
+                                SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim, cardsDrawnSorted)));
+                                if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != numberOfAdditionalCards)) {
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
-                                    //gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                    System.out.println("Tunnel was not claimed, because chosen or couldn't");
+                                    gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 } else {
                                     List<Card> listOfCardsUsed = additionalCardsChosen.toList();
                                     informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted, listOfCardsUsed.size()), players);
@@ -174,14 +170,18 @@ public final class Game {
                                     }
                                     SortedBag<Card> allCardsUsedToClaim = SortedBag.of(listOfCardsUsed);
                                     gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
-                                    //gameState = gameState.withMoreDiscardedCards(allCardsUsedToClaim);
+                                    gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                     informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
+                                    System.out.println("Tunnel was claimed, with drawn cards");
                                 }
                             }
 
+                        }else{
+                            informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                            System.out.println("Tunnel was not claimed, with no cards drawn");
                         }
-
                     }
+                    break;
                }
                gameState = gameState.forNextTurn();
             }
