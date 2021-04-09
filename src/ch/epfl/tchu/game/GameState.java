@@ -237,6 +237,10 @@ public final class GameState extends PublicGameState {
      */
     public GameState withBlindlyDrawnCard() {
 
+        if(!canDrawCards()) {
+            throw new IllegalArgumentException("there are not 5 cards in total between deck and discards");
+        }
+
         Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
         temp.put(currentPlayerId(), map.get(currentPlayerId()).withAddedCard(this.topCard()));
         temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
@@ -253,8 +257,11 @@ public final class GameState extends PublicGameState {
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
 
         Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
+        System.out.println("cards size (wCR): " + cards.size());
+        System.out.println("avant: " + map.get(currentPlayerId()).cards().size());
         temp.put(currentPlayerId(), map.get(currentPlayerId()).withClaimedRoute(route, cards));
         temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
+        System.out.println("après: " + temp.get(currentPlayerId()).cards().size());
 
         return new GameState(tickets, allCardState.withMoreDiscardedCards(cards), temp, currentPlayerId(), lastPlayer());
     }
