@@ -134,7 +134,11 @@ public class GameTest {
 
         @Override
         public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-            return null;
+            List<Ticket> chosenTickets = new ArrayList<>();
+            chosenTickets.add(options.get(0));
+            chosenTickets.add(options.get(1));
+            chosenTickets.add(options.get(2));
+            return SortedBag.of(chosenTickets);
         }
 
         @Override
