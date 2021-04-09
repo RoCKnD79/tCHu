@@ -252,16 +252,13 @@ public final class GameState extends PublicGameState {
     /**
      * @param route, claimed route
      * @param cards, cards used to claim route
-     * @return a new GameState with modified PlayerState of the person who claimed the route
+     * @return a new GameState with modified PlayerState of thehttps://code-with-me.jetbrains.com/8ULt17pj2pTayANxVTmVaQ#p=IC&fp=35A9860B5A79E66F2538B20BC0BE256517B0D48E1B46D9117F77B44ADA1A60AC person who claimed the route
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
 
         Map<PlayerId, PlayerState> temp = new EnumMap<>(PlayerId.class);
-        System.out.println("cards size (wCR): " + cards.size());
-        System.out.println("avant: " + map.get(currentPlayerId()).cards().size());
         temp.put(currentPlayerId(), map.get(currentPlayerId()).withClaimedRoute(route, cards));
         temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
-        System.out.println("après: " + temp.get(currentPlayerId()).cards().size());
 
         return new GameState(tickets, allCardState.withMoreDiscardedCards(cards), temp, currentPlayerId(), lastPlayer());
     }
