@@ -5,8 +5,15 @@ import ch.epfl.tchu.SortedBag;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
+
 public interface Player {
 
+    /**
+     * @author Christopher Soriano (326354)
+     */
     enum TurnKind{
         DRAW_TICKETS, DRAW_CARDS, CLAIM_ROUTE;
 

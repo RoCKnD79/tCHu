@@ -6,6 +6,10 @@ import ch.epfl.tchu.gui.Info;
 import java.net.CookieHandler;
 import java.util.*;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
+
 public final class Game {
 
     private final Info player1Info;
@@ -72,7 +76,6 @@ public final class Game {
         //while (!((gameState.lastTurnBegins()) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))){
         //while (!((lastTurnBegins) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))) {
         while(!gameState.currentPlayerId().equals((gameState.lastPlayer()))) {
-            System.out.println("asdj asohdoa sjdoa");
             Player currentPlayer = players.get(gameState.currentPlayerId());
             Info currentPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId()));
             PlayerState currentPlayerState = gameState.currentPlayerState();
@@ -202,7 +205,6 @@ public final class Game {
                gameState = gameState.forNextTurn();
             }
 
-        System.out.println("fin");
 
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 

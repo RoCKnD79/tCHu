@@ -1,5 +1,9 @@
 package ch.epfl.tchu.game;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
+
 public interface StationConnectivity {
     /**
      * when called, tells if stations are connected of not.

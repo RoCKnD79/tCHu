@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+/**
+ * @author Christopher Soriano (326354)
+ * @author Roman Danylovych (327830)
+ */
+
 public final class Ticket implements Comparable<Ticket> {
 
     //public final Trip trip;

@@ -5,6 +5,11 @@ import ch.epfl.tchu.SortedBag;
 import java.sql.SQLOutput;
 import java.util.*;
 
+/**
+ * @author Christopher Soriano (326354)
+ * @author Roman Danylovych (327830)
+ */
+
 public final class Route {
 
     private final Station station1;

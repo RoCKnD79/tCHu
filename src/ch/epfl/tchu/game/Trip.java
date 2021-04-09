@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
+
 public final class Trip {
 
     private final Station from;

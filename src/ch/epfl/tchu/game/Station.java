@@ -1,5 +1,10 @@
 package ch.epfl.tchu.game;
 
+/**
+ * @author Christopher Soriano (326354)
+ * @author Roman Danylovych (327830)
+ */
+
 public final class Station {
 
     private final int ID;
