@@ -210,6 +210,7 @@ public final class PlayerState extends PublicPlayerState {
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards) {
         List<Route> temp = new ArrayList<>(routes);
         temp.add(route);
+
         return new PlayerState(tickets, cards.difference(claimCards), temp);
     }
 
@@ -230,7 +231,6 @@ public final class PlayerState extends PublicPlayerState {
         for(Route r : routes) {
             partitionBuild.connect(r.station1(), r.stationOpposite(r.station1()));
         }
-
         StationPartition partition = partitionBuild.build();
 
         int ticketPoints = 0;
@@ -245,7 +245,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return total points the player won/lost => claim points + ticket points
      */
     public int finalPoints() {
-        return claimPoints() + ticketPoints();
+        return (claimPoints() + ticketPoints());
     }
 
 }

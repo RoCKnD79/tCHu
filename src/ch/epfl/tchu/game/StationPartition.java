@@ -73,12 +73,10 @@ public final class StationPartition implements StationConnectivity {
             }
 
             if(r[s1.id()] == s1.id()) {
-                System.out.println("r[s1.id()] == s1.id()");
                 if(representative(s2.id()) != s1.id()){
                     r[s1.id()] = s2.id();
                 }
             } else {
-                System.out.println("else bug ?");
                 int temp = representative(s1.id());
                 r[s1.id()] = r[representative(s2.id())];
                 r[temp] = s1.id();
@@ -105,10 +103,8 @@ public final class StationPartition implements StationConnectivity {
          * @return the representative of the station in question
          */
         private int representative(int id) {
-            //System.out.println("----------------ID: " + id + " ------------------------");
             boolean valueChange;
             int repId = r[id];
-            //int n = 0;
             do {
                 valueChange = false;
 
@@ -117,20 +113,10 @@ public final class StationPartition implements StationConnectivity {
                 }
 
                 if(repId != r[repId]) {
-                    //System.out.println("(1) repId: " + repId + " | r[repId]: " + r[repId]);
                     repId = r[repId];
-                    //System.out.println("(2) repId: " + repId + " | r[repId]: " + r[repId]);
                     valueChange = true;
                 }
-
-                /*if(n > 30) {
-                    System.out.println("québlo");
-                    System.out.println("repId: " + repId + " | r[repId]: " + r[repId]);
-                    break;
-                }*/
-                //n += 1;
             } while(valueChange);
-            //System.out.println("AHHHHHHHHHHHHHHHHHHH");
             return repId;
         }
 
