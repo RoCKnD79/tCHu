@@ -93,9 +93,15 @@ public final class Game {
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
                     System.out.println("case = DRAW_TICKETS");
-                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT));
-                    gameState = gameState.withChosenAdditionalTickets(gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT), chosenTickets);
-                    informBothPlayers(currentPlayerInfo.drewTickets(chosenTickets.size()), players);
+
+                    SortedBag<Ticket> proposedTickets = gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
+                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(proposedTickets);
+
+                    informBothPlayers(currentPlayerInfo.drewTickets(proposedTickets.size()), players);
+
+                    gameState = gameState.withChosenAdditionalTickets(proposedTickets, chosenTickets);
+
+                    informBothPlayers(currentPlayerInfo.keptTickets(chosenTickets.size()), players);
                     informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
                     break;
 
@@ -103,40 +109,37 @@ public final class Game {
                     System.out.println("case = DRAW_CARDS");
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot1 = currentPlayer.drawSlot();
-                    /*System.out.println(cardSlot1);
-                    System.out.println(currentPlayerState.cards());
-                    System.out.println(currentPlayerState.routes());*/
+
                     if (cardSlot1 != Constants.DECK_SLOT){
-                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
-                        informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCards().get(cardSlot1)), players);
+                        informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCard(cardSlot1)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot1);
                     }else{
-                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
                         gameState = gameState.withBlindlyDrawnCard();
                     }
 
                     System.out.println("deck size : " + gameState.cardState().deckSize());
                     informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot2 = currentPlayer.drawSlot();
                     if (cardSlot2 != Constants.DECK_SLOT){
-                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
+                        informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCard(cardSlot2)), players);
                     }else{
-
-                        gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
-
                         gameState = gameState.withBlindlyDrawnCard();
+                        informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
                     }
 
                     break;
 
                 case CLAIM_ROUTE:
                     System.out.println("case = CLAIMED");
+
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     Route routeToBeClaimed = currentPlayer.claimedRoute();
                     SortedBag<Card> cardInitiallyUsedToClaim = currentPlayer.initialClaimCards();
+
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if(currentPlayerState.canClaimRoute(routeToBeClaimed)){
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
@@ -156,8 +159,11 @@ public final class Game {
                                cardsDrawn.add(gameState.topCard());
                                gameState = gameState.withoutTopCard();
                             }
+
                             SortedBag<Card> cardsDrawnSorted = SortedBag.of(cardsDrawn);
                             int numberOfAdditionalCards = routeToBeClaimed.additionalClaimCardsCount(cardInitiallyUsedToClaim, cardsDrawnSorted);
+                            informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted,numberOfAdditionalCards), players);
+
                             if (numberOfAdditionalCards == 0){
                                 gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
                                 gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
@@ -173,7 +179,6 @@ public final class Game {
                                 } else {
 
                                     List<Card> listOfCardsUsed = additionalCardsChosen.toList();
-                                    informBothPlayers(currentPlayerInfo.drewAdditionalCards(cardsDrawnSorted, listOfCardsUsed.size()), players);
                                     for (Card c : cardInitiallyUsedToClaim) {
                                         listOfCardsUsed.add(c);
                                     }
@@ -219,7 +224,13 @@ public final class Game {
         }
         if (currentPlayerPoints > secondPlayerPoints) {
             informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId()))).won(currentPlayerPoints, secondPlayerPoints), players);
+            System.out.println("winner has : " + currentPlayerPoints);
             }
+        if(currentPlayerPoints < secondPlayerPoints){
+            informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId().next()))).won(secondPlayerPoints, currentPlayerPoints), players);
+            System.out.println("winner has : " + secondPlayerPoints);
+        }
+
 
         List<String> listOfPlayers = new ArrayList<>();
         listOfPlayers.add(playerNames.get(PlayerId.PLAYER_1));

@@ -9,6 +9,7 @@ public class GameTest {
     private Map<PlayerId, String> playerNames = new HashMap<>();
     private Map<PlayerId, Player> players = new HashMap<>();
     private static List<Route> claimableRoutes = new ArrayList<>();
+    private static int numberOfTurns = 0;
 
     @Test
     void playTest(){
@@ -18,6 +19,7 @@ public class GameTest {
         players.put(PlayerId.PLAYER_2, new TestPlayer(1, ChMap.routes()));
         Random rng = new Random();
         Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), rng);
+        System.out.println(numberOfTurns);
     }
 
     private static final class TestPlayer implements Player {
@@ -77,6 +79,7 @@ public class GameTest {
 
         @Override
         public TurnKind nextTurn() {
+            numberOfTurns += 1;
             System.out.println("deck size : " + gameState.cardState().deckSize());
             System.out.println(("CurPla : " + gameState.currentPlayerState().cardCount()) + "SecPla : " + gameState.playerState(gameState.currentPlayerId().next()).cardCount());
             System.out.println("discard size : " + gameState.cardState().discardsSize());
@@ -146,24 +149,27 @@ public class GameTest {
 
         @Override
         public SortedBag<Card> initialClaimCards() {
-            return claimedRoute().possibleClaimCards().get(0);
+            return ownState.possibleClaimCards(claimedRoute()).get(0);
         }
 
         @Override
         public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
 
-            List<Card> additionalCards = new ArrayList<>();
+            /*List<Card> additionalCards = new ArrayList<>();
             for(Card c : ownState.cards()){
                 for(int i = 0; i < options.size(); ++i){
                     for(int j = 0; j < options.get(i).size(); ++j) {
-                        if (additionalCards.size() < 3) {
+                        if (additionalCards.size() < options.get) {
                             if (c.equals(options.get(i).get(j))) {
                                 additionalCards.add(c);
                             }
                         }
                     }
-            }}
-            return SortedBag.of(additionalCards);
+            }}*/
+            if (options.isEmpty()){
+                return SortedBag.of();
+            }
+            return options.get(0);
         }
     }
 }

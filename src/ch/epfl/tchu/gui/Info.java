@@ -75,7 +75,7 @@ public final class Info {
     }
 
     /**
-     * @param count, number of cards drawn by player
+     * @param count, number of tickets drawn by player
      * @return "[player] a tiré [count] billet/s"
      */
     public String drewTickets(int count) {
