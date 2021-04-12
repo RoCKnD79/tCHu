@@ -78,13 +78,15 @@ public final class Game {
             PlayerState secondPlayerState = gameState.playerState(gameState.currentPlayerId().next());
             Info secondPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId().next()));
 
-            if (gameState.lastTurnBegins() && !lastTurnInformed){
+            informBothPlayers(currentPlayerInfo.canPlay(), players);
+
+            if (!(gameState.lastPlayer() == null) && !(lastTurnInformed)){
                 System.out.println("------------------------------------------------------------LAST TURN");
                 lastTurnInformed = true;
 
                 informBothPlayers(secondPlayerInfo.lastTurnBegins(secondPlayerState.carCount()), players);
             }
-            informBothPlayers(currentPlayerInfo.canPlay(), players);
+
 
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
 
