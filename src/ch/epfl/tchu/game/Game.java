@@ -6,10 +6,6 @@ import ch.epfl.tchu.gui.Info;
 import java.net.CookieHandler;
 import java.util.*;
 
-/**
- * @author Christopher Soriano (326354)
- */
-
 public final class Game {
 
     private final Info player1Info;
@@ -72,7 +68,7 @@ public final class Game {
         informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
 
-        boolean lastTurnBegins = false;
+        boolean lastTurnInformed = false;
         //while (!((gameState.lastTurnBegins()) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))){
         //while (!((lastTurnBegins) && (gameState.currentPlayerId().equals(gameState.lastPlayer())))) {
         while(!gameState.currentPlayerId().equals((gameState.lastPlayer()))) {
@@ -82,9 +78,10 @@ public final class Game {
             PlayerState secondPlayerState = gameState.playerState(gameState.currentPlayerId().next());
             Info secondPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId().next()));
 
-            if (gameState.lastTurnBegins()){
+            if (gameState.lastTurnBegins() && !lastTurnInformed){
                 System.out.println("------------------------------------------------------------LAST TURN");
-                lastTurnBegins = true;
+                lastTurnInformed = true;
+
                 informBothPlayers(secondPlayerInfo.lastTurnBegins(secondPlayerState.carCount()), players);
             }
             informBothPlayers(currentPlayerInfo.canPlay(), players);
@@ -173,7 +170,15 @@ public final class Game {
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                                 System.out.println("Tunnel was claimed, easy way");
                             }else {
-                                SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim, cardsDrawnSorted)));
+                                List<SortedBag<Card>> currentPlayersPossibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards,cardInitiallyUsedToClaim, cardsDrawnSorted);
+                                System.out.println("number of additional cards : " + numberOfAdditionalCards);
+                                System.out.println("size of cards initially used to claim " + cardInitiallyUsedToClaim.size());
+                                System.out.println("size of cards drawn " + cardsDrawnSorted.size());
+                                System.out.println("size of possible additional cards : " + currentPlayersPossibleAdditionalCards.size());
+                                SortedBag<Card> additionalCardsChosen = SortedBag.of();
+                                if(currentPlayersPossibleAdditionalCards.size() > 0) {
+                                    additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayersPossibleAdditionalCards));
+                                }
 
                                 if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != numberOfAdditionalCards)) {
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
@@ -205,6 +210,7 @@ public final class Game {
                gameState = gameState.forNextTurn();
             }
 
+        System.out.println("fin");
 
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 
