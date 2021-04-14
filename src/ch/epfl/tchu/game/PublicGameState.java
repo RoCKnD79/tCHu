@@ -17,14 +17,15 @@ public class PublicGameState {
     private final PlayerId lastPlayer;
     private final Map<PlayerId, PublicPlayerState> playerState;
 
-
     /**
      * public constructor of PublicGameState
      * @param ticketsCount, number of tickets in ticket deck
-     * @param cardState, public state of the cards of the game
-     * @param currentPlayerId, id of current player
-     * @param playerState, public states of each player
+     * @param cardState, public state of the cards of the game (publicCardState)
+     * @param currentPlayerId, id of the player currently playing
+     * @param playerState, map connecting a publicPlayerState to each playerId
      * @param lastPlayer, id of the player that'll play last in the game
+     * @throws IllegalArgumentException, if ticketsCount  < 0
+     *                                   or playerState.size() != 2
      */
     public PublicGameState(int ticketsCount, PublicCardState cardState, PlayerId currentPlayerId,
                            Map<PlayerId, PublicPlayerState> playerState, PlayerId lastPlayer) {
@@ -39,7 +40,7 @@ public class PublicGameState {
         this.ticketsCount = ticketsCount;
         this.cardState = Objects.requireNonNull(cardState);
         this.currentPlayerId = Objects.requireNonNull(currentPlayerId);
-        this.playerState = playerState;
+        this.playerState = Map.copyOf(playerState);
         this.lastPlayer = lastPlayer;
     }
 
@@ -54,7 +55,7 @@ public class PublicGameState {
      * @return true if number of tickets available is > 0
      */
     public boolean canDrawTickets() {
-        return !(ticketsCount <= 0);
+        return ticketsCount > 0;
     }
 
     /**

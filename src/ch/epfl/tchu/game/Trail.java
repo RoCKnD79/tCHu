@@ -3,6 +3,10 @@ package ch.epfl.tchu.game;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Christopher Soriano (326354)
+ * @author Roman Danylovych (327830)
+ */
 public final class Trail {
 
     private final Station station1;
@@ -10,6 +14,7 @@ public final class Trail {
     private final List<Route> routeConnections;
 
     /**
+     * main constructor of the class
      * @param station1, station of departure
      * @param station2, station of arrival
      * @param routes, the routes linking station1 and station2 together
@@ -17,18 +22,18 @@ public final class Trail {
     private Trail(Station station1, Station station2, List<Route> routes) {
         this.station1 = station1;
         this.station2 = station2;
-
-        routeConnections = copyList(routes);
+        routeConnections = List.copyOf(routes);
     }
 
     /**
+     * second constructor, mainly used in longest() method in order to create new trails
      * @param oldTrail, the trail to which we would like to add a route
      * @param routeToAdd, the route we would like to add to the trail
      */
     private Trail(Trail oldTrail, Route routeToAdd) {
         this.station1 = oldTrail.station1();
-        //this.station2 = routeToAdd.station2();
         this.station2 = routeToAdd.stationOpposite(oldTrail.station2);
+
         List<Route> routes = oldTrail.routeConnections();
         routes.add(routeToAdd);
         this.routeConnections = List.copyOf(routes);
@@ -54,39 +59,46 @@ public final class Trail {
 
         Trail longest = null;
         if(!initTrails.isEmpty()) {
-            longest = initTrails.get(0);
+            //finds initially the longest trail among all the initial trials
+            longest = longestTrail(initTrails.get(0), initTrails);
         }
 
-        for(Trail t : initTrails) {
-            if(longest.length() < t.length()) {
-                longest = t;
-            }
-        }
-
+        //the main algorithm that will build new trails with available routes and find the longest possible trail
         while(!initTrails.isEmpty()) {
             List<Trail> trails = new ArrayList<>();
+            //builds a list of new trails built with added routes
             for(Trail t : initTrails) {
                 List<Route> routesToAdd = calculatePotentialRoutes(t, routes);
-                for(Route r : routesToAdd) {
-                    trails.add(new Trail(t, r));
-                }
+                routesToAdd.forEach(route -> trails.add(new Trail(t, route)));
             }
-            for(Trail t : trails) {
-                if(longest.length() < t.length()) {
-                    longest = t;
-                }
-            }
+            longest = longestTrail(longest, trails);
             initTrails = trails;
         }
 
         return longest;
     }
 
+    /**
+     * method used to calculate the longest trail in a list of trails
+     * (specifically written for method longest(List<Route> routes))
+     * @param prevLongest, current longest trail
+     * @param trails, list of trails from which we'd like to find the longest one
+     * @return longest trail out of the list or prevLongest if it is still the longest
+     */
+    private static Trail longestTrail(Trail prevLongest, List<Trail> trails) {
+        Trail longest = prevLongest;
+        for(Trail t : trails) {
+            if(longest.length() < t.length()) {
+                longest = t;
+            }
+        }
+        return longest;
+    }
 
     /**
      * @param t, the trail to which we would like to add routes
      * @param routes the candidates that could potentially extend the trail
-     * @return a list of the roads that can be added to the trail
+     * @return a list of the routes that can be added to the trail
      */
     private static List<Route> calculatePotentialRoutes(Trail t, List<Route> routes) {
 
@@ -101,57 +113,38 @@ public final class Trail {
         return List.copyOf(potentialRoutes);
     }
 
+    /**
+     * @return length of trail
+     */
+    public int length() {
+        return routeConnections.stream().mapToInt(Route::length).sum();
+    }
 
     /**
-     * @param routes, the routes we want to copy to a new list
-     * @return the copy of the list
+     * @return station of departure
      */
-    private static List<Route> copyList(List<Route> routes) {
-        List<Route> copyList = new ArrayList<>();
-        copyList.addAll(routes);
-        return copyList;
-    }
-
-    //calculates the length of the trail
-    public int length() {
-        if(this == null) {
-            return 0;
-        }
-        int l = 0;
-        for(int i = 0; i < routeConnections.size(); ++i) {
-            l += routeConnections.get(i).length();
-        }
-        return l;
-    }
-
-    //returns the station of departure
     public Station station1() {
-        if (routeConnections == null) {
-            return null;
-        }
-        return station1;
+        return routeConnections == null ? null : station1;
     }
 
-    //returns the station of arrival
+    /**
+     * @return station of arrival
+     */
     public Station station2() {
-        if (routeConnections == null) {
-            return null;
-        }
-        return station2;
+        return routeConnections == null ? null : station2;
     }
 
-
+    /**
+     * @return list of routeConnections
+     */
     public List<Route> routeConnections() {
-        return copyList(routeConnections);
+        return new ArrayList<>(routeConnections);
     }
-
 
     @Override
     public String toString() {
-
-        if(this == null) {
+        if(station1 == null || station2 == null)
             return "Trail is null";
-        }
 
         return station1.name() + " - " + station2.name();
     }

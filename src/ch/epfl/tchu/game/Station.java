@@ -20,10 +20,9 @@ public final class Station {
     public Station(int id, String name) throws IllegalArgumentException {
         if (id < 0) {
             throw new IllegalArgumentException("only positive id are accepted");
-        } else {
-            ID = id;
         }
 
+        ID = id;
         NAME = name;
     }
 

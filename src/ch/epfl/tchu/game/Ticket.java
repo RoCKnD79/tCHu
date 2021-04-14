@@ -1,5 +1,7 @@
 package ch.epfl.tchu.game;
 
+import ch.epfl.tchu.gui.StringsFr;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -11,65 +13,67 @@ import java.util.TreeSet;
 
 public final class Ticket implements Comparable<Ticket> {
 
-    //public final Trip trip;
     private final Station fromStation;
-    //private final ArrayList<String> text = new ArrayList<>();
     private final List<Trip> trips;
     private final String tripInfo;
 
-    /**First constructor for ticket class, verifies that list of trips isn't null and that all trips have same origin.
-     @param trips
-    */
+    /**
+     * First constructor for ticket class, verifies that list of trips isn't null and that all trips have same origin.
+     * @param trips, trips we'd like to have on our ticket
+     * @throws IllegalArgumentException, if list of trips is null or empty
+     */
     public Ticket(List<Trip> trips) throws IllegalArgumentException {
         if (trips == null || trips.size() == 0) {
-            throw new IllegalArgumentException("List can't be null");
+            throw new IllegalArgumentException("List can't be null or empty");
         }
         fromStation = trips.get(0).from();
-        for(int i = 0; i < trips.size(); ++i) {
-            if (!fromStation.name().equals(trips.get(i).from().name())) {
+        for (Trip trip : trips) {
+            if (!fromStation.name().equals(trip.from().name())) {
                 throw new IllegalArgumentException("Not all trips come from same Station");
             }
         }
         //TODO Si ya une erreur c'est peut-être à cause de ça
-        this.trips = trips;
+        this.trips = List.copyOf(trips);
         tripInfo = computeText(trips);
     }
 
     /**Second constructor for ticket class, creates a unique trip.
-      @param from
-      @param to
-      @param points
+      @param from, station of departure
+      @param to, station of arrival
+      @param points, points offered if ticket is accomplished
      */
     public Ticket(Station from, Station to, int points){
-        //this(List.of());
         this(List.of(new Trip(from, to, points)));
     }
 
+
     /**
-    returns number of points for the specific ticket and connectivity
-    @param connectivity
-     @return int, max points if best connection was achieved, min points if no connection was achieved, or a specific amount of points if a in between connection was established.
+     * returns number of points for the specific ticket and connectivity
+     * @param connectivity
+     * @return max points if BEST connection was achieved,
+     *         min points if NO connection was achieved,
+     *         or a specific amount of points if a PARTIAL connection was established.
      */
     public int points(StationConnectivity connectivity) {
 
         boolean max = false;
         int maxPts = trips.get(0).points();
         int minPts = trips.get(0).points();
-        for (int h = 0; h < trips.size(); ++h) {
-            if (connectivity.connected(trips.get(h).from(), trips.get(h).to()) == true) {
-                if (maxPts < trips.get(h).points()) {
-                    maxPts = trips.get(h).points();
+        for (Trip trip : trips) {
+            if (connectivity.connected(trip.from(), trip.to())) {
+                if (maxPts < trip.points()) {
+                    maxPts = trip.points();
                 }
                 max = true;
-            }else {
-                if (minPts > trips.get(h).points()) {
-                    minPts = trips.get(h).points();
+            } else {
+                if (minPts > trip.points()) {
+                    minPts = trip.points();
                 }
 
             }
         }
 
-        if (max == false){
+        if (!max){
             return -minPts;
         }
         return maxPts;
@@ -86,30 +90,43 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * Computes Text for the ticket created, specific to the requirements.
-     * @param trips
+     * @param trips, list of trips we'd like to represent in a textual form
      * @return textual representation of the trip written on the ticket
      */
     private static String computeText(List<Trip> trips) {
-        TreeSet<String> text = new TreeSet<String>();
-        String info;
+        TreeSet<String> text = new TreeSet<>();
 
-        for(int i = 0; i < trips.size(); ++i) {
-            text.add(trips.get(i).to().name() + " (" + trips.get(i).points() + ")");
-        }
+        trips.forEach(trip -> text.add(new StringBuilder()
+                .append(trip.to().name())
+                .append(" (")
+                .append(trip.points())
+                .append(")")
+                .toString()));
+
+        String info;
         if(text.size() > 1) {
-            info = trips.get(0).from().name() + " - " + "{" + String.join(", ", text) + "}";
+            info = new StringBuilder()
+                    .append(trips.get(0).from().name())
+                    .append(" - {")
+                    .append(String.join(", ", text))
+                    .append("}")
+                    .toString();
         } else {
-            info = trips.get(0).from().name() + " - " + text.last();
+            info = new StringBuilder()
+                    .append(trips.get(0).from().name())
+                    .append(" - ")
+                    .append(text.last())
+                    .toString();
         }
         return info;
     }
 
     /**
      method that compares alphabetically the textual representations of two tickets
-     @param that
+     @param that, ticket we'd like to compare this to
      @return negative number if for ex: "a".compareTo("z");
              positive number if for ex: "z".compareTo("a");
-             zero if for ex: "a".compareTo("a");
+             zero if: "a".compareTo("a");
      */
     @Override
     public int compareTo(Ticket that) { return this.text().compareTo(that.text()); }

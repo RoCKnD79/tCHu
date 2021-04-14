@@ -23,39 +23,50 @@ public final class GameState extends PublicGameState {
      */
     private GameState(Deck<Ticket> tickets, CardState allCardState, Map<PlayerId, PlayerState> map,
                       PlayerId currentPlayerId, PlayerId lastPlayer) {
+
         super(tickets.size(), new PublicCardState(allCardState.faceUpCards(),
-                allCardState.deckSize(), allCardState.discardsSize()), currentPlayerId, Map.copyOf(map), lastPlayer);
+                allCardState.deckSize(), allCardState.discardsSize()),
+                currentPlayerId, Map.copyOf(map), lastPlayer);
+
         this.tickets = tickets;
         this.allCardState = allCardState;
         this.map = map;
     }
 
     /**
-     * initializes the game => designates first and second player, distributes 4 cards to each player
-     * @param tickets, the tickets we start the game with ? //TODO
+     * initializes the game => designates first player, creates a playerState for each player,
+     *                          distributes 4 cards to each player, initializes deck of cards and ticket deck,
+     *                          prepares the 5 face up cards, creates initial CardState of the whole game
+     *
+     * @param tickets, the tickets we start the game with
      * @param rng, used to designate first and second player and to shuffle cards
      * @return new GameState
      */
     public static GameState initial(SortedBag<Ticket> tickets, Random rng) {
         PlayerId firstPlayer = PlayerId.PLAYER_1;
 
+        //decides at random who will be the first to play
         if(rng.nextInt(2) == 1) {
             firstPlayer = PlayerId.PLAYER_2;
         }
         PlayerId secondPlayer = firstPlayer.next();
 
+        //initialise deck of tickets and deck of cards
         Deck<Ticket> ticketDeck = Deck.of(tickets, rng);
         Deck<Card> cardDeck = Deck.of(Constants.ALL_CARDS , rng);
 
+        //initialise the playerState of first player
         PlayerState playerState1 = PlayerState.initial(distributeInitCards(cardDeck));
         cardDeck = cardDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
 
+        //initialise the playerState of next player
         PlayerState playerState2 = PlayerState.initial(distributeInitCards(cardDeck));
         cardDeck = cardDeck.withoutTopCards(Constants.INITIAL_CARDS_COUNT);
 
         //faceUpCards are automatically removed from Deck when calling of()
         CardState cardState = CardState.of(cardDeck);
 
+        //initialise map connecting each PlayerId with a corresponding PlayerState
         Map<PlayerId, PlayerState> map = new EnumMap<>(PlayerId.class);
         map.put(firstPlayer, playerState1);
         map.put(secondPlayer, playerState2);
@@ -63,6 +74,14 @@ public final class GameState extends PublicGameState {
         return new GameState(ticketDeck, cardState, map, firstPlayer, null);
     }
 
+    /**
+     * used in initial()
+     * @param cards, deck of cards
+     * @return five cards from the top of the deck
+     */
+    private static SortedBag<Card> distributeInitCards(Deck<Card> cards) {
+        return cards.topCards(Constants.INITIAL_CARDS_COUNT);
+    }
 
 
     //-----------------------FIRST GROUP OF METHODS: CONCERNING CARDS AND TICKETS-----------------------
@@ -128,7 +147,6 @@ public final class GameState extends PublicGameState {
         if(allCardState.deckSize() == 0) {
             throw new IllegalArgumentException("Deck is empty");
         }
-        //System.out.println("after withoutTopCard (gs): " + allCardState.discardsSize());
         return new GameState(tickets, allCardState.withoutTopDeckCard(), map, currentPlayerId(), lastPlayer());
     }
 
@@ -137,8 +155,6 @@ public final class GameState extends PublicGameState {
      * @return new GameState with discardedCards added to the discards pile
      */
     public GameState withMoreDiscardedCards(SortedBag<Card> discardedCards) {
-        //CardState newCardState = allCardState.withMoreDiscardedCards(discardedCards);
-        //System.out.println("discardSize (gs, withMoreDiscC): " + newCardState.discardsSize());
         return new GameState(tickets, allCardState.withMoreDiscardedCards(discardedCards), map,
                 currentPlayerId(), lastPlayer());
     }
@@ -149,28 +165,10 @@ public final class GameState extends PublicGameState {
      *          otherwise, return just current instance (this)
      */
     public GameState withCardsDeckRecreatedIfNeeded(Random rng) {
-        //System.out.println("isDeckempty ? " + allCardState.isDeckEmpty());
-        /*return allCardState.isDeckEmpty()
+        return allCardState.isDeckEmpty()
                 ? new GameState(tickets, allCardState.withDeckRecreatedFromDiscards(rng), map,
                   currentPlayerId(), lastPlayer())
-                : this;*/
-
-        if (allCardState.isDeckEmpty()){
-            return new GameState(tickets, allCardState.withDeckRecreatedFromDiscards(rng), map,
-                    currentPlayerId(), lastPlayer());
-        }else{
-            return this;
-        }
-        /*
-        : new GameState(tickets, allCardState, map,
-                currentPlayerId(), lastPlayer());
-         */
-    }
-
-
-
-    private static SortedBag<Card> distributeInitCards(Deck<Card> cards) {
-        return cards.topCards(Constants.INITIAL_CARDS_COUNT);
+                : this;
     }
 
 
@@ -218,7 +216,7 @@ public final class GameState extends PublicGameState {
     /**
      * @param slot, the position of the faceUpCard the player chooses
      * @return new GameState where the card has been added to the player's state
-     * @throws IllegalArgumentException if
+     * @throws IllegalArgumentException if player cannot draw cards => canDrawCards() is false => size of deck + size of discards >= 5
      */
     public GameState withDrawnFaceUpCard(int slot) {
         if(!canDrawCards()) {
@@ -233,7 +231,7 @@ public final class GameState extends PublicGameState {
     }
 
     /**
-     * @return draws card from the top of the deck
+     * @return new GameState with one card less from top of deck (which has been drawn)
      */
     public GameState withBlindlyDrawnCard() {
 
@@ -246,13 +244,12 @@ public final class GameState extends PublicGameState {
         temp.put(currentPlayerId().next(), map.get(currentPlayerId().next()));
 
         return new GameState(tickets, allCardState.withoutTopDeckCard(), temp, currentPlayerId(), lastPlayer());
-        //return withDrawnFaceUpCard(0);
     }
 
     /**
      * @param route, claimed route
      * @param cards, cards used to claim route
-     * @return a new GameState with modified PlayerState of thehttps://code-with-me.jetbrains.com/8ULt17pj2pTayANxVTmVaQ#p=IC&fp=35A9860B5A79E66F2538B20BC0BE256517B0D48E1B46D9117F77B44ADA1A60AC person who claimed the route
+     * @return a new GameState with modified PlayerState of the person who claimed the route
      */
     public GameState withClaimedRoute(Route route, SortedBag<Card> cards) {
 
@@ -264,13 +261,12 @@ public final class GameState extends PublicGameState {
     }
 
 
-    //-----------------------SECOND GROUP OF METHODS: CHANGE OF STATE DUE TO PLAYER'S ACTIONS-----------------------
+    //-----------------------THIRD GROUP OF METHODS: CHANGE OF STATE DUE TO PLAYER'S ACTIONS-----------------------
 
     /**
      * @return true if no last player has been designated yet and current player has <= 2 cars
      */
     public boolean lastTurnBegins() {
-        //TODO "cette méthode doit être appelée uniquement à la fin du tour d'un joueur" ??????
         return lastPlayer() == null && map.get(currentPlayerId()).carCount() <= 2;
     }
 

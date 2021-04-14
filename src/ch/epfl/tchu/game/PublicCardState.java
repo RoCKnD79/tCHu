@@ -41,11 +41,9 @@ public class PublicCardState {
     }
 
     /**
-     * @return total of cards that are not in the player's hands => the 5 cards facing up, number of cards in deck and in discards
+     * @return total of cards that are not in the player's hands => the 5 cards facing up + number of cards in deck and in discards
      */
-    public int totalSize() {
-        return faceUpCards.size() + deckSize + discardsSize;
-    }
+    public int totalSize() { return Constants.FACE_UP_CARDS_COUNT + deckSize + discardsSize; }
 
     /**
      * @return the 5 visible cards in the form of a list containing exactly 5 elements
@@ -57,7 +55,7 @@ public class PublicCardState {
     /**
      * @param slot, slot of the card we want to return
      * @return 1 card (at chosen slot) out of the 5 face-up cards
-     * @throws IndexOutOfBoundsException if slot < 0   or   slot >= 5
+     * @throws IndexOutOfBoundsException if slot < 0   or   5 <= slot
      */
     public Card faceUpCard(int slot) throws IndexOutOfBoundsException {
         return faceUpCards.get(Objects.checkIndex(slot, faceUpCards.size()));
