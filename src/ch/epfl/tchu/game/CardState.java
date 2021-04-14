@@ -11,13 +11,13 @@ import java.util.Random;
  */
 //
 //IMMUTABLE class
-    /*
-    represents the cards that the players can't see, this includes :
-    - the discards
-    - the deck
 
-    */
-public final class CardState extends PublicCardState{
+/**
+ * represents the cards that the players can't see, this includes :
+ * - the discards
+ * - the deck
+ **/
+public final class CardState extends PublicCardState {
 
 
     private final Deck<Card> deck;
@@ -26,9 +26,10 @@ public final class CardState extends PublicCardState{
 
     /**
      * Constructor for cardState
+     *
      * @param faceUpCards, cards that are face up
-     * @param discards, discard sorted list
-     * @param deck, "pioche"
+     * @param discards,    discard sorted list
+     * @param deck,        "pioche"
      */
     private CardState(List<Card> faceUpCards, SortedBag<Card> discards, Deck<Card> deck) {
         super(faceUpCards, deck.size(), discards.size());
@@ -38,71 +39,75 @@ public final class CardState extends PublicCardState{
 
     /**
      * Creates a card state.
+     *
      * @param deck, a deck
      * @return a new cardstate with an empty discard list, a new deck, and a new face up cards
      * @throws IllegalArgumentException, if deck contains less than 5 cards
      */
-    public static CardState of(Deck<Card> deck) throws IllegalArgumentException{
-        if(deck.size() < 5){
+    public static CardState of(Deck<Card> deck) throws IllegalArgumentException {
+        if (deck.size() < 5) {
             throw new IllegalArgumentException("Deck contains less than 5 cards");
         }
         SortedBag<Card> emptyDiscards = SortedBag.of();
-    return new CardState(deck.topCards(5).toList(), emptyDiscards, deck.withoutTopCards(5));
+        return new CardState(deck.topCards(5).toList(), emptyDiscards, deck.withoutTopCards(5));
     }
 
     /**
      * replaces the card in slot with the card on top of the deck
+     *
      * @param slot, slot of the card that will be replaced
      * @return new Card state with replaced face up card
      * @throws IndexOutOfBoundsException if the slot is higher than 5 or lower than 0
      * @throws IllegalArgumentException, if the deck is empty
      */
-    public CardState withDrawnFaceUpCard(int slot) throws IndexOutOfBoundsException, IllegalArgumentException{
-        if ((slot >= 5) || (slot < 0)){
+    public CardState withDrawnFaceUpCard(int slot) throws IndexOutOfBoundsException, IllegalArgumentException {
+        if ((slot >= 5) || (slot < 0)) {
             throw new IndexOutOfBoundsException("slot index is not between 0 and 5");
         }
-        if (deck.isEmpty()){
+        if (deck.isEmpty()) {
             throw new IllegalArgumentException("deck is empty");
         }
         List<Card> newFaceUpCards = new ArrayList<>(this.faceUpCards());
         newFaceUpCards.set(slot, deck.topCard());
-        return new CardState(newFaceUpCards,discards, deck.withoutTopCard());
+        return new CardState(newFaceUpCards, discards, deck.withoutTopCard());
     }
 
     /**
      * Gives the card on top of the deck
+     *
      * @return the top card of the deck
      * @throws IllegalArgumentException, if the deck is empty
      */
-    public Card topDeckCard() throws IllegalArgumentException{
-        if (deck.isEmpty()){
+    public Card topDeckCard() throws IllegalArgumentException {
+        if (deck.isEmpty()) {
             throw new IllegalArgumentException("deck is empty");
         }
-    return deck.topCard();
+        return deck.topCard();
     }
 
     /**
      * creates a cardstate but without the top card card in the deck
+     *
      * @return new card state without top card
      * @throws IllegalArgumentException, if the deck is empty
      */
-    public CardState withoutTopDeckCard() throws IllegalArgumentException{
-        if (deck.isEmpty()){
+    public CardState withoutTopDeckCard() throws IllegalArgumentException {
+        if (deck.isEmpty()) {
             throw new IllegalArgumentException("deck is empty");
         }
-        //return new CardState(faceUpCards(), emptyDiscards, deck.withoutTopCard());
         return new CardState(faceUpCards(), discards, deck.withoutTopCard());
     }
 
     /**
      * puts all of the discard cards in an shuffled manner and creates a new deck from these shuffled discards cards
+     *
      * @param rng, random rng
      * @return a new Cardsate with a new deck
      * @throws IllegalArgumentException, if the deck isn't empty
      */
-    public CardState withDeckRecreatedFromDiscards(Random rng) throws IllegalArgumentException{
+    public CardState withDeckRecreatedFromDiscards(Random rng) throws IllegalArgumentException {
 
-        if(!deck.isEmpty()){
+        if (!deck.isEmpty()) {
             throw new IllegalArgumentException("deck is not empty");
         }
         Deck<Card> newDeckFromDiscards = Deck.of(discards, rng);
@@ -111,38 +116,25 @@ public final class CardState extends PublicCardState{
     }
 
     /**
-     *adds new cards to the discard list
+     * adds new cards to the discard list
+     *
      * @param additionalDiscards, discards to add to the list
      * @return a new cardstate with a new discard list
      */
-    public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards){
+    public CardState withMoreDiscardedCards(SortedBag<Card> additionalDiscards) {
 
-        //System.out.println("additional discards size : " + additionalDiscards.size());
         List<Card> discardsWithAdditional = discards.toList();
 
-        for(Card c : additionalDiscards){
+        for (Card c : additionalDiscards) {
             discardsWithAdditional.add(c);
         }
 
         SortedBag.Builder<Card> discardSortedBuilder = new SortedBag.Builder<>();
-        for(Card c : discardsWithAdditional){
+        for (Card c : discardsWithAdditional) {
             discardSortedBuilder.add(c);
         }
         SortedBag<Card> discardsWithAddedCards = discardSortedBuilder.build();
-        //System.out.println("discardsSize (cs): " + discardsSize());
-        //System.out.println("discarded with added cards size : " +discardsWithAddedCards.size());
-        //System.out.println("discardsWithAddedCards (cs): " + discardsWithAddedCards.size());
-    return new CardState(faceUpCards(), discardsWithAddedCards, deck);
+        return new CardState(faceUpCards(), discardsWithAddedCards, deck);
 
     }
-/*
-    public List<Card> getFaceUpCards(){
-        return faceUpCards();
-    }
-    public Deck getDeck(){
-        return deck;
-    }
-    public SortedBag<Card> getDiscards(){
-        return discards;
-    }*/
 }

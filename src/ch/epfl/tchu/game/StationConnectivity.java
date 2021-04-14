@@ -7,10 +7,11 @@ package ch.epfl.tchu.game;
 public interface StationConnectivity {
     /**
      * when called, tells if stations are connected of not.
-     * @param s1
-     * @param s2
+     *
+     * @param s1, first station
+     * @param s2, second station
      * @return true if the station are connected, false if the stations are not connected.
      */
-    public abstract boolean connected(Station s1, Station s2);
+    boolean connected(Station s1, Station s2);
 
 }

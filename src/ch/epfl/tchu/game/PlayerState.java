@@ -5,7 +5,6 @@ import ch.epfl.tchu.SortedBag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author Christopher Soriano (326354)
@@ -47,7 +46,8 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
-     * gives the tickets of the player
+     * returns the tickets of the player
+     *
      * @return tickets of player
      */
     public SortedBag<Ticket> tickets() {
@@ -56,6 +56,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Creates a new PlayerState with a new set of additional tickets added to the original
+     *
      * @param newTickets, tickets that are added to the original list of tickets
      * @return new PlayerState with additional tickets
      */
@@ -65,6 +66,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Method that returns the cards that the player has
+     *
      * @return cards of the player
      */
     public SortedBag<Card> cards() {
@@ -73,6 +75,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Creates a new state for the player with an added card to his cards
+     *
      * @param card, the card to add to original list of cards
      * @return a new PlayerState with card added to original list
      */
@@ -83,6 +86,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * Creates a new state for the player with additional cards to his cards
+     *
      * @param additionalCards, the sorted list of cards to add to original list of cards
      * @return a new PlayerState with additional cards added to original list
      */
@@ -92,6 +96,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * tests if given route can be claimed with the cards the player has
+     *
      * @param route the player wants to claim
      * @return true if claim is possible
      */
@@ -101,6 +106,7 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * calculates a list of all possible card combinations the player can use to claim the given route
+     *
      * @param route, route we want to claim
      * @return list of all possible claim card combinations
      */
@@ -129,7 +135,7 @@ public final class PlayerState extends PublicPlayerState {
                 }
             }
 
-        } else { //case where route is a tunnel (=> Level.UNDERGROUND) and player has locomotive cards
+        } else {
             if (route.color() == null) {
                 if (cards.countOf(Card.LOCOMOTIVE) >= length) {
                     list.add(SortedBag.of(length, Card.LOCOMOTIVE));
@@ -149,18 +155,19 @@ public final class PlayerState extends PublicPlayerState {
 
     /**
      * if initial cards are only locomotive cards, then the player will only be able to play additionalCardsCount locomotive cards
-     *      (if he has the sufficient amount of locomotive cards available)
+     * (if he has the sufficient amount of locomotive cards available)
      * if initial cards are composed of (only color cards) OR (color cards and locomotives), then the player will be able to play
-     *      additionalCardsCount cards of different combinations,
-     *      ex: if additionalCardsCount is 2 and the player initially used 1 blue and 1 locomotive,
-     *          then the player may play {2xB}, {1xB, 1xL} or {2xL}
+     * additionalCardsCount cards of different combinations,
+     * ex: if additionalCardsCount is 2 and the player initially used 1 blue and 1 locomotive,
+     * then the player may play {2xB}, {1xB, 1xL} or {2xL}
+     *
      * @param additionalCardsCount, number of additional cards the player will need to play
-     * @param initialCards, the cards the player played initially to claim the tunnel, before drawing the additional cards
-     * @param drawnCards, the 3 cards drawn by the player after he played his initialCards to begin claiming a tunnel
+     * @param initialCards,         the cards the player played initially to claim the tunnel, before drawing the additional cards
+     * @param drawnCards,           the 3 cards drawn by the player after he played his initialCards to begin claiming a tunnel
      * @return a List of possible additional cards the player is able to play in order to finish claiming the tunnel
      * @throws IllegalArgumentException if the number of additionalCards (=> additionalCardsCount) is < 1 or > 3
      *                                  if initialCards is empty or more than 2 types of cards (2 types because at most
-     *                                                  you can use both a certain color and locomotive cards to claim a tunnel)
+     *                                  you can use both a certain color and locomotive cards to claim a tunnel)
      *                                  if the number of drawnCards isn't exactly 3
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) throws IllegalArgumentException {
@@ -168,23 +175,23 @@ public final class PlayerState extends PublicPlayerState {
         if ((additionalCardsCount < 1) || (additionalCardsCount > 3)) {
             throw new IllegalArgumentException("additionnal card count is not between 1 and 3 included");
         }
-        if (initialCards.isEmpty() || initialCards.toSet().size() > 2){
+        if (initialCards.isEmpty() || initialCards.toSet().size() > 2) {
             throw new IllegalArgumentException("inital cards list is empty or contains two different type of cards");
         }
-        if(drawnCards.size() != 3){
+        if (drawnCards.size() != 3) {
             throw new IllegalArgumentException("the number of drawn cards is not equal to 3");
         }
 
         List<SortedBag<Card>> list = new ArrayList<>();
         SortedBag<Card> cardsLeft = cards.difference(initialCards);
 
-        if(cardsLeft.size() < additionalCardsCount) {
+        if (cardsLeft.size() < additionalCardsCount) {
             System.out.println("not enough cards");
             return List.of();
         }
 
-        if(initialCards.countOf(Card.LOCOMOTIVE) == initialCards.size()) {
-            if(cardsLeft.countOf(Card.LOCOMOTIVE) >= additionalCardsCount) {
+        if (initialCards.countOf(Card.LOCOMOTIVE) == initialCards.size()) {
+            if (cardsLeft.countOf(Card.LOCOMOTIVE) >= additionalCardsCount) {
                 return List.of(SortedBag.of(additionalCardsCount, Card.LOCOMOTIVE));
             }
         } else {
@@ -202,15 +209,13 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
-     *
-     * @param route, claimed route
+     * @param route,      claimed route
      * @param claimCards, cards used to claim route
      * @return new PlayerState instance with player's routes and cards updated
      */
     public PlayerState withClaimedRoute(Route route, SortedBag<Card> claimCards) {
         List<Route> temp = new ArrayList<>(routes);
         temp.add(route);
-
         return new PlayerState(tickets, cards.difference(claimCards), temp);
     }
 
@@ -219,22 +224,23 @@ public final class PlayerState extends PublicPlayerState {
      */
     public int ticketPoints() {
         int largestId = 0;
-        for(Route r : routes) {
+        for (Route r : routes) {
             int max = Math.max(r.station1().id(), r.station2().id());
-            if(max > largestId) {
+            if (max > largestId) {
                 largestId = max;
             }
         }
 
         StationPartition.Builder partitionBuild = new StationPartition.Builder(largestId + 1);
 
-        for(Route r : routes) {
+        for (Route r : routes) {
             partitionBuild.connect(r.station1(), r.stationOpposite(r.station1()));
         }
+
         StationPartition partition = partitionBuild.build();
 
         int ticketPoints = 0;
-        for(Ticket t : tickets) {
+        for (Ticket t : tickets) {
             ticketPoints += t.points(partition);
         }
 
@@ -242,10 +248,12 @@ public final class PlayerState extends PublicPlayerState {
     }
 
     /**
+     * calculates total points by adding claimPoints to the points earned thanks to tickets
+     *
      * @return total points the player won/lost => claim points + ticket points
      */
     public int finalPoints() {
-        return (claimPoints() + ticketPoints());
+        return claimPoints() + ticketPoints();
     }
 
 }

@@ -13,6 +13,8 @@ public enum PlayerId {
     public static final int COUNT = ALL.size();
 
     /**
+     * used to get other player
+     *
      * @return PLAYER_2 if called through PLAYER_1 and PLAYER_1 otherwise
      */
     public PlayerId next() {

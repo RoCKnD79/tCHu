@@ -12,8 +12,9 @@ public final class Station {
 
     /**
      * constructor of a station
-     * @param id
-     * @param name
+     *
+     * @param id,   id of station
+     * @param name, name of station
      * @throws IllegalArgumentException if the id is not positive.
      */
     public Station(int id, String name) throws IllegalArgumentException {
@@ -22,11 +23,13 @@ public final class Station {
         } else {
             ID = id;
         }
+
         NAME = name;
     }
 
     /**
      * when called, gives the id of the station
+     *
      * @return id of station
      */
     public int id() {
@@ -35,6 +38,7 @@ public final class Station {
 
     /**
      * when called, gives the name of the station
+     *
      * @return name of station
      */
     public String name() {
@@ -43,7 +47,6 @@ public final class Station {
 
     @Override
     public String toString() {
-        //return "Gare de " + NAME;
         return NAME;
     }
 

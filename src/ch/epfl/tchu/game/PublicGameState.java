@@ -58,7 +58,7 @@ public class PublicGameState {
     }
 
     /**
-     * @return, PublicCardState of the game
+     * @return PublicCardState of the game
      */
     public PublicCardState cardState() {
         return cardState;
@@ -110,3 +110,4 @@ public class PublicGameState {
     }
 
 }
+
