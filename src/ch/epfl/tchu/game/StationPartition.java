@@ -25,13 +25,11 @@ public final class StationPartition implements StationConnectivity {
      */
     @Override
     public boolean connected(Station s1, Station s2) {
-
         if(s1.id() >= repArray.length || s2.id() >= repArray.length) {
             if (s1.id() == s2.id()) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         }
         return repArray[s1.id()] == repArray[s2.id()];
     }
@@ -45,12 +43,13 @@ public final class StationPartition implements StationConnectivity {
         private int[] r;
 
         /**
-         * @param stationCount = max(id1, id2,..., idN) + 1 where id1, id2,..., idN are the ids of the stations
-         *                          that are going to be added to the repArray
+         * constructor the StationPartition builder
+         * @param stationCount = max(id1, id2,..., idN) + 1 where id1, id2,..., idN are the ids
+         *                     of the stations that are going to be added to the representatives array (r)
          */
         public Builder(int stationCount) {
             if(stationCount < 0) {
-                throw new IllegalArgumentException("number of stations passed in argument must be positive (>=0)");
+                throw new IllegalArgumentException("number of stations passed in argument must be positive (>= 0)");
             }
             this.stationCount = stationCount;
 
@@ -63,7 +62,7 @@ public final class StationPartition implements StationConnectivity {
         /**
          * @param s1, station 1
          * @param s2, station 2
-         * @return the current instance of the builder, which will have its repArrayBuild modified (in most of the cases)
+         * @return the current instance of the builder, which will have its representatives array (r) modified (in most of the cases)
          * @throws IndexOutOfBoundsException, if the id of the station given in argument is >= stationCount
          */
         public Builder connect(Station s1, Station s2) throws IndexOutOfBoundsException {
@@ -72,11 +71,12 @@ public final class StationPartition implements StationConnectivity {
                         " (number passed in argument in the constructor of Builder)");
             }
 
+            //case where s1 points to itself. Starts pointing at s2 if s2's final representative isn't s1
             if(r[s1.id()] == s1.id()) {
                 if(representative(s2.id()) != s1.id()){
                     r[s1.id()] = s2.id();
                 }
-            } else {
+            } else { //case where s1 is already pointing to another station
                 int temp = representative(s1.id());
                 r[s1.id()] = r[representative(s2.id())];
                 r[temp] = s1.id();
@@ -90,7 +90,6 @@ public final class StationPartition implements StationConnectivity {
          * @return an instance of StationPartition
          */
         public StationPartition build() {
-
             for(int i = 0; i < r.length; ++i) {
                 r[i] = representative(i);
             }
@@ -108,15 +107,16 @@ public final class StationPartition implements StationConnectivity {
             do {
                 valueChange = false;
 
-                if (r[r[repId]] == repId) {
+                //case where s1 points to s2 and s2 points to s1
+                if (r[r[repId]] == repId)
                     r[repId] = repId;
-                }
 
                 if(repId != r[repId]) {
                     repId = r[repId];
                     valueChange = true;
                 }
             } while(valueChange);
+
             return repId;
         }
 

@@ -15,7 +15,11 @@ public final class Info {
 
     private final String playerName;
 
-    //basic constructor, initializing the player's name
+    /**
+     * basic constructor, initializing the player's name
+     * @param playerName, name of player
+     * @throws NullPointerException
+     */
     public Info(String playerName) throws NullPointerException {
         this.playerName = Objects.requireNonNull(playerName);
     }
@@ -47,9 +51,15 @@ public final class Info {
      * @param points, the number of points each player's won at the end of a round
      * @return "[player1] et [player2] sont ex æqo avec [points] points !
      */
-    //pas demandé de tester si le nombre de players est au nombre de deux
     public static String draw(List<String> playerNames, int points) {
-        return String.format(StringsFr.DRAW, playerNames.get(0) + StringsFr.AND_SEPARATOR + playerNames.get(1), points);
+
+        String str = new StringBuilder()
+                .append(playerNames.get(0))
+                .append(StringsFr.AND_SEPARATOR)
+                .append(playerNames.get(1))
+                .toString();
+
+        return String.format(StringsFr.DRAW, str, points);
     }
 
     /**
@@ -118,7 +128,7 @@ public final class Info {
 
     /**
      * @param drawnCards, the 3 cards the player decided to draw from the deck
-     * @param additionalCost
+     * @param additionalCost, possible additional cost (number of additional cards the player may be asked to play)
      * @return "Les cartes supplémentaires sont [drawnCards]."
      *          if there is NO additional cost: "Elles n'impliquent aucun coût additionnel."
      *          if there IS an additional cost: "Elles impliquent un coût additionnel de [additionalCost] cartes."
@@ -130,14 +140,13 @@ public final class Info {
             throw new IllegalArgumentException("drawnCards null or additional cost is negative");
         }
 
-        String str;
-        str = String.format(StringsFr.ADDITIONAL_CARDS_ARE, displayCards(drawnCards));
+        StringBuilder stringBuilder = new StringBuilder(String.format(StringsFr.ADDITIONAL_CARDS_ARE, displayCards(drawnCards)));
         if(additionalCost == 0) {
-            str += StringsFr.NO_ADDITIONAL_COST;
+            stringBuilder.append(StringsFr.NO_ADDITIONAL_COST);
         } else {
-            str += String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, StringsFr.plural(additionalCost));
+            stringBuilder.append(String.format(StringsFr.SOME_ADDITIONAL_COST, additionalCost, StringsFr.plural(additionalCost)));
         }
-        return str;
+        return stringBuilder.toString();
     }
 
 
@@ -165,8 +174,13 @@ public final class Info {
      * @return [playerName] reçoit un bonus de 10 points pour le plus long trajet(departure station - arrival station)
      */
     public String getsLongestTrailBonus(Trail longestTrail) {
-        return String.format(StringsFr.GETS_BONUS, this.playerName,
-                longestTrail.station1() + StringsFr.EN_DASH_SEPARATOR + longestTrail.station2());
+        String str = new StringBuilder()
+                .append(longestTrail.station1())
+                .append(StringsFr.EN_DASH_SEPARATOR)
+                .append(longestTrail.station2())
+                .toString();
+
+        return String.format(StringsFr.GETS_BONUS, this.playerName, str);
     }
 
     /**
@@ -196,21 +210,33 @@ public final class Info {
             text.add(numOccurrences + " " + cardName(c, numOccurrences));
         }
 
-        String str = "";
         if(text.size() == 1) { //ex: 2 bleues
             return text.get(0);
         } else if(text.size() == 2) { //ex: 1 rouge   et   2 vertes
-            return text.get(0) + StringsFr.AND_SEPARATOR + text.get(1);
+            return new StringBuilder()
+                    .append(text.get(0))
+                    .append(StringsFr.AND_SEPARATOR)
+                    .append(text.get(1))
+                    .toString();
         } else { //ex: 1 orange   ,   4 bleues   ,   2 vertes    et   1 jaune
-            str = String.join(", ", text.subList(0, text.size()-1));
-            str += StringsFr.AND_SEPARATOR + text.get(text.size()-1);
-            return str;
+            return new StringBuilder()
+                    .append(String.join(", ", text.subList(0, text.size()-1)))
+                    .append(StringsFr.AND_SEPARATOR )
+                    .append(text.get(text.size()-1))
+                    .toString();
         }
     }
 
-    //returns route => "station1 - station2"
+    /**
+     * @param route, route to display
+     * @return "station1 - station2"
+     */
     private static String displayRoute(Route route) {
-        return route.station1() + StringsFr.EN_DASH_SEPARATOR + route.station2();
+        return new StringBuilder()
+                .append(route.station1())
+                .append(StringsFr.EN_DASH_SEPARATOR)
+                .append(route.station2())
+                .toString();
     }
 
 }
