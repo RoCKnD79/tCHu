@@ -1,15 +1,15 @@
 package ch.epfl.tchu.net;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.function.Function;
+import ch.epfl.tchu.SortedBag;
 
-//TODO c'est une interface générique, donc faut mettre le type des éléments que serde peut (dé)sérialiser
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+
 public interface Serde<E>{
 
-    abstract String serialize(E e);
-    abstract E deserialize(String string);
+    String serialize(E e);
+    E deserialize(String string);
 
      static <E> Serde<E> of(Function<E, String> serialize, Function<String, E> deserialize){
         return new Serde<>() {
@@ -51,6 +51,55 @@ public interface Serde<E>{
                  return element;
              }
 
+         };
+    }
+
+    static <E> Serde<List<E>> listOf(Serde<E> serde, String separator){
+         return new Serde<>() {
+
+             @Override
+             public String serialize(List<E> e) {
+                 String string = "";
+                for(E element : e){
+                    string += serde.serialize(element);
+                }
+                return String.join(Pattern.quote(separator), string);
+             }
+
+             @Override
+             public List<E> deserialize(String string) {
+                 String[] splittedString = string.split(Pattern.quote(separator), -1);
+                 List<String> list = new ArrayList<>(Arrays.asList(splittedString));
+                 List<E> newList = new ArrayList<>();
+                 for(String e : list){
+                     newList.add(serde.deserialize(e));
+                 }
+                 return newList;
+             }
+         };
+    }
+
+    static <E extends Comparable<E>> Serde<SortedBag<E>> bagOf(Serde<E> serde, String separator){
+         return new Serde<>() {
+             @Override
+             public String serialize(SortedBag<E> bag) {
+                 String string = "";
+                 for(E e : bag){
+                    string += serde.serialize(e);
+                 }
+                 return String.join(Pattern.quote(separator), string);
+             }
+
+             @Override
+             public SortedBag<E> deserialize(String string) {
+                 String[] splittedString = string.split(Pattern.quote(separator), -1);
+                 List<String> list = new ArrayList<>(Arrays.asList(splittedString));
+                 List<E> newList = new ArrayList<>();
+                 for(String e : list){
+                     newList.add(serde.deserialize(e));
+                 }
+                 return SortedBag.of(newList);
+             }
          };
     }
 
