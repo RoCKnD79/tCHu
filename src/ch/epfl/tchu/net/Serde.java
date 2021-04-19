@@ -8,37 +8,50 @@ import java.util.function.Function;
 //TODO c'est une interface générique, donc faut mettre le type des éléments que serde peut (dé)sérialiser
 public interface Serde<E>{
 
-    abstract String serialize(Object object);
-    abstract Object deserialize(String string);
+    abstract String serialize(E e);
+    abstract E deserialize(String string);
 
-    //TODO j'ai mis object en type, parce que je sais pas quoi mettre d'autre
-     static Serde<Object> of(Function<Object, String> serialize, Function<String, Object> deserialize){
+     static <E> Serde<E> of(Function<E, String> serialize, Function<String, E> deserialize){
         return new Serde<>() {
             @Override
-            public String serialize(Object object) {
-                return serialize.apply(object);
+            public String serialize(E e) {
+                return serialize.apply(e);
             }
 
             @Override
-            public Object deserialize(String string) {
+            public E deserialize(String string) {
                 return deserialize.apply(string);
             }
         };
     }
 
-    static Serde oneOf(List<EnumSet<T>> list){
-         return new Serde() {
-             @Override
-             public String serialize(Object object) {
-                 return null;
-             }
-
-             @Override
-             public Object deserialize(String string) {
-                 return null;
-             }
-
+    static <E> Serde<E> oneOf(List<E> values){
+         if(values == null){
+             throw new NullPointerException("list in null");
          }
+         return new Serde<>() {
+
+             @Override
+             public String serialize(E e) {
+                 if(values.contains(e)) {
+                     return Integer.toString(values.indexOf(e));
+                 }
+                 //TODO wtf
+                 return Integer.toString(-1);
+             }
+
+             @Override
+             public E deserialize(String string) {
+                 E element = null;
+                 try {
+                     element =  values.get(Integer.parseInt(string));
+                 }catch (NumberFormatException e){
+                     System.out.println("string passed in argument is not an integer");
+                 }
+                 return element;
+             }
+
+         };
     }
 
 
