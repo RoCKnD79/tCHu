@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-public interface Serde<E>{
+public interface Serde<E> {
 
     String serialize(E e);
     E deserialize(String string);
@@ -25,6 +25,7 @@ public interface Serde<E>{
         };
     }
 
+
     static <E> Serde<E> oneOf(List<E> values){
          if(values == null){
              throw new NullPointerException("list in null");
@@ -34,6 +35,7 @@ public interface Serde<E>{
              @Override
              public String serialize(E e) {
                  if(values.contains(e)) {
+                     //System.out.println(Integer.toString(values.indexOf(e)));
                      return Integer.toString(values.indexOf(e));
                  }
                  //TODO wtf
@@ -48,6 +50,7 @@ public interface Serde<E>{
                  }catch (NumberFormatException e){
                      System.out.println("string passed in argument is not an integer");
                  }
+                 //System.out.println(element);
                  return element;
              }
 
@@ -59,11 +62,17 @@ public interface Serde<E>{
 
              @Override
              public String serialize(List<E> e) {
-                 String string = "";
-                for(E element : e){
-                    string += serde.serialize(element);
-                }
-                return String.join(Pattern.quote(separator), string);
+                 /*String string = "";
+                 for(E element : e){
+                     string += serde.serialize(element);
+                 }
+                 return String.join(Pattern.quote(separator), string);*/
+                 List<String> list = new ArrayList<>();
+                 for(E element : e) {
+                     list.add(serde.serialize(element));
+                 }
+                 String str = String.join(Pattern.quote(separator), list);
+                 return str;
              }
 
              @Override
@@ -83,11 +92,17 @@ public interface Serde<E>{
          return new Serde<>() {
              @Override
              public String serialize(SortedBag<E> bag) {
-                 String string = "";
+                 /*String string = "";
                  for(E e : bag){
                     string += serde.serialize(e);
                  }
-                 return String.join(Pattern.quote(separator), string);
+                 return String.join(Pattern.quote(separator), string);*/
+                 List<String> list = new ArrayList<>();
+                 for(E e: bag) {
+                     list.add(serde.serialize(e));
+                 }
+                 //return String.join(",", list); //This one works fine when doing ticketsSortedBagSerde, puts the commas
+                 return String.join(Pattern.quote(separator), list);
              }
 
              @Override
