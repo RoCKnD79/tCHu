@@ -49,14 +49,15 @@ public class Serdes {
                 list.add(deckSize);
                 list.add(discardsSize);
 
-                return String.join(Pattern.quote(SEMI_COLON), list);
+                return String.join(SEMI_COLON, list);
             },
             s -> {
-                String[] splittedInitString = s.split(SEMI_COLON, -1);
+                String[] splitInitString = s.split(Pattern.quote(SEMI_COLON), -1);
 
-                List<Card> faceUpCards = cardListSerde.deserialize(splittedInitString[0]);
-                int deckSize = intSerde.deserialize(splittedInitString[1]);
-                int discardsSize = intSerde.deserialize(splittedInitString[2]);
+                List<Card> faceUpCards = cardListSerde.deserialize(splitInitString[0]);
+                int deckSize = intSerde.deserialize(splitInitString[1]);
+                int discardsSize = intSerde.deserialize(splitInitString[2]);
+
 
                 return new PublicCardState(faceUpCards, deckSize, discardsSize);
             }
@@ -75,7 +76,7 @@ public class Serdes {
           return String.join(SEMI_COLON, list);
       },
       s -> {
-          String[] splittedInitString = s.split(SEMI_COLON, -1);
+          String[] splittedInitString = s.split(Pattern.quote(SEMI_COLON), -1);
 
           int ticketCount = intSerde.deserialize(splittedInitString[0]);
           int cardCount = intSerde.deserialize(splittedInitString[1]);
@@ -98,7 +99,7 @@ public class Serdes {
           return String.join(SEMI_COLON, list);
       },
       s -> {
-          String[] splittedInitString = s.split(SEMI_COLON, -1);
+          String[] splittedInitString = s.split(Pattern.quote(SEMI_COLON), -1);
 
           SortedBag<Ticket> ticketCount = ticketSortedBagSerde.deserialize(splittedInitString[0]);
           SortedBag<Card> cards = cardSortedBagSerde.deserialize(splittedInitString[1]);
@@ -128,14 +129,14 @@ public class Serdes {
             return String.join(COLON, list);
         },
         s -> {
-            String[] splittedInitString = s.split(COLON, -1);
+            String[] splitInitString = s.split(Pattern.quote(COLON), -1);
 
-            int ticketsCount = intSerde.deserialize(splittedInitString[0]);
-            PublicCardState cardState = publicCardStateSerde.deserialize(splittedInitString[1]);
-            PlayerId currentPlayerId = playerIdSerde.deserialize(splittedInitString[2]);
-            PublicPlayerState player1 = publicPlayerStateSerde.deserialize(splittedInitString[3]);
-            PublicPlayerState player2 = publicPlayerStateSerde.deserialize(splittedInitString[4]);
-            PlayerId lastPlayer = playerIdSerde.deserialize(splittedInitString[5]);
+            int ticketsCount = intSerde.deserialize(splitInitString[0]);
+            PublicCardState cardState = publicCardStateSerde.deserialize(splitInitString[1]);
+            PlayerId currentPlayerId = playerIdSerde.deserialize(splitInitString[2]);
+            PublicPlayerState player1 = publicPlayerStateSerde.deserialize(splitInitString[3]);
+            PublicPlayerState player2 = publicPlayerStateSerde.deserialize(splitInitString[4]);
+            PlayerId lastPlayer = playerIdSerde.deserialize(splitInitString[5]);
 
             Map<PlayerId, PublicPlayerState> map = new EnumMap<>(PlayerId.class);
             map.put(PlayerId.PLAYER_1, player1);
