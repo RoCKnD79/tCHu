@@ -15,7 +15,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public class RemotePlayerProxy implements Player {
 
 
-    private Socket socket;
+    private final Socket socket;
 
 
     public RemotePlayerProxy(Socket socket){
