@@ -1,5 +1,5 @@
 package ch.epfl.tchu.net;
-
+//u a bitch ass
 public enum MessageId {
     INIT_PLAYERS,
     RECEIVE_INFO,
