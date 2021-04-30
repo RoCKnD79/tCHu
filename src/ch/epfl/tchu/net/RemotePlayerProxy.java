@@ -24,8 +24,8 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        List<String> listInfos = List.of(Serdes.playerIdSerde.serialize(ownId), Serdes.stringListSerde.serialize(List.of(playerNames.get(ownId))));
-        sendMessage(Serdes.stringListSerde.serialize(listInfos));
+        List<String> listInfos = List.of(Serdes.playerIdSerde.serialize(ownId), Serdes.stringListSerde.serialize(List.of(playerNames.get(ownId), playerNames.get(ownId.next()))));
+        sendMessage(MessageId.INIT_PLAYERS.name() + " " + Serdes.stringListSerde.serialize(listInfos));
     }
 
     @Override

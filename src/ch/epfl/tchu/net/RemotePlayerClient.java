@@ -38,12 +38,13 @@ public class RemotePlayerClient {
             System.out.println("string is not null, entered while");
             String[] splitString = string.split(Pattern.quote(" "), -1);
             System.out.println(splitString[0]);
-            System.out.println("deserialised message : " + Serdes.stringSerde.deserialize(splitString[0]));
             MessageId messageId = MessageId.valueOf(splitString[0]);
             switch (messageId){
                 case INIT_PLAYERS:
-                    PlayerId ownId = Serdes.playerIdSerde.deserialize(splitString[1]);
-                    List<String> playerNames =  Serdes.stringListSerde.deserialize(splitString[2]);
+                    System.out.println("message : " + string);
+                    List<String> info = Serdes.stringListSerde.deserialize(splitString[1]);
+                    PlayerId ownId = Serdes.playerIdSerde.deserialize(info.get(0));
+                    List<String> playerNames =  Serdes.stringListSerde.deserialize(info.get(1));
                     Map<PlayerId, String> playerNameMap = new EnumMap<PlayerId, String>(PlayerId.class);
                     for(PlayerId playerId : PlayerId.ALL){
                         playerNameMap.put(playerId, playerNames.get(playerId.ordinal()));

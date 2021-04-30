@@ -22,7 +22,7 @@ public final class TestClient {
         @Override
         public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
             System.out.printf("ownId: %s\n", ownId);
-            System.out.printf("playerNames: §s\n", playerNames);
+            System.out.printf("playerNames: %s\n", playerNames);
         }
 
         @Override
