@@ -1,17 +1,19 @@
 package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
+import ch.epfl.tchu.net.RemotePlayerClient;
 import ch.epfl.tchu.net.RemotePlayerProxy;
 
 import javax.sound.midi.Soundbank;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 public final class TestClient {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         System.out.println("Starting client!");
         RemotePlayerClient playerClient = new RemotePlayerClient(new TestPlayer(), "localhost", 5108);
-        PlayerClient.run();
+        playerClient.run();
         System.out.println("Client done!");
     }
 
