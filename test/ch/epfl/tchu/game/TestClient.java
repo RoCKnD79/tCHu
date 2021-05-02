@@ -6,8 +6,7 @@ import ch.epfl.tchu.net.RemotePlayerProxy;
 
 import javax.sound.midi.Soundbank;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class TestClient {
     public static void main(String[] args) throws IOException {
@@ -32,6 +31,8 @@ public final class TestClient {
 
         @Override
         public void updateState(PublicGameState newState, PlayerState ownState) {
+            System.out.printf("ownId: %s\n", newState);
+            System.out.printf("playerNames: %s\n", ownState);
 
         }
 
@@ -47,7 +48,11 @@ public final class TestClient {
 
         @Override
         public TurnKind nextTurn() {
-            return null;
+            System.out.println("ENTERED NEXT TURN");
+            List<TurnKind> nextTurns = new ArrayList<>(TurnKind.ALL);
+            Collections.shuffle(nextTurns);
+            System.out.println("next turn : " + nextTurns.get(0));
+            return nextTurns.get(0);
         }
 
         @Override

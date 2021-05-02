@@ -34,7 +34,8 @@ public class RemotePlayerClient {
     public void run() throws IOException {
         System.out.println("entered run");
         String string = r.readLine();
-        while (string!= null){
+        System.out.println("line read is the following : " + string);
+        while (string != null){
             System.out.println("string is not null, entered while");
             String[] splitString = string.split(Pattern.quote(" "), -1);
             System.out.println(splitString[0]);
@@ -61,10 +62,13 @@ public class RemotePlayerClient {
                     player.setInitialTicketChoice(tickets);
                     break;
                 case CHOOSE_INITIAL_TICKETS:
-                    sendMessage(Serdes.ticketSortedBagSerde.serialize(player.chooseInitialTickets()));
+                    SortedBag<Ticket> sortedbagTickets = player.chooseInitialTickets();
+                    sendMessage(Serdes.ticketSortedBagSerde.serialize(sortedbagTickets));
                     break;
                 case NEXT_TURN:
-                    sendMessage(Serdes.turnKindSerde.serialize(player.nextTurn()));
+                    System.out.println("NEXTTURM");
+                    Player.TurnKind turnkind = player.nextTurn();
+                    sendMessage(Serdes.turnKindSerde.serialize(turnkind));
                     break;
                 case CHOOSE_TICKETS:
                     SortedBag<Ticket> options = Serdes.ticketSortedBagSerde.deserialize(splitString[1]);
@@ -85,13 +89,14 @@ public class RemotePlayerClient {
                     break;
             }
             string = r.readLine();
+            System.out.println("line : " + (string==null));
+
         }
     }
 
 
     private void sendMessage(String message){
         try(
-
                 BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII))){
             w.write(message);
             w.write('\n');
