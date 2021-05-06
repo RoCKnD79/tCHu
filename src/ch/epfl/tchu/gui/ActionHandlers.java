@@ -1,5 +1,6 @@
 package ch.epfl.tchu.gui;
 
+import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Route;
 import ch.epfl.tchu.game.Ticket;
@@ -15,13 +16,13 @@ public interface ActionHandlers {
         void onDrawCard(int slot);
     }
     interface ClaimRouteHandler{
-        void onClaimRoute(Route route, Set<Card> cardSet);
+        void onClaimRoute(Route route, SortedBag<Card> cardSet);
     }
     interface ChooseTicketsHandler{
-        void onChooseTickets(Set<Ticket> ticketSet);
+        void onChooseTickets(SortedBag<Ticket> ticketSet);
     }
     interface ChooseCardsHandler{
-        void onChooseCards(Set<Card> cardSet);
+        void onChooseCards(SortedBag<Card> cardSet);
     }
 
 
