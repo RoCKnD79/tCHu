@@ -8,6 +8,7 @@ import ch.epfl.tchu.game.Route;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -19,7 +20,7 @@ import java.util.List;
 //Package private class
 class MapViewCreator {
 
-    public void createMapView(ObservableGameState observableGameState, ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler, CardChooser cardChooser){
+    public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler, CardChooser cardChooser){
         Pane pane = new Pane();
         pane.getStylesheets().add("map.css");
         pane.getStylesheets().add("color.css");
@@ -34,7 +35,9 @@ class MapViewCreator {
             routeGroup.setId(r.id());
             routeGroup.getStyleClass().add("route");
             routeGroup.getStyleClass().add(r.level().name());
-            routeGroup.getStyleClass().add(r.color().name());
+            //TODO jsp cmt traiter le cas où la couleur est nulle
+            if(r.color() != null)
+                routeGroup.getStyleClass().add(r.color().name());
             pane.getChildren().add(routeGroup);
 
             ReadOnlyObjectProperty<PlayerId> property = observableGameState.routesOwnersProperty(r);
@@ -75,7 +78,7 @@ class MapViewCreator {
 
 
         }
-
+        return pane;
     }
 
     @FunctionalInterface

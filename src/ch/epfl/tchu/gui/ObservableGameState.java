@@ -85,7 +85,6 @@ public class ObservableGameState {
 
     public boolean canDrawTickets() { return publicGameState.canDrawTickets(); }
     public boolean canDrawCards() { return publicGameState.canDrawCards(); }
-
     public List<SortedBag<Card>> possibleClaimCards(Route routeToClaim) {
         return playerState.possibleClaimCards(routeToClaim);
     }
@@ -130,8 +129,12 @@ public class ObservableGameState {
     private void updateClaimableRoutesMap(PublicGameState publicGameState, PlayerState playerState, Map<Route, BooleanProperty> map) {
         if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> map.get(r).set(false)); }
 
+
+
         List<Route> availableRoutes = ChMap.routes();
-        availableRoutes.removeAll(publicGameState.claimedRoutes());
+        //TODO MON POTE
+        //List<Route> claimedRoutes = new ArrayList<>(publicGameState.claimedRoutes());
+        //availableRoutes.removeAll(claimedRoutes);
 
         for(Route r : availableRoutes) {
             for(Route claimedRoute : publicGameState.claimedRoutes()) {

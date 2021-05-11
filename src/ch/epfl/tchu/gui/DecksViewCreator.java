@@ -21,7 +21,7 @@ class DecksViewCreator {
 
     private DecksViewCreator(){}
 
-    private HBox createHandView(ObservableGameState ogs) {
+    static HBox createHandView(ObservableGameState ogs) {
         HBox handView = new HBox();
         handView.getStylesheets().add("decks.css");
         handView.getStylesheets().add("colors.css");
@@ -84,9 +84,9 @@ class DecksViewCreator {
         return handView;
     }
 
-    private VBox createCardsView(ObservableGameState observableGameState,
-                                             ObjectProperty<ActionHandlers.DrawTicketsHandler> ticketHandler,
-                                             ObjectProperty<ActionHandlers.DrawCardHandler> cardHandler) {
+    static VBox createCardsView(ObservableGameState observableGameState,
+                                ObjectProperty<ActionHandlers.DrawTicketsHandler> ticketHandler,
+                                ObjectProperty<ActionHandlers.DrawCardHandler> cardHandler) {
 
         VBox cardsView = new VBox();
         cardsView.setId("card-pane");
