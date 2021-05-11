@@ -37,7 +37,8 @@ public class ObservableGameState {
         ticketsPercent = new SimpleIntegerProperty(100);
         cardsPercent = new SimpleIntegerProperty(100);
         faceUpCards = createFaceUpCards();
-        routesOwners = FXCollections.observableMap(initRoutesOwners());
+        //routesOwners = FXCollections.observableMap(initRoutesOwners());
+        routesOwners = initRoutesOwners();
 
         ticketList = FXCollections.observableArrayList(playerState.tickets().toList());
         countPerCard = FXCollections.observableMap(cardCountMap());
@@ -100,7 +101,7 @@ public class ObservableGameState {
 
     private Map<Route, ObjectProperty<PlayerId>> initRoutesOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
-        ChMap.routes().forEach(r -> map.put(r, null));
+        ChMap.routes().forEach(r -> map.put(r, new SimpleObjectProperty<>(null)));
         return map;
     }
 
