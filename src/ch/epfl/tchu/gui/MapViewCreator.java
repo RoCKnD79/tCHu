@@ -35,7 +35,7 @@ class MapViewCreator {
             routeGroup.setId(r.id());
             routeGroup.getStyleClass().add("route");
             routeGroup.getStyleClass().add(r.level().name());
-            //TODO jsp cmt traiter le cas où la couleur est nulle
+            //TODO cmt traiter le cas où la couleur est nulle ?
             if(r.color() != null)
                 routeGroup.getStyleClass().add(r.color().name());
             pane.getChildren().add(routeGroup);

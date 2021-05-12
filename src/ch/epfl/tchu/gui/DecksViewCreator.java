@@ -143,7 +143,7 @@ class DecksViewCreator {
             ReadOnlyObjectProperty<Card> cardProperty = observableGameState.faceUpCard(slot);
 
             StackPane cardNode = new StackPane();
-            //TODO devrait retourner le nom de la couleur de la carte normalement
+            //TODO card color null case
             if(cardProperty.get().color() != null) {
                 cardNode.getStyleClass().add(cardProperty.get().color().toString());
             }
