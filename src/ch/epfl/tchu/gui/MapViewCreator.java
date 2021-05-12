@@ -36,8 +36,11 @@ class MapViewCreator {
             routeGroup.getStyleClass().add("route");
             routeGroup.getStyleClass().add(r.level().name());
             //TODO cmt traiter le cas où la couleur est nulle ?
-            if(r.color() != null)
+            if(r.color() == null)
+                routeGroup.getStyleClass().add("NEUTRAL");
+            else
                 routeGroup.getStyleClass().add(r.color().name());
+
             pane.getChildren().add(routeGroup);
 
             ReadOnlyObjectProperty<PlayerId> property = observableGameState.routesOwnersProperty(r);
@@ -59,9 +62,12 @@ class MapViewCreator {
                 Group caseGroup = new Group();
                 caseGroup.setId(r.id() + "_" + i);
                 javafx.scene.shape.Rectangle rectangle = new Rectangle(36, 12);
+                rectangle.getStyleClass().add("track");
+                rectangle.getStyleClass().add("filled");
                 caseGroup.getChildren().add(rectangle);
+                /*caseGroup.getChildren().add(rectangle);
                 caseGroup.getStyleClass().add("track");
-                caseGroup.getStyleClass().add("filled");
+                caseGroup.getStyleClass().add("filled");*/
 
                 Group wagonGroup = new Group();
                 wagonGroup.getStyleClass().add("car");
