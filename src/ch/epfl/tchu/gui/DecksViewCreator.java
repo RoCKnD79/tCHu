@@ -44,14 +44,15 @@ class DecksViewCreator {
         for(Card c : Card.ALL) {
             StackPane stackPane = new StackPane();
             stackPane.getStyleClass().add("card");
-            stackPane.getStyleClass().add(c.color().toString());
+            if(c.color() != null)
+                stackPane.getStyleClass().add(c.color().toString());
 
             //-------------compteur Cartes-------------
             Text countText = new Text();
             countText.setText(Integer.toString(ogs.countOfCard(c).get()));
             countText.getStyleClass().add("count");
-            //TODO jsp comment utiliser convert
-            countText.textProperty().bind(Bindings.convert(countText.textProperty()));
+            //TODO régler convert
+            //countText.textProperty().bind(Bindings.convert(countText.textProperty()));
             countText.visibleProperty().bind(Bindings.greaterThan(ogs.countOfCard(c), 1));
 
             //-------------Rectangle contour-------------
@@ -143,7 +144,9 @@ class DecksViewCreator {
 
             StackPane cardNode = new StackPane();
             //TODO devrait retourner le nom de la couleur de la carte normalement
-            cardNode.getStyleClass().add(cardProperty.get().color().toString());
+            if(cardProperty.get().color() != null) {
+                cardNode.getStyleClass().add(cardProperty.get().color().toString());
+            }
             cardsView.getStyleClass().add("card");
 
             //-------------Rectangle contour-------------

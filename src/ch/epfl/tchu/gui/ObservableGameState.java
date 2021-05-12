@@ -137,12 +137,13 @@ public class ObservableGameState {
         //List<Route> claimedRoutes = new ArrayList<>(publicGameState.claimedRoutes());
         //availableRoutes.removeAll(claimedRoutes);
 
-        for(Route r : availableRoutes) {
+        //TODO MON POTE
+        /*for(Route r : availableRoutes) {
             for(Route claimedRoute : publicGameState.claimedRoutes()) {
                 if(r.stations().equals(claimedRoute.stations()))
                     availableRoutes.remove(r);
             }
-        }
+        }*/
 
         for(Route r : availableRoutes) {
             if(playerState.canClaimRoute(r))

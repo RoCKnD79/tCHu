@@ -23,7 +23,7 @@ class MapViewCreator {
     public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler, CardChooser cardChooser){
         Pane pane = new Pane();
         pane.getStylesheets().add("map.css");
-        pane.getStylesheets().add("color.css");
+        pane.getStylesheets().add("colors.css");
 
         ImageView imageView = new ImageView("map.png");
         pane.getChildren().add(imageView);
@@ -60,11 +60,11 @@ class MapViewCreator {
                 caseGroup.setId(r.id() + "_" + i);
                 javafx.scene.shape.Rectangle rectangle = new Rectangle(36, 12);
                 caseGroup.getChildren().add(rectangle);
-                caseGroup.getStylesheets().add("track");
-                caseGroup.getStylesheets().add("filled");
+                caseGroup.getStyleClass().add("track");
+                caseGroup.getStyleClass().add("filled");
 
                 Group wagonGroup = new Group();
-                wagonGroup.getStylesheets().add("car");
+                wagonGroup.getStyleClass().add("car");
                 Rectangle rectangleWagon = new Rectangle(36,12);
                 Circle circle1 = new Circle(12, 6, 3);
                 Circle circle2 = new Circle(12, 6, 3);

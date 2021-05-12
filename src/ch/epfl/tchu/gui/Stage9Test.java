@@ -29,8 +29,6 @@ public final class Stage9Test extends Application {
         ObjectProperty<ActionHandlers.DrawCardHandler> drawCard =
                 new SimpleObjectProperty<>(Stage9Test::drawCard);
 
-        System.out.println(gameState == null);
-
         Node mapView = MapViewCreator
                 .createMapView(gameState, claimRoute, Stage9Test::chooseCards);
         Node cardsView = DecksViewCreator
