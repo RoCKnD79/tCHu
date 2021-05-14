@@ -29,20 +29,24 @@ public class ObservableGameState {
     private final Map<Card, IntegerProperty> countPerCard;
     private final Map<Route, BooleanProperty> claimableRoutes;
 
-    public ObservableGameState(PublicGameState publicGameState, PlayerId playerId, PlayerState playerState) {
-        this.publicGameState = publicGameState;
+    public ObservableGameState(PlayerId playerId) {
+        this.publicGameState = null;
         this.playerId = playerId;
-        this.playerState = playerState;
+        this.playerState = null;
 
-        ticketsPercent = new SimpleIntegerProperty(100);
-        cardsPercent = new SimpleIntegerProperty(100);
-        faceUpCards = createFaceUpCards();
+        ticketsPercent = new SimpleIntegerProperty(0);
+        cardsPercent = new SimpleIntegerProperty(0);
+        faceUpCards = initFaceUpCards();
         //routesOwners = FXCollections.observableMap(initRoutesOwners());
         routesOwners = initRoutesOwners();
 
-        ticketList = FXCollections.observableArrayList(playerState.tickets().toList());
-        countPerCard = FXCollections.observableMap(cardCountMap());
-        claimableRoutes = FXCollections.observableMap(initClaimableRoutesMap());
+        //ticketList = FXCollections.observableArrayList(playerState.tickets().toList());
+        //countPerCard = FXCollections.observableMap(cardCountMap());
+        //claimableRoutes = FXCollections.observableMap(initClaimableRoutesMap());
+
+        ticketList = FXCollections.observableArrayList();
+        countPerCard = initCardCountMap();
+        claimableRoutes = initClaimableRoutesMap();
     }
 
     public void setState(PublicGameState newGameState, PlayerState playerState) {
@@ -65,7 +69,8 @@ public class ObservableGameState {
         ticketList.setAll(playerState.tickets().toList());
         SortedBag<Card> playerCards = playerState.cards();
         countPerCard.forEach( (c, i) -> i.set(playerCards.countOf(c)));
-        updateClaimableRoutesMap(publicGameState, playerState, claimableRoutes);
+        //updateClaimableRoutesMap(newGameState, playerState, claimableRoutes);
+        updateClaimableRoutesMap();
 
     }
 
@@ -91,11 +96,12 @@ public class ObservableGameState {
     }
 
 
-    private List<ObjectProperty<Card>> createFaceUpCards() {
+    private List<ObjectProperty<Card>> initFaceUpCards() {
         List<ObjectProperty<Card>> list = new ArrayList<>();
-        List<Card> faceUpCards = publicGameState.cardState().faceUpCards();
-        for(Card c : faceUpCards)
-            list.add(new SimpleObjectProperty<>(c));
+        //<Card> faceUpCards = publicGameState.cardState().faceUpCards();
+        for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i)
+            list.add(new SimpleObjectProperty<>(null));
+
         return list;
     }
 
@@ -105,11 +111,10 @@ public class ObservableGameState {
         return map;
     }
 
-    private Map<Card, IntegerProperty> cardCountMap() {
+    private Map<Card, IntegerProperty> initCardCountMap() {
         Map<Card, IntegerProperty> map = new HashMap<>();
         SortedBag<Card> cards = SortedBag.of(Card.ALL);
-        SortedBag<Card> playerCards = playerState.cards();
-        cards.forEach(c -> map.put(c, new SimpleIntegerProperty(playerCards.countOf(c))));
+        cards.forEach(c -> map.put(c, new SimpleIntegerProperty(0)));
         return map;
     }
 
@@ -122,34 +127,33 @@ public class ObservableGameState {
     private Map<Route, BooleanProperty> initClaimableRoutesMap() {
         Map<Route, BooleanProperty> map = new HashMap<>();
         ChMap.routes().forEach(r -> map.put(r, new SimpleBooleanProperty(false)));
-        updateClaimableRoutesMap(publicGameState, playerState, map);
 
         return map;
     }
 
-    private void updateClaimableRoutesMap(PublicGameState publicGameState, PlayerState playerState, Map<Route, BooleanProperty> map) {
-        if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> map.get(r).set(false)); }
+    //private void updateClaimableRoutesMap(PublicGameState publicGameState, PlayerState playerState, Map<Route, BooleanProperty> map) {
+    private void updateClaimableRoutesMap() {
+        if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> claimableRoutes.get(r).set(false)); }
 
+        List<Route> availableRoutes = new ArrayList<>(ChMap.routes());
+        availableRoutes.removeAll(publicGameState.claimedRoutes());
 
-
-        List<Route> availableRoutes = ChMap.routes();
-        //TODO MON POTE
-        //List<Route> claimedRoutes = new ArrayList<>(publicGameState.claimedRoutes());
-        //availableRoutes.removeAll(claimedRoutes);
-
-        //TODO MON POTE, AH
-        /*for(Route r : availableRoutes) {
+        /*
+        checks if the route attempted to be claimed is not a double-route, in which case if its neighbor route
+        is claimed, it is removed from the list of available routes
+         */
+        for(Route r : availableRoutes) {
             for(Route claimedRoute : publicGameState.claimedRoutes()) {
                 if(r.stations().equals(claimedRoute.stations()))
                     availableRoutes.remove(r);
             }
-        }*/
+        }
 
         for(Route r : availableRoutes) {
             if(playerState.canClaimRoute(r))
-                map.get(r).set(true);
+                claimableRoutes.get(r).set(true);
             else
-                map.get(r).set(false);
+                claimableRoutes.get(r).set(false);
         }
     }
 
@@ -165,5 +169,3 @@ public class ObservableGameState {
     }
 
 }
-
-//MANJ MOA LE POIRO

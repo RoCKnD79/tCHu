@@ -19,8 +19,11 @@ public final class Stage9Test extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        GameState gs = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
-        ObservableGameState gameState = new ObservableGameState(gs, PlayerId.PLAYER_1, gs.playerState(PlayerId.PLAYER_1));
+        //GameState gs = GameState.initial(SortedBag.of(ChMap.tickets()), new Random());
+        //ObservableGameState gameState = new ObservableGameState(gs, PlayerId.PLAYER_1, gs.playerState(PlayerId.PLAYER_1));
+        ObservableGameState gameState = new ObservableGameState(PlayerId.PLAYER_1);
+
+        setState(gameState);
 
         ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRoute =
                 new SimpleObjectProperty<>(Stage9Test::claimRoute);
@@ -41,7 +44,7 @@ public final class Stage9Test extends Application {
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
 
-        setState(gameState);
+        //setState(gameState);
     }
 
     private void setState(ObservableGameState gameState) {
