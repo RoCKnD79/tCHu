@@ -30,19 +30,14 @@ public class ObservableGameState {
     private final Map<Route, BooleanProperty> claimableRoutes;
 
     public ObservableGameState(PlayerId playerId) {
-        this.publicGameState = null;
         this.playerId = playerId;
+        this.publicGameState = null;
         this.playerState = null;
 
         ticketsPercent = new SimpleIntegerProperty(0);
         cardsPercent = new SimpleIntegerProperty(0);
         faceUpCards = initFaceUpCards();
-        //routesOwners = FXCollections.observableMap(initRoutesOwners());
         routesOwners = initRoutesOwners();
-
-        //ticketList = FXCollections.observableArrayList(playerState.tickets().toList());
-        //countPerCard = FXCollections.observableMap(cardCountMap());
-        //claimableRoutes = FXCollections.observableMap(initClaimableRoutesMap());
 
         ticketList = FXCollections.observableArrayList();
         countPerCard = initCardCountMap();
@@ -96,6 +91,50 @@ public class ObservableGameState {
     }
 
 
+
+
+    //---------------------------updating methods---------------------------
+    private void updateClaimableRoutesMap() {
+        //verify if it's this player's turn
+        if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> claimableRoutes.get(r).set(false)); }
+
+        //removes all claimed routes from list of available routes
+        List<Route> availableRoutes = new ArrayList<>(ChMap.routes());
+        availableRoutes.removeAll(publicGameState.claimedRoutes());
+
+        /*
+        checks if the route attempted to be claimed is not a double-route, in which case if its neighbor route
+        is claimed, it is removed from the list of available routes
+         */
+        for(Route r : availableRoutes) {
+            for(Route claimedRoute : publicGameState.claimedRoutes()) {
+                if(r.stations().equals(claimedRoute.stations()))
+                    availableRoutes.remove(r);
+            }
+        }
+
+        for(Route r : availableRoutes) {
+            if(playerState.canClaimRoute(r))
+                claimableRoutes.get(r).set(true);
+            else
+                claimableRoutes.get(r).set(false);
+        }
+    }
+
+    private void updateRoutesOwners() {
+        publicGameState.claimedRoutes().forEach(r -> {
+            List<Route> playerRoutes1 = publicGameState.playerState(PlayerId.PLAYER_1).routes();
+            List<Route> playerRoutes2 = publicGameState.playerState(PlayerId.PLAYER_2).routes();
+            if(playerRoutes1.contains(r))
+                routesOwners.get(r).set(PlayerId.PLAYER_1);
+            else if(playerRoutes2.contains(r))
+                routesOwners.get(r).set(PlayerId.PLAYER_2);
+        });
+    }
+
+
+    //---------------------------initializing methods---------------------------
+
     private List<ObjectProperty<Card>> initFaceUpCards() {
         List<ObjectProperty<Card>> list = new ArrayList<>();
         //<Card> faceUpCards = publicGameState.cardState().faceUpCards();
@@ -129,43 +168,6 @@ public class ObservableGameState {
         ChMap.routes().forEach(r -> map.put(r, new SimpleBooleanProperty(false)));
 
         return map;
-    }
-
-    //private void updateClaimableRoutesMap(PublicGameState publicGameState, PlayerState playerState, Map<Route, BooleanProperty> map) {
-    private void updateClaimableRoutesMap() {
-        if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> claimableRoutes.get(r).set(false)); }
-
-        List<Route> availableRoutes = new ArrayList<>(ChMap.routes());
-        availableRoutes.removeAll(publicGameState.claimedRoutes());
-
-        /*
-        checks if the route attempted to be claimed is not a double-route, in which case if its neighbor route
-        is claimed, it is removed from the list of available routes
-         */
-        for(Route r : availableRoutes) {
-            for(Route claimedRoute : publicGameState.claimedRoutes()) {
-                if(r.stations().equals(claimedRoute.stations()))
-                    availableRoutes.remove(r);
-            }
-        }
-
-        for(Route r : availableRoutes) {
-            if(playerState.canClaimRoute(r))
-                claimableRoutes.get(r).set(true);
-            else
-                claimableRoutes.get(r).set(false);
-        }
-    }
-
-    private void updateRoutesOwners() {
-        publicGameState.claimedRoutes().forEach(r -> {
-            List<Route> playerRoutes1 = publicGameState.playerState(PlayerId.PLAYER_1).routes();
-            List<Route> playerRoutes2 = publicGameState.playerState(PlayerId.PLAYER_2).routes();
-            if(playerRoutes1.contains(r))
-                routesOwners.get(r).set(PlayerId.PLAYER_1);
-            else if(playerRoutes2.contains(r))
-                routesOwners.get(r).set(PlayerId.PLAYER_2);
-        });
     }
 
 }

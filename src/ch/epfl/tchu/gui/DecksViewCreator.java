@@ -21,6 +21,11 @@ class DecksViewCreator {
 
     private DecksViewCreator(){}
 
+    /**
+     *
+     * @param ogs,
+     * @return
+     */
     static HBox createHandView(ObservableGameState ogs) {
         HBox handView = new HBox();
         handView.getStylesheets().add("decks.css");
@@ -46,14 +51,8 @@ class DecksViewCreator {
             stackPane.getStyleClass().add("card");
             if(c.color() != null)
                 stackPane.getStyleClass().add(c.color().toString());
-
-            //-------------compteur Cartes-------------
-            Text countText = new Text();
-            countText.setText(Integer.toString(ogs.countOfCard(c).get()));
-            countText.getStyleClass().add("count");
-            //TODO régler convert
-            //countText.textProperty().bind(Bindings.convert(countText.textProperty()));
-            countText.visibleProperty().bind(Bindings.greaterThan(ogs.countOfCard(c), 1));
+            else
+                stackPane.getStyleClass().add("NEUTRAL");
 
             //-------------Rectangle contour-------------
             Rectangle outsideRect = new Rectangle(60, 90);
@@ -68,11 +67,18 @@ class DecksViewCreator {
             Rectangle trainImageRect = new Rectangle(40, 70);
             trainImageRect.getStyleClass().add("train-image");
 
+            //-------------compteur Cartes-------------
+            Text countText = new Text();
+            countText.getStyleClass().add("count");
+            countText.textProperty().bind(Bindings.convert(ogs.countOfCard(c)));
+            countText.visibleProperty().bind(Bindings.greaterThan(ogs.countOfCard(c), 1));
+
             //-------------Ajout des nodes à StackPane-------------
-            stackPane.getChildren().add(countText);
+
             stackPane.getChildren().add(outsideRect);
             stackPane.getChildren().add(filledInsideRect);
             stackPane.getChildren().add(trainImageRect);
+            stackPane.getChildren().add(countText);
 
             stackPane.visibleProperty().bind(Bindings.greaterThan(ogs.countOfCard(c), 0));
 
@@ -96,6 +102,7 @@ class DecksViewCreator {
 
         //-------------TicketButton and its gauge-------------
         Button ticketsButton = new Button();
+        ticketsButton.setText("Billets");
         ticketsButton.getStyleClass().add("gauged");
 
         Group ticketGauge = new Group();
@@ -112,29 +119,10 @@ class DecksViewCreator {
         ticketsButton.setGraphic(ticketGauge);
 
         ticketsButton.disableProperty().bind(ticketHandler.isNull());
-
         ticketsButton.setOnMouseClicked(e -> ticketHandler.get().onDrawTickets());
 
-        //-------------DeckButton and its gauge-------------
-        Button deckButton = new Button();
-        deckButton.getStyleClass().add("gauged");
+        cardsView.getChildren().add(ticketsButton);
 
-        Group deckGauge = new Group();
-        Rectangle backgroundDeckRect = new Rectangle(50, 5);
-        backgroundDeckRect.getStyleClass().add("background");
-
-        Rectangle foregroundDeckGauge = new Rectangle(50, 5);
-        foregroundDeckGauge.getStyleClass().add("foreground");
-        ReadOnlyIntegerProperty deckPercentProperty = observableGameState.cardsPercentProperty();
-        foregroundDeckGauge.widthProperty().bind(deckPercentProperty.multiply(50).divide(100));
-
-        deckGauge.getChildren().add(backgroundDeckRect);
-        deckGauge.getChildren().add(foregroundDeckGauge);
-        deckButton.setGraphic(deckGauge);
-
-        deckButton.disableProperty().bind(cardHandler.isNull());
-
-        deckButton.setOnMouseClicked(e -> cardHandler.get().onDrawCard(-1));
 
 
         //---------------------FACE_UP_CARDS---------------------
@@ -143,10 +131,12 @@ class DecksViewCreator {
             ReadOnlyObjectProperty<Card> cardProperty = observableGameState.faceUpCard(slot);
 
             StackPane cardNode = new StackPane();
-            //TODO card color null case
-            if(cardProperty.get().color() != null) {
+
+            if(cardProperty.get().color() != null)
                 cardNode.getStyleClass().add(cardProperty.get().color().toString());
-            }
+            else
+                cardNode.getStyleClass().add("NEUTRAL");
+
             cardsView.getStyleClass().add("card");
 
             //-------------Rectangle contour-------------
@@ -170,6 +160,29 @@ class DecksViewCreator {
 
             cardsView.getChildren().add(cardNode);
         }
+
+        //-------------DeckButton and its gauge-------------
+        Button deckButton = new Button();
+        deckButton.setText("Cartes");
+        deckButton.getStyleClass().add("gauged");
+
+        Group deckGauge = new Group();
+        Rectangle backgroundDeckRect = new Rectangle(50, 5);
+        backgroundDeckRect.getStyleClass().add("background");
+
+        Rectangle foregroundDeckGauge = new Rectangle(50, 5);
+        foregroundDeckGauge.getStyleClass().add("foreground");
+        ReadOnlyIntegerProperty deckPercentProperty = observableGameState.cardsPercentProperty();
+        foregroundDeckGauge.widthProperty().bind(deckPercentProperty.multiply(50).divide(100));
+
+        deckGauge.getChildren().add(backgroundDeckRect);
+        deckGauge.getChildren().add(foregroundDeckGauge);
+        deckButton.setGraphic(deckGauge);
+
+        deckButton.disableProperty().bind(cardHandler.isNull());
+        deckButton.setOnMouseClicked(e -> cardHandler.get().onDrawCard(-1));
+
+        cardsView.getChildren().add(deckButton);
 
         return cardsView;
     }
