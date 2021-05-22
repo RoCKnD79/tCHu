@@ -24,7 +24,7 @@ class InfoViewCreator {
 public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playerNames, ObservableGameState gameState, ObservableList<Text> observableGameTextList){
     VBox infoView = new VBox();
     infoView.getStylesheets().add("info.css");
-    infoView.getStylesheets().add("color.css");
+    infoView.getStylesheets().add("colors.css");
 
     VBox vBox2 = new VBox();
     vBox2.setId("player-stats");
@@ -53,7 +53,8 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
 
     Text textMessage = new Text();
     textFlowMessage.getChildren().add(textMessage);
-    Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
+    //TODO IMPORTANT
+    //Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
 
 
     return infoView;

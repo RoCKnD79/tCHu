@@ -132,7 +132,9 @@ class DecksViewCreator {
 
             StackPane cardNode = new StackPane();
 
-            if(cardProperty.get().color() != null)
+            //if(cardProperty.get().color() != null)
+            //if(cardProperty.getValue().getColor() != null)
+            if(cardProperty.getValue() != null)
                 cardNode.getStyleClass().add(cardProperty.get().color().toString());
             else
                 cardNode.getStyleClass().add("NEUTRAL");

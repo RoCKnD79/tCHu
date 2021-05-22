@@ -44,6 +44,7 @@ public class ObservableGameState {
         claimableRoutes = initClaimableRoutesMap();
     }
 
+    //TODO il faut ajouter des attributs représentant des stats du joueur adverse et les update ici
     public void setState(PublicGameState newGameState, PlayerState playerState) {
         publicGameState = newGameState;
         this.playerState = playerState;

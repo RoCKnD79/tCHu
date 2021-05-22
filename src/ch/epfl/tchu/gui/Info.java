@@ -18,7 +18,7 @@ public final class Info {
     /**
      * basic constructor, initializing the player's name
      * @param playerName, name of player
-     * @throws NullPointerException
+     * @throws NullPointerException, if playerName is null
      */
     public Info(String playerName) throws NullPointerException {
         this.playerName = Objects.requireNonNull(playerName);
@@ -202,7 +202,9 @@ public final class Info {
      *         (3) ex: 1 orange, 4 bleues, 2 vertes et 1 jaune (if > 2 types of cards => ","
      *         between the cards and a "et" between the 2 last cards)
      */
-    private static String displayCards(SortedBag<Card> cards) {
+    //is public in order to be used in GraphicalPlayer
+    //private static String displayCards(SortedBag<Card> cards) {
+    public static String displayCards(SortedBag<Card> cards) {
 
         List<String> text = new ArrayList<>();
         for (Card c: cards.toSet()) {

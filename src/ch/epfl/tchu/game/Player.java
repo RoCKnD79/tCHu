@@ -18,7 +18,7 @@ public interface Player {
         DRAW_TICKETS, DRAW_CARDS, CLAIM_ROUTE;
 
         private static final TurnKind[] turnKinds = TurnKind.values();
-        private static final List<TurnKind> ALL = List.of(turnKinds);
+        public static final List<TurnKind> ALL = List.of(turnKinds);
     }
 
     /**
