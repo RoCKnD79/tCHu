@@ -1,9 +1,8 @@
 package ch.epfl.tchu.game;
 
-import ch.epfl.tchu.gui.StringsFr;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
 
 /**
@@ -13,7 +12,6 @@ import java.util.TreeSet;
 
 public final class Ticket implements Comparable<Ticket> {
 
-    private final Station fromStation;
     private final List<Trip> trips;
     private final String tripInfo;
 
@@ -26,13 +24,12 @@ public final class Ticket implements Comparable<Ticket> {
         if (trips == null || trips.size() == 0) {
             throw new IllegalArgumentException("List can't be null or empty");
         }
-        fromStation = trips.get(0).from();
+        Station fromStation = trips.get(0).from();
         for (Trip trip : trips) {
             if (!fromStation.name().equals(trip.from().name())) {
                 throw new IllegalArgumentException("Not all trips come from same Station");
             }
         }
-        //TODO Si ya une erreur c'est peut-être à cause de ça
         this.trips = List.copyOf(trips);
         tripInfo = computeText(trips);
     }
@@ -49,13 +46,12 @@ public final class Ticket implements Comparable<Ticket> {
 
     /**
      * returns number of points for the specific ticket and connectivity
-     * @param connectivity
+     * @param connectivity, StationConnectivity, offers the method connected() to verify connection between 2 stations
      * @return max points if BEST connection was achieved,
      *         min points if NO connection was achieved,
      *         or a specific amount of points if a PARTIAL connection was established.
      */
     public int points(StationConnectivity connectivity) {
-
         boolean max = false;
         int maxPts = trips.get(0).points();
         int minPts = trips.get(0).points();

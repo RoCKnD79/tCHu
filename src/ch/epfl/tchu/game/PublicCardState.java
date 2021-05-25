@@ -29,6 +29,7 @@ public class PublicCardState {
      * @throws IllegalArgumentException, if number of cards facing up is not 5 OR if size of the deck or of the discards is < 0
      */
     public PublicCardState(List<Card> faceUpCards, int deckSize, int discardsSize) throws IllegalArgumentException {
+        //System.out.println(faceUpCards == null);
         if(faceUpCards.size() != 5) {
             throw new IllegalArgumentException("there must strictly be 5 face-up/visible cards.");
         } else if(deckSize < 0 || discardsSize < 0) {

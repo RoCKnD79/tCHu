@@ -36,6 +36,7 @@ class MapViewCreator {
             routeGroup.getStyleClass().add("route");
             routeGroup.getStyleClass().add(r.level().name());
 
+            //TODO
             if(r.color() == null)
                 routeGroup.getStyleClass().add("NEUTRAL");
             else

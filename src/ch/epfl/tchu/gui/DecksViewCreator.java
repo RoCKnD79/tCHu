@@ -118,8 +118,18 @@ class DecksViewCreator {
         ticketGauge.getChildren().add(foregroundTicketGauge);
         ticketsButton.setGraphic(ticketGauge);
 
+
+
+
+
+        System.out.println("(DecksViewCreator) ticketHandler null ? " + ticketHandler.isNull().get());
         ticketsButton.disableProperty().bind(ticketHandler.isNull());
         ticketsButton.setOnMouseClicked(e -> ticketHandler.get().onDrawTickets());
+        //ticketsButton.setOnMouseClicked(e -> System.out.println("AHHHHHHHHHHHHH"));
+
+
+
+
 
         cardsView.getChildren().add(ticketsButton);
 
@@ -132,14 +142,23 @@ class DecksViewCreator {
 
             StackPane cardNode = new StackPane();
 
-            //if(cardProperty.get().color() != null)
-            //if(cardProperty.getValue().getColor() != null)
-            if(cardProperty.getValue() != null)
+            //TODO PROBLEME D'AFFICHAGE DE CARTE SANS COULEUR
+            /*if(cardProperty.get() != null){
                 cardNode.getStyleClass().add(cardProperty.get().color().toString());
+            }
             else
-                cardNode.getStyleClass().add("NEUTRAL");
+                cardNode.getStyleClass().add("NEUTRAL");*/
+
 
             cardsView.getStyleClass().add("card");
+
+            //will update the faceUpCards everytime they change
+            cardProperty.addListener((prop, oldValue, newValue) -> {
+                if(newValue == Card.LOCOMOTIVE)
+                    cardNode.getStyleClass().add("NEUTRAL");
+                else
+                    cardNode.getStyleClass().add(newValue.toString());
+            });
 
             //-------------Rectangle contour-------------
             Rectangle outsideRect = new Rectangle(60, 90);
@@ -154,10 +173,12 @@ class DecksViewCreator {
             Rectangle trainImageRect = new Rectangle(40, 70);
             trainImageRect.getStyleClass().add("train-image");
 
+            //----------------------------------------------------
             cardNode.getChildren().add(outsideRect);
             cardNode.getChildren().add(filledInsideRect);
             cardNode.getChildren().add(trainImageRect);
 
+            cardNode.disableProperty().bind(cardHandler.isNull());
             cardNode.setOnMouseClicked(e -> cardHandler.get().onDrawCard(slot));
 
             cardsView.getChildren().add(cardNode);
@@ -175,7 +196,9 @@ class DecksViewCreator {
         Rectangle foregroundDeckGauge = new Rectangle(50, 5);
         foregroundDeckGauge.getStyleClass().add("foreground");
         ReadOnlyIntegerProperty deckPercentProperty = observableGameState.cardsPercentProperty();
+        //the following code is to adapt the percentage of cards to the size of the gauge
         foregroundDeckGauge.widthProperty().bind(deckPercentProperty.multiply(50).divide(100));
+
 
         deckGauge.getChildren().add(backgroundDeckRect);
         deckGauge.getChildren().add(foregroundDeckGauge);

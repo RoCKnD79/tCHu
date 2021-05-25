@@ -22,12 +22,10 @@ private final BlockingQueue<Route> routeBlockingQueue = new ArrayBlockingQueue<>
 private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQueue<>(1);
 
 
-public GraphicalPlayerAdapter() {
-
-    }
+    public GraphicalPlayerAdapter() {}
 
     @Override
-    public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) throws InterruptedException {
+    public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
 
         BlockingQueue<GraphicalPlayer> blockingQueueGraphicalPlayer = new ArrayBlockingQueue<>(1);
 
@@ -35,7 +33,7 @@ public GraphicalPlayerAdapter() {
         try{
             graphicalPlayer = blockingQueueGraphicalPlayer.take();
         }catch (InterruptedException e){
-            throw new InterruptedException();
+            throw new Error();
         }
     }
 
@@ -56,16 +54,16 @@ public GraphicalPlayerAdapter() {
     }
 
     @Override
-    public SortedBag<Ticket> chooseInitialTickets() throws InterruptedException{
+    public SortedBag<Ticket> chooseInitialTickets() {
         try {
             return ticketsBlockingQueue.take();
         }catch (InterruptedException e){
-            throw new InterruptedException();
+            throw new Error();
         }
     }
 
     @Override
-    public TurnKind nextTurn() throws InterruptedException {
+    public TurnKind nextTurn() {
         BlockingQueue<TurnKind> turnKindBlockingQueue = new ArrayBlockingQueue<>(1);
         runLater(() -> graphicalPlayer.startTurn(() -> turnKindBlockingQueue.add(TurnKind.DRAW_TICKETS),
                 (s) -> {turnKindBlockingQueue.add(TurnKind.DRAW_CARDS);
@@ -77,22 +75,22 @@ public GraphicalPlayerAdapter() {
         try{
     return turnKindBlockingQueue.take();}
         catch (InterruptedException e){
-            throw new InterruptedException();
+            throw new Error();
         }
     }
 
     @Override
-    public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) throws InterruptedException {
+    public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
        try{
            runLater(() -> graphicalPlayer.chooseTickets(options, ticketsBlockingQueue::add));
        return ticketsBlockingQueue.take();}
        catch (InterruptedException e){
-           throw new InterruptedException();
+           throw new Error();
        }
     }
 
     @Override
-    public int drawSlot() throws InterruptedException {
+    public int drawSlot() {
     //TODO check slot queue
         if (slotQueue != null){
             return slotQueue.remove();
@@ -102,36 +100,36 @@ public GraphicalPlayerAdapter() {
         return integerBlockingQueue.take();
         }
         catch (InterruptedException e){
-            throw new InterruptedException();
+            throw new Error();
         }
     }
 
     @Override
-    public Route claimedRoute() throws InterruptedException {
+    public Route claimedRoute() {
     try {
         return routeBlockingQueue.take();
     }catch (InterruptedException e){
-        throw new InterruptedException();
+        throw new Error();
     }
     }
 
     @Override
-    public SortedBag<Card> initialClaimCards() throws InterruptedException {
+    public SortedBag<Card> initialClaimCards() {
     try{
         return cardsBlockingQueue.take();}
     catch (InterruptedException e){
-        throw new InterruptedException();
+        throw new  Error();
     }
     }
 
     @Override
-    public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) throws InterruptedException {
+    public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
        try {
            BlockingQueue<SortedBag<Card>> sortedBagBlockingQueue = new ArrayBlockingQueue<>(1);
            runLater(() -> graphicalPlayer.chooseAdditionalCards(options, cardsBlockingQueue::add));
            return sortedBagBlockingQueue.take();
        }catch (InterruptedException e){
-           throw new InterruptedException();
+           throw new Error();
        }
     }
 }

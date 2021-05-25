@@ -20,10 +20,20 @@ public class ObservableGameState {
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<Route, ObjectProperty<PlayerId>> routesOwners;
 
-    private final IntegerProperty ticketsCount = new SimpleIntegerProperty();
+    /*private final IntegerProperty ticketsCount = new SimpleIntegerProperty();
     private final IntegerProperty cardsCount = new SimpleIntegerProperty();
     private final IntegerProperty carsCount = new SimpleIntegerProperty();
-    private final IntegerProperty points = new SimpleIntegerProperty();
+    private final IntegerProperty points = new SimpleIntegerProperty();*/
+
+    private final IntegerProperty ownTicketsCount = new SimpleIntegerProperty();
+    private final IntegerProperty ownCardsCount = new SimpleIntegerProperty();
+    private final IntegerProperty ownCarsCount = new SimpleIntegerProperty();
+    private final IntegerProperty ownPoints = new SimpleIntegerProperty();
+
+    private final IntegerProperty rivalTicketsCount = new SimpleIntegerProperty();
+    private final IntegerProperty rivalCardsCount = new SimpleIntegerProperty();
+    private final IntegerProperty rivalCarsCount = new SimpleIntegerProperty();
+    private final IntegerProperty rivalPoints = new SimpleIntegerProperty();
 
     private final ObservableList<Ticket> ticketList;
     private final Map<Card, IntegerProperty> countPerCard;
@@ -45,6 +55,12 @@ public class ObservableGameState {
     }
 
     //TODO il faut ajouter des attributs représentant des stats du joueur adverse et les update ici
+
+    /**
+     * updates all attributes
+     * @param newGameState, the new publicGameState after a player did an action
+     * @param playerState, new PlayerState of th
+     */
     public void setState(PublicGameState newGameState, PlayerState playerState) {
         publicGameState = newGameState;
         this.playerState = playerState;
@@ -54,13 +70,20 @@ public class ObservableGameState {
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = newGameState.cardState().faceUpCard(slot);
             faceUpCards.get(slot).set(newCard);
+            System.out.println(faceUpCards.get(slot).toString());
         }
         updateRoutesOwners();
 
-        ticketsCount.set(playerState.ticketCount());
-        cardsCount.set(playerState.cardCount());
-        carsCount.set(playerState.carCount());
-        points.set(playerState.ticketPoints());
+        ownTicketsCount.set(playerState.ticketCount());
+        ownCardsCount.set(playerState.cardCount());
+        ownCarsCount.set(playerState.carCount());
+        ownPoints.set(playerState.claimPoints());
+
+        PublicPlayerState rivalPlayerState = newGameState.playerState(playerId.next());
+        rivalTicketsCount.set(rivalPlayerState.ticketCount());
+        rivalCardsCount.set(rivalPlayerState.cardCount());
+        rivalCarsCount.set(rivalPlayerState.carCount());
+        rivalPoints.set(rivalPlayerState.claimPoints());
 
         ticketList.setAll(playerState.tickets().toList());
         SortedBag<Card> playerCards = playerState.cards();
@@ -75,10 +98,15 @@ public class ObservableGameState {
     public ReadOnlyObjectProperty<Card> faceUpCard(int slot) { return faceUpCards.get(slot); }
     public ReadOnlyObjectProperty<PlayerId> routesOwnersProperty(Route route) { return routesOwners.get(route); }
 
-    public ReadOnlyIntegerProperty ticketsCountProperty() { return ticketsCount; }
-    public ReadOnlyIntegerProperty cardsCountProperty() { return cardsCount; }
-    public ReadOnlyIntegerProperty carsCountProperty() { return carsCount; }
-    public ReadOnlyIntegerProperty pointsProperty() { return points; }
+    public ReadOnlyIntegerProperty ownTicketsCountProperty() { return ownTicketsCount; }
+    public ReadOnlyIntegerProperty ownCardsCountProperty() { return ownCardsCount; }
+    public ReadOnlyIntegerProperty ownCarsCountProperty() { return ownCarsCount; }
+    public ReadOnlyIntegerProperty ownPointsProperty() { return ownPoints; }
+
+    public ReadOnlyIntegerProperty rivalTicketsCountProperty() { return rivalTicketsCount; }
+    public ReadOnlyIntegerProperty rivalCardsCountProperty() { return rivalCardsCount; }
+    public ReadOnlyIntegerProperty rivalCarsCountProperty() { return rivalCarsCount; }
+    public ReadOnlyIntegerProperty rivalPointsProperty() { return rivalPoints; }
 
     public ObservableList<Ticket> ticketsListProperty() { return FXCollections.unmodifiableObservableList(ticketList); }
     public ReadOnlyIntegerProperty countOfCard(Card c) { return countPerCard.get(c); }

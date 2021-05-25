@@ -22,6 +22,7 @@ import java.util.Map;
 class InfoViewCreator {
 
 public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playerNames, ObservableGameState gameState, ObservableList<Text> observableGameTextList){
+
     VBox infoView = new VBox();
     infoView.getStylesheets().add("info.css");
     infoView.getStylesheets().add("colors.css");
@@ -29,32 +30,57 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
     VBox vBox2 = new VBox();
     vBox2.setId("player-stats");
 
+    //--------------------------this player's stats section--------------------------
+    TextFlow ownTextFlowStats = new TextFlow();
+    ownTextFlowStats.getStyleClass().add(playerId.toString());
+
+    Circle ownCircle = new Circle(5);
+    ownCircle.getStyleClass().add("filled");
+
+    Text ownTextStats = new Text();
+    StringExpression ownStringExpression = Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId),
+            gameState.ownTicketsCountProperty(),  gameState.ownCardsCountProperty(),
+            gameState.ownCarsCountProperty(), gameState.ownPointsProperty());
+    ownTextStats.textProperty().bind(ownStringExpression);
+
+    ownTextFlowStats.getChildren().add(ownCircle);
+    ownTextFlowStats.getChildren().add(ownTextStats);
+
+    //--------------------------rival player's stats section--------------------------
+    TextFlow rivalTextFlowStats = new TextFlow();
+    rivalTextFlowStats.getStyleClass().add(playerId.next().toString());
+
+    Circle rivalCircle = new Circle(5);
+    rivalCircle.getStyleClass().add("filled");
+
+    Text rivalTextStats = new Text();
+    StringExpression rivalStringExpression = Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId.next()),
+            gameState.rivalTicketsCountProperty(),  gameState.rivalCardsCountProperty(),
+            gameState.rivalCarsCountProperty(), gameState.rivalPointsProperty());
+    rivalTextStats.textProperty().bind(rivalStringExpression);
+
+    rivalTextFlowStats.getChildren().add(rivalCircle);
+    rivalTextFlowStats.getChildren().add(rivalTextStats);
+
+    //--------------------------Separator between player stats and game information--------------------------
     Separator separator = new Separator();
     separator.setOrientation(Orientation.HORIZONTAL);
 
-    infoView.getChildren().add(separator);
-    infoView.getChildren().add(vBox2);
-
-    TextFlow textFlowStats = new TextFlow();
-    //TODO je sais pas quoi doit remplacer le n
-    textFlowStats.getStyleClass().add(playerId.toString());
-
-    Circle circle = new Circle(5);
-    StringExpression stringExpression = Bindings.format(playerNames.get(playerId), StringsFr.PLAYER_STATS, gameState.ticketsCountProperty(),  gameState.carsCountProperty(), gameState.carsCountProperty(), gameState.pointsProperty());
-    Text textStats = new Text();
-    textStats.textProperty().bind(stringExpression);
-    textFlowStats.getChildren().add(circle);
-    textFlowStats.getChildren().add(textStats);
-
-
-
+    //--------------------------The messages giving information on the happenings in the game--------------------------
     TextFlow textFlowMessage = new TextFlow();
-    textFlowMessage.getStyleClass().add("game-info");
+    textFlowMessage.setId("game-info");
 
     Text textMessage = new Text();
     textFlowMessage.getChildren().add(textMessage);
-    //TODO IMPORTANT
-    //Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
+    Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
+
+    //----------------------------------------------------
+    vBox2.getChildren().add(ownTextFlowStats);
+    vBox2.getChildren().add(rivalTextFlowStats);
+
+    infoView.getChildren().add(vBox2);
+    infoView.getChildren().add(separator);
+    infoView.getChildren().add(textFlowMessage);
 
 
     return infoView;

@@ -30,14 +30,6 @@ public enum Card {
         color = c;
     }
 
-    /**
-     * method that returns the Color of the card
-     * @return color, color of the card
-     */
-    public Color getColor() {
-        return color;
-    }
-
     public static final List<Card> ALL = List.of(Card.values());
     public static final int COUNT = ALL.size();
 
@@ -50,7 +42,7 @@ public enum Card {
      */
     public static Card of(Color color) {
         for (Card card : CARS) {
-            if (color.equals(card.getColor())) {
+            if (color.equals(card.color())) {
                 return card;
             }
         }
@@ -62,7 +54,7 @@ public enum Card {
      * @return color of the card
      */
     public Color color() {
-        return this.getColor();
+        return color;
     }
 
 }
