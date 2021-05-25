@@ -314,18 +314,21 @@ public class GraphicalPlayer {
      *
      * @param drawTicketsHandler, handler in charge of dealing with drawing tickets, can be null
      * @param drawCardHandler, handler in charge of dealing with drawing cards, can be null
+     * @param claimRouteHandler, handler in charge of dealing with claiming routes
      */
     private void setHandlerProperties(ActionHandlers.DrawTicketsHandler drawTicketsHandler,
-                                      ActionHandlers.DrawCardHandler drawCardHandler) {
+                                      ActionHandlers.DrawCardHandler drawCardHandler,
+                                      ActionHandlers.ClaimRouteHandler claimRouteHandler) {
         this.drawTicketsHandler.set(drawTicketsHandler);
         this.drawCardHandler.set(drawCardHandler);
+        this.claimRouteHandler.set(claimRouteHandler);
     }
 
     /**
-     * sets the handlers contained inside the handler properties drawTicketsHandler and drawCardHandler to null
+     * sets the handlers contained inside the handler properties to null
      */
     private void setHandlerPropertiesToNull() {
-        setHandlerProperties(null, null);
+        setHandlerProperties(null, null, null);
     }
 
     /**

@@ -20,11 +20,6 @@ public class ObservableGameState {
     private final List<ObjectProperty<Card>> faceUpCards;
     private final Map<Route, ObjectProperty<PlayerId>> routesOwners;
 
-    /*private final IntegerProperty ticketsCount = new SimpleIntegerProperty();
-    private final IntegerProperty cardsCount = new SimpleIntegerProperty();
-    private final IntegerProperty carsCount = new SimpleIntegerProperty();
-    private final IntegerProperty points = new SimpleIntegerProperty();*/
-
     private final IntegerProperty ownTicketsCount = new SimpleIntegerProperty();
     private final IntegerProperty ownCardsCount = new SimpleIntegerProperty();
     private final IntegerProperty ownCarsCount = new SimpleIntegerProperty();
@@ -54,8 +49,6 @@ public class ObservableGameState {
         claimableRoutes = initClaimableRoutesMap();
     }
 
-    //TODO il faut ajouter des attributs représentant des stats du joueur adverse et les update ici
-
     /**
      * updates all attributes
      * @param newGameState, the new publicGameState after a player did an action
@@ -70,7 +63,6 @@ public class ObservableGameState {
         for (int slot : Constants.FACE_UP_CARD_SLOTS) {
             Card newCard = newGameState.cardState().faceUpCard(slot);
             faceUpCards.get(slot).set(newCard);
-            System.out.println(faceUpCards.get(slot).toString());
         }
         updateRoutesOwners();
 
@@ -88,7 +80,6 @@ public class ObservableGameState {
         ticketList.setAll(playerState.tickets().toList());
         SortedBag<Card> playerCards = playerState.cards();
         countPerCard.forEach( (c, i) -> i.set(playerCards.countOf(c)));
-        //updateClaimableRoutesMap(newGameState, playerState, claimableRoutes);
         updateClaimableRoutesMap();
 
     }
@@ -166,7 +157,6 @@ public class ObservableGameState {
 
     private List<ObjectProperty<Card>> initFaceUpCards() {
         List<ObjectProperty<Card>> list = new ArrayList<>();
-        //<Card> faceUpCards = publicGameState.cardState().faceUpCards();
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i)
             list.add(new SimpleObjectProperty<>(null));
 

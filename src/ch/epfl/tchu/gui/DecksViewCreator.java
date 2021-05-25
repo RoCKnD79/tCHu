@@ -31,7 +31,7 @@ class DecksViewCreator {
         handView.getStylesheets().add("decks.css");
         handView.getStylesheets().add("colors.css");
 
-        ListView<Ticket> ticketListView = new ListView<>();
+        ListView<Ticket> ticketListView = new ListView<>(ogs.ticketsListProperty());
         ticketListView.setId("tickets");
         handView.getChildren().add(ticketListView);
 
@@ -118,18 +118,9 @@ class DecksViewCreator {
         ticketGauge.getChildren().add(foregroundTicketGauge);
         ticketsButton.setGraphic(ticketGauge);
 
-
-
-
-
         System.out.println("(DecksViewCreator) ticketHandler null ? " + ticketHandler.isNull().get());
         ticketsButton.disableProperty().bind(ticketHandler.isNull());
         ticketsButton.setOnMouseClicked(e -> ticketHandler.get().onDrawTickets());
-        //ticketsButton.setOnMouseClicked(e -> System.out.println("AHHHHHHHHHHHHH"));
-
-
-
-
 
         cardsView.getChildren().add(ticketsButton);
 
@@ -142,15 +133,7 @@ class DecksViewCreator {
 
             StackPane cardNode = new StackPane();
 
-            //TODO PROBLEME D'AFFICHAGE DE CARTE SANS COULEUR
-            /*if(cardProperty.get() != null){
-                cardNode.getStyleClass().add(cardProperty.get().color().toString());
-            }
-            else
-                cardNode.getStyleClass().add("NEUTRAL");*/
-
-
-            cardsView.getStyleClass().add("card");
+            cardNode.getStyleClass().add("card");
 
             //will update the faceUpCards everytime they change
             cardProperty.addListener((prop, oldValue, newValue) -> {
