@@ -25,7 +25,8 @@ public final class Game {
      * @param rng,         attribute of Random
      * @throws IllegalArgumentException, if players size is inferior to 2, or if playerNames is also inferior to two.
      */
-    public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng) throws IllegalArgumentException {
+    public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng)
+            throws IllegalArgumentException {
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
         }
