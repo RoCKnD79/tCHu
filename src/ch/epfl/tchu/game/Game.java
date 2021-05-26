@@ -146,7 +146,7 @@ public final class Game {
                                 gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                             } else {
-                                List<SortedBag<Card>> currentPlayersPossibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim, cardsDrawnSorted);
+                                List<SortedBag<Card>> currentPlayersPossibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim);
                                 SortedBag<Card> additionalCardsChosen = SortedBag.of();
                                 if (currentPlayersPossibleAdditionalCards.size() > 0) {
                                     additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayersPossibleAdditionalCards));
