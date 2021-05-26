@@ -22,7 +22,7 @@ public interface Player {
     }
 
     /**
-     * method that will be called in beginning of game to communicate to player his own id, and the names of the other players
+     * method  that will be called in beginning of game to communicate to player his own id, and the names of the other players
      *
      * @param ownId,       id of the player
      * @param playerNames, map linking ids to names
