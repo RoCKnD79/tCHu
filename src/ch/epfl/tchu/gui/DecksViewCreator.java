@@ -129,10 +129,19 @@ class DecksViewCreator {
 
             //will update the faceUpCards everytime they change
             cardProperty.addListener((prop, oldValue, newValue) -> {
-                if(newValue == Card.LOCOMOTIVE)
-                    cardNode.getStyleClass().add("NEUTRAL");
-                else
-                    cardNode.getStyleClass().add(newValue.toString());
+                if(newValue == Card.LOCOMOTIVE) {
+                    int size = cardNode.getStyleClass().size();
+                    if (size == 2)
+                        cardNode.getStyleClass().set(size - 1, newValue.toString());
+                    else cardNode.getStyleClass().add("NEUTRAL");
+                }
+                else{
+                    int size = cardNode.getStyleClass().size();
+                    if(size == 2)
+                        cardNode.getStyleClass().set(size-1, newValue.toString());
+                    else cardNode.getStyleClass().add(newValue.toString());
+                }
+
             });
 
             //-------------Rectangle contour-------------

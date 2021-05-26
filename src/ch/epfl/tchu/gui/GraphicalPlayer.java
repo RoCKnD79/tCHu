@@ -243,7 +243,7 @@ public class GraphicalPlayer {
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
 
-
+        //----------------------List of playable claim cards----------------------
         ObservableList<SortedBag<Card>> obsListClaimCards = FXCollections.observableArrayList(claimCards);
         ListView<SortedBag<Card>> choiceList = new ListView<>(obsListClaimCards);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
@@ -254,18 +254,19 @@ public class GraphicalPlayer {
         confirmButton.disableProperty().bind(Bindings.greaterThan(1,
                 Bindings.size(choiceList.getSelectionModel().getSelectedItems())));
 
-        //after confirming, window is closed and chosen tickets are passed as an argument to the handler
+        //-----after confirming, window is closed and chosen tickets are passed as an argument to the handler-----
         confirmButton.setOnAction(e -> {
             stage.hide();
             SortedBag<Card> cardSet = choiceList.getSelectionModel().getSelectedItem();
             handler.onChooseCards(cardSet);
         });
 
-        //introText: "Choisissez les cartes à utiliser pour vous emparer de cette route :"
+        //-----introText: "Choisissez les cartes à utiliser pour vous emparer de cette route :"-----
         Text introText = new Text();
         introText.setText(StringsFr.CHOOSE_CARDS);
         TextFlow textFlow = new TextFlow(introText);
 
+        //-------------------------------------------------------------
         vBox.getChildren().add(textFlow);
         vBox.getChildren().add(choiceList);
         vBox.getChildren().add(confirmButton);
@@ -300,7 +301,7 @@ public class GraphicalPlayer {
         Scene scene = new Scene(vBox);
         scene.getStylesheets().add("chooser.css");
 
-
+        //----------------------List of playable additional cards----------------------
         ObservableList<SortedBag<Card>> obsListClaimCards = FXCollections.observableArrayList(additionalCards);
         ListView<SortedBag<Card>> choiceList = new ListView<>(obsListClaimCards);
         choiceList.setCellFactory(v -> new TextFieldListCell<>(new CardBagStringConverter()));
@@ -309,18 +310,20 @@ public class GraphicalPlayer {
         Button confirmButton = new Button();
         confirmButton.setText("Choisir");
 
-        //after confirming, window is closed and chosen tickets are passed as an argument to the handler
+        //-----after confirming, window is closed and chosen tickets are passed as an argument to the handler-----
         confirmButton.setOnAction(e -> {
             stage.hide();
             SortedBag<Card> cardSet = choiceList.getSelectionModel().getSelectedItem();
-            handler.onChooseCards(cardSet);
+            if(cardSet != null)
+                handler.onChooseCards(cardSet);
         });
 
-        //introText: "Choisissez les cartes à utiliser pour vous emparer de cette route :"
+        //-----introText: "Choisissez les cartes à utiliser pour vous emparer de cette route :"-----
         Text introText = new Text();
         introText.setText(StringsFr.CHOOSE_ADDITIONAL_CARDS);
         TextFlow textFlow = new TextFlow(introText);
 
+        //------------------------------------------------------
         vBox.getChildren().add(textFlow);
         vBox.getChildren().add(choiceList);
         vBox.getChildren().add(confirmButton);
@@ -355,7 +358,7 @@ public class GraphicalPlayer {
     /**
      * Nested class whose role is to give a way to represent sorted bags of cards in an appealing textual form
      * Was created in order to modify the cell factory of a ListView of SortedBag<Card>
-     *     (c.f. chooseClaimCards and chooseAdditionalCards)
+     *     (c.f. chooseClaimCards(...) and chooseAdditionalCards(...) )
      */
     private class CardBagStringConverter extends StringConverter<SortedBag<Card>> {
 

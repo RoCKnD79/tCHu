@@ -53,7 +53,7 @@ public class ServerMain extends Application {
 
         players.put(PlayerId.PLAYER_1, player1);
         players.put(PlayerId.PLAYER_2, player2);
-        //TODO players est nulle !!!!
+
         new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random()));
     }
 }
