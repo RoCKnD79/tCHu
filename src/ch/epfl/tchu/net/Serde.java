@@ -91,6 +91,9 @@ public interface Serde<E> {
 
              @Override
              public SortedBag<E> deserialize(String string) {
+                 if(string.isEmpty()){
+                     return SortedBag.of();
+                 }
                  return SortedBag.of(listOf(serde, separator).deserialize(string));
              }
          };
