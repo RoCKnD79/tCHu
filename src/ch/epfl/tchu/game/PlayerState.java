@@ -84,15 +84,6 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(this.tickets, cards.union(newCard), this.routes);
     }
 
-    /**
-     * Creates a new state for the player with additional cards to his cards
-     *
-     * @param additionalCards, the sorted list of cards to add to original list of cards
-     * @return a new PlayerState with additional cards added to original list
-     */
-    public PlayerState withAddedCards(SortedBag<Card> additionalCards) {
-        return new PlayerState(this.tickets, cards.union(additionalCards), this.routes);
-    }
 
     /**
      * tests if given route can be claimed with the cards the player has
@@ -170,7 +161,7 @@ public final class PlayerState extends PublicPlayerState {
      *                                  you can use both a certain color and locomotive cards to claim a tunnel)
      *                                  if the number of drawnCards isn't exactly 3
      */
-    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards, SortedBag<Card> drawnCards) throws IllegalArgumentException {
+    public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards) throws IllegalArgumentException {
 
         if ((additionalCardsCount < 1) || (additionalCardsCount > 3)) {
             throw new IllegalArgumentException("additionnal card count is not between 1 and 3 included");
@@ -178,10 +169,6 @@ public final class PlayerState extends PublicPlayerState {
         if (initialCards.isEmpty() || initialCards.toSet().size() > 2) {
             throw new IllegalArgumentException("inital cards list is empty or contains two different type of cards");
         }
-        if (drawnCards.size() != 3) {
-            throw new IllegalArgumentException("the number of drawn cards is not equal to 3");
-        }
-
         List<SortedBag<Card>> list = new ArrayList<>();
         SortedBag<Card> cardsLeft = cards.difference(initialCards);
 
