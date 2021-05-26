@@ -26,11 +26,13 @@ public final class FakeServer {
                      new OutputStreamWriter(s.getOutputStream(),
                              US_ASCII))) {
             // Envoi des messages
+            System.out.println("HELELLELELELELELELELELELLE");
             for (String m : MESSAGES) {
                 w.write(m + '\n');
                 w.flush();
             }
-            // Attente et impression de la réponse
+            // Attente et impression de la répons
+            System.out.println("bitch ass looking ass bitch");
             System.out.println(r.readLine());
         }
     }

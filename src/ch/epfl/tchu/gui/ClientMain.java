@@ -26,7 +26,6 @@ public class ClientMain extends Application {
             hostname = arguments.get(0);
             portNumber = Integer.parseInt(arguments.get(1));
         }
-        System.out.println("arguments list size : " + arguments.size());
 
         GraphicalPlayerAdapter graphicalPlayerAdapter = new GraphicalPlayerAdapter();
         RemotePlayerClient remotePlayerClient = new RemotePlayerClient(graphicalPlayerAdapter, hostname, portNumber);
@@ -34,6 +33,7 @@ public class ClientMain extends Application {
         new Thread(() -> {
             try {
                 remotePlayerClient.run();
+                System.out.println("END OF RUN");
             } catch (IOException e) {
                 e.printStackTrace();
             }
