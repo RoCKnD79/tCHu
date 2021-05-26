@@ -16,12 +16,20 @@ public class ClientMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        List<String> arguments = new ArrayList<>(getParameters().getRaw());
-        String hostName = arguments.get(0);
-        int portNumber = Integer.parseInt(arguments.get(1));
+        String hostname;
+        int portNumber;
+        List<String> arguments = getParameters().getRaw();
+        if(arguments.size() == 0){
+            hostname = "localhost";
+            portNumber = 5108;
+        }else {
+            hostname = arguments.get(0);
+            portNumber = Integer.parseInt(arguments.get(1));
+        }
+        System.out.println("arguments list size : " + arguments.size());
 
         GraphicalPlayerAdapter graphicalPlayerAdapter = new GraphicalPlayerAdapter();
-        RemotePlayerClient remotePlayerClient = new RemotePlayerClient(graphicalPlayerAdapter, hostName, portNumber);
+        RemotePlayerClient remotePlayerClient = new RemotePlayerClient(graphicalPlayerAdapter, hostname, portNumber);
 
         new Thread(() -> {
             try {
