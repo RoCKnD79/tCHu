@@ -38,14 +38,6 @@ class DecksViewCreator {
         HBox handPaneView = new HBox();
         handPaneView.setId("hand-pane");
 
-
-        /* TODO
-        La classe de style représentant la couleur d'une des cinq cartes face visible doit bien entendu changer
-        lorsque la carte en question change. Cela peut se faire en attachant, au moyen de la méthode addListener,
-        un auditeur à la propriété de l'état du jeu observable correspondant à l'emplacement. Lorsque cet auditeur
-        est informé d'un changement, il modifie la classe de style du nœud afin de refléter le changement du type de carte.
-         */
-
         for(Card c : Card.ALL) {
             StackPane stackPane = new StackPane();
             stackPane.getStyleClass().add("card");
