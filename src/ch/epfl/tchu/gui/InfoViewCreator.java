@@ -71,7 +71,7 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
     textFlowMessage.setId("game-info");
 
     Text textMessage = new Text();
-    textFlowMessage.getChildren().add(textMessage);
+    //textFlowMessage.getChildren().add(textMessage);
     Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
 
     //----------------------------------------------------

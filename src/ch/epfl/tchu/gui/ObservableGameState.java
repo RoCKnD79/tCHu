@@ -127,9 +127,13 @@ public class ObservableGameState {
         is claimed, it is removed from the list of available routes
          */
         for(Route r : availableRoutes) {
-            for(Route claimedRoute : publicGameState.claimedRoutes()) {
-                if(r.stations().equals(claimedRoute.stations()))
-                    availableRoutes.remove(r);
+            if(r != null) {
+                for (Route claimedRoute : publicGameState.claimedRoutes()) {
+                    if(claimedRoute != null) {
+                        if (r.stations().equals(claimedRoute.stations()))
+                            availableRoutes.remove(r);
+                    }
+                }
             }
         }
 
@@ -142,13 +146,16 @@ public class ObservableGameState {
     }
 
     private void updateRoutesOwners() {
+
         publicGameState.claimedRoutes().forEach(r -> {
             List<Route> playerRoutes1 = publicGameState.playerState(PlayerId.PLAYER_1).routes();
             List<Route> playerRoutes2 = publicGameState.playerState(PlayerId.PLAYER_2).routes();
-            if(playerRoutes1.contains(r))
-                routesOwners.get(r).set(PlayerId.PLAYER_1);
-            else if(playerRoutes2.contains(r))
-                routesOwners.get(r).set(PlayerId.PLAYER_2);
+            if(r != null) {
+                if (playerRoutes1.contains(r)) {
+                    routesOwners.get(r).set(PlayerId.PLAYER_1);
+                } else if (playerRoutes2.contains(r))
+                    routesOwners.get(r).set(PlayerId.PLAYER_2);
+            }
         });
     }
 
@@ -166,6 +173,7 @@ public class ObservableGameState {
     private Map<Route, ObjectProperty<PlayerId>> initRoutesOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         ChMap.routes().forEach(r -> map.put(r, new SimpleObjectProperty<>(null)));
+        map.forEach((r, p) -> System.out.println(r));
         return map;
     }
 

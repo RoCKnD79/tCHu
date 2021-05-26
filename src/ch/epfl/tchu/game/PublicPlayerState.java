@@ -70,7 +70,8 @@ public class PublicPlayerState {
         int numberOfCars = 40;
         if (routes != null) {
             for (Route r : routes) {
-                numberOfCars -= r.length();
+                if(r != null)
+                    numberOfCars -= r.length();
             }
         }
         return numberOfCars;
@@ -81,7 +82,8 @@ public class PublicPlayerState {
 
         if (routes != null) {
             for (Route r : this.routes) {
-                numberOfPoints += r.claimPoints();
+                if(r != null)
+                    numberOfPoints += r.claimPoints();
             }
         }
         return numberOfPoints;
