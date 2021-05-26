@@ -48,14 +48,14 @@ class MapViewCreator {
             property.addListener((prop, oldValue, newValue) -> routeGroup.getStyleClass().add(newValue.toString()));
 
             routeGroup.setOnMouseClicked(e -> {
-            List<SortedBag<Card>> possibleClaimCards = observableGameState.possibleClaimCards(r);
-            if(possibleClaimCards.size() == 1){
-                claimRouteHandler.getValue().onClaimRoute(r, possibleClaimCards.get(0));
-            }else{
-                ActionHandlers.ChooseCardsHandler chooseCardsH =
-                        chosenCards -> claimRouteHandler.getValue().onClaimRoute(r, chosenCards);
-                cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
-            }
+                List<SortedBag<Card>> possibleClaimCards = observableGameState.possibleClaimCards(r);
+                if(possibleClaimCards.size() == 1){
+                    claimRouteHandler.getValue().onClaimRoute(r, possibleClaimCards.get(0));
+                }else{
+                    ActionHandlers.ChooseCardsHandler chooseCardsH =
+                            chosenCards -> claimRouteHandler.getValue().onClaimRoute(r, chosenCards);
+                    cardChooser.chooseCards(possibleClaimCards, chooseCardsH);
+                }
             });
             routeGroup.disableProperty().bind(claimRouteHandler.isNull().or(observableGameState.booleanPropertyOfRoute(r).not()));
 
@@ -65,21 +65,28 @@ class MapViewCreator {
                 javafx.scene.shape.Rectangle rectangle = new Rectangle(36, 12);
                 rectangle.getStyleClass().add("track");
                 rectangle.getStyleClass().add("filled");
-                caseGroup.getChildren().add(rectangle);
+
                 /*caseGroup.getChildren().add(rectangle);
                 caseGroup.getStyleClass().add("track");
                 caseGroup.getStyleClass().add("filled");*/
 
+                //--------------------Creating the car (wagon)--------------------
                 Group wagonGroup = new Group();
                 wagonGroup.getStyleClass().add("car");
+
                 Rectangle rectangleWagon = new Rectangle(36,12);
+                rectangleWagon.getStyleClass().add("filled");
+
                 Circle circle1 = new Circle(12, 6, 3);
-                Circle circle2 = new Circle(12, 6, 3);
+                Circle circle2 = new Circle(24, 6, 3);
+
                 wagonGroup.getChildren().add(rectangleWagon);
                 wagonGroup.getChildren().add(circle1);
                 wagonGroup.getChildren().add(circle2);
 
-                routeGroup.getChildren().add(wagonGroup);
+                caseGroup.getChildren().add(rectangle);
+                caseGroup.getChildren().add(wagonGroup);
+                //routeGroup.getChildren().add(wagonGroup);
                 routeGroup.getChildren().add(caseGroup);
             }
 
