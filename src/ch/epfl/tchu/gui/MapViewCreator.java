@@ -25,7 +25,7 @@ class MapViewCreator {
         pane.getStylesheets().add("map.css");
         pane.getStylesheets().add("colors.css");
 
-        ImageView imageView = new ImageView("map.png");
+        ImageView imageView = new ImageView();
         pane.getChildren().add(imageView);
 
 
@@ -46,7 +46,6 @@ class MapViewCreator {
 
             ReadOnlyObjectProperty<PlayerId> property = observableGameState.routesOwnersProperty(r);
             property.addListener((prop, oldValue, newValue) -> routeGroup.getStyleClass().add(newValue.toString()));
-
             routeGroup.setOnMouseClicked(e -> {
                 List<SortedBag<Card>> possibleClaimCards = observableGameState.possibleClaimCards(r);
                 if(possibleClaimCards.size() == 1){
