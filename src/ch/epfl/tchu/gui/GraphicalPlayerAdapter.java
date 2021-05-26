@@ -26,15 +26,14 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
 
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-
-        BlockingQueue<GraphicalPlayer> blockingQueueGraphicalPlayer = new ArrayBlockingQueue<>(1);
+        //BlockingQueue<GraphicalPlayer> blockingQueueGraphicalPlayer = new ArrayBlockingQueue<>(1);
 
         runLater(() -> graphicalPlayer = new GraphicalPlayer(ownId, playerNames));
-        try{
+        /*try{
             graphicalPlayer = blockingQueueGraphicalPlayer.take();
         }catch (InterruptedException e){
             throw new Error();
-        }
+        }*/
     }
 
     @Override
@@ -49,7 +48,6 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
-        //TODO il faut mettre un handler en paramètre
         runLater(() -> graphicalPlayer.chooseTickets(tickets, ticketsBlockingQueue::add));
     }
 
@@ -92,17 +90,17 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
     @Override
     public int drawSlot() {
     //TODO check slot queue
-        if (slotQueue != null){
-            return slotQueue.remove();
-        }
-        try{
         runLater(() -> graphicalPlayer.drawCard(integerBlockingQueue::add));
+        if (integerBlockingQueue.size() == 1){
+            return integerBlockingQueue.remove();
+        }else{
+        try{
         return integerBlockingQueue.take();
         }
         catch (InterruptedException e){
             throw new Error();
         }
-    }
+    }}
 
     @Override
     public Route claimedRoute() {
