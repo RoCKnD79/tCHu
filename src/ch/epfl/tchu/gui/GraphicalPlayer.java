@@ -2,6 +2,7 @@ package ch.epfl.tchu.gui;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,6 +27,7 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,8 +58,18 @@ public class GraphicalPlayer {
         Node infoView = InfoViewCreator.createInfoView(playerId, playerNames, observableGameState, observableList);
 
         BorderPane mainPane = new BorderPane(mapView, null, cardsView, handView, infoView);
-        primaryStage.setScene(new Scene(mainPane));
+
+        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        System.out.println(width);
+        double height = screenSize.getHeight();
+        System.out.println(height);
+
+        primaryStage.setScene(new Scene(mainPane, 1280, 600));
         primaryStage.setTitle("tCHu \u2014 " + playerNames.get(playerId));
+
+        primaryStage.setMaxHeight(1080);
+        primaryStage.setMaxWidth(1920);
         primaryStage.show();
 
     }
@@ -76,6 +88,8 @@ public class GraphicalPlayer {
      * @param message, message to add to the list of information
      */
     public void receiveInfo(String message){
+        assert Platform.isFxApplicationThread();
+
         Text text = new Text(message);
         if(observableList.size() >= 5){
             observableList.remove(0);
@@ -98,6 +112,7 @@ public class GraphicalPlayer {
     public void startTurn(ActionHandlers.DrawTicketsHandler drawTicketsHandler,
                           ActionHandlers.DrawCardHandler drawCardHandler,
                           ActionHandlers.ClaimRouteHandler claimRouteHandler) {
+        assert Platform.isFxApplicationThread();
 
         //--------------DrawTicketsHandlerProperty--------------
         if(!observableGameState.canDrawTickets()) { this.drawTicketsHandler.set(null); }
@@ -135,6 +150,7 @@ public class GraphicalPlayer {
      * @param handler, handler in charge of dealing with drawing tickets
      */
     public void chooseTickets(SortedBag<Ticket> tickets, ActionHandlers.ChooseTicketsHandler handler){
+        assert Platform.isFxApplicationThread();
 
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(primaryStage);
@@ -198,6 +214,8 @@ public class GraphicalPlayer {
      * @param handler, handler in charge of dealing with drawing cards
      */
     public void drawCard(ActionHandlers.DrawCardHandler handler) {
+        assert Platform.isFxApplicationThread();
+
         drawCardHandler.set(slot -> {
             handler.onDrawCard(slot);
             setHandlerPropertiesToNull();
@@ -212,6 +230,8 @@ public class GraphicalPlayer {
      */
     public void chooseClaimCards(List<SortedBag<Card>> claimCards,
                                         ActionHandlers.ChooseCardsHandler handler) {
+        assert Platform.isFxApplicationThread();
+
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(primaryStage);
         stage.initModality(Modality.WINDOW_MODAL);
@@ -267,6 +287,7 @@ public class GraphicalPlayer {
      */
     public void chooseAdditionalCards(List<SortedBag<Card>> additionalCards,
                                       ActionHandlers.ChooseCardsHandler handler) {
+        assert Platform.isFxApplicationThread();
 
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.initOwner(primaryStage);

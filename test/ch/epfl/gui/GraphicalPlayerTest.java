@@ -20,7 +20,7 @@ public final class GraphicalPlayerTest extends Application {
     private void setState(GraphicalPlayer player) {
         PlayerState p1State =
                 new PlayerState(SortedBag.of(ChMap.tickets().subList(0, 3)),
-                        SortedBag.of(1, Card.BLUE, 3, Card.RED),
+                        SortedBag.of(1, Card.LOCOMOTIVE, 3, Card.RED),
                         ChMap.routes().subList(0, 3));
 
         PublicPlayerState p2State =
@@ -59,7 +59,7 @@ public final class GraphicalPlayerTest extends Application {
 
         //player.chooseClaimCards(cardList, e -> System.out.println("(GraphicalPlayerTest) chooseClaimCards"));
 
-        player.chooseAdditionalCards(cardList, e -> System.out.println("(GraphicalPlayerTest) chooseAdditionalCards"));
+        //player.chooseAdditionalCards(cardList, e -> System.out.println("(GraphicalPlayerTest) chooseAdditionalCards"));
 
     }
 
