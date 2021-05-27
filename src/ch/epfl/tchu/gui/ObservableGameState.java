@@ -126,7 +126,8 @@ public class ObservableGameState {
         checks if the route attempted to be claimed is not a double-route, in which case if its neighbor route
         is claimed, it is removed from the list of available routes
          */
-        for(Route r : availableRoutes) {
+        //for(Route r : availableRoutes) {
+        for (Route r : new ArrayList<>(availableRoutes)) {
             if(r != null) {
                 for (Route claimedRoute : publicGameState.claimedRoutes()) {
                     if(claimedRoute != null) {
@@ -173,7 +174,7 @@ public class ObservableGameState {
     private Map<Route, ObjectProperty<PlayerId>> initRoutesOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         ChMap.routes().forEach(r -> map.put(r, new SimpleObjectProperty<>(null)));
-        map.forEach((r, p) -> System.out.println(r));
+        //map.forEach((r, p) -> System.out.println(r));
         return map;
     }
 
