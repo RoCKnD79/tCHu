@@ -105,8 +105,8 @@ public final class Game {
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
                     int cardSlot2 = currentPlayer.drawSlot();
                     if (cardSlot2 != Constants.DECK_SLOT) {
-                        gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCard(cardSlot2)), players);
+                        gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     } else {
                         gameState = gameState.withBlindlyDrawnCard();
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);

@@ -80,7 +80,7 @@ public final class PlayerState extends PublicPlayerState {
      * @return a new PlayerState with card added to original list
      */
     public PlayerState withAddedCard(Card card) {
-        SortedBag<Card> newCard = SortedBag.of(1, card);
+        SortedBag<Card> newCard = SortedBag.of(card);
         return new PlayerState(this.tickets, cards.union(newCard), this.routes);
     }
 
