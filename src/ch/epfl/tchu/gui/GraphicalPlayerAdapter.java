@@ -71,8 +71,8 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
                             cardsBlockingQueue.add(t);}
         ));
         try{
-    return turnKindBlockingQueue.take();}
-        catch (InterruptedException e){
+            return turnKindBlockingQueue.take();
+        } catch (InterruptedException e){
             throw new Error();
         }
     }

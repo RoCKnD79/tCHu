@@ -38,33 +38,30 @@ public final class Game {
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
-        System.out.println("players are initialised in game ");
-        //informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
-        //System.out.println("both players are informed");
+
+        informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
+
         SortedBag<Ticket> player1InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
-        System.out.println("gamestate is changed to no top tickets");
         SortedBag<Ticket> player2InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
-
         player1.setInitialTicketChoice(player1InitialTickets);
         player2.setInitialTicketChoice(player2InitialTickets);
-        System.out.println("setInitialTicketChoice is called in game");
+
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
-        System.out.println("both players were informed of a game state change");
+
         SortedBag<Ticket> player1Tickets = player1.chooseInitialTickets();
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
-        System.out.println("chooseInitialTickets is called in game");
+
         gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
         gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
 
         informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
-        System.out.println("both players are informed of a game change");
+
         boolean doWhile = true;
         boolean lastTurn = false;
         while (doWhile || !lastTurn) {
-            System.out.println("entered while of game");
             Player currentPlayer = players.get(gameState.currentPlayerId());
             Info currentPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId()));
             PlayerState currentPlayerState = gameState.currentPlayerState();

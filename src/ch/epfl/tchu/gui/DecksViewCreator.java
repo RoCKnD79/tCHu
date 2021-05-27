@@ -110,7 +110,6 @@ class DecksViewCreator {
         ticketGauge.getChildren().add(foregroundTicketGauge);
         ticketsButton.setGraphic(ticketGauge);
 
-        System.out.println("(DecksViewCreator) ticketHandler null ? " + ticketHandler.isNull().get());
         ticketsButton.disableProperty().bind(ticketHandler.isNull());
         ticketsButton.setOnMouseClicked(e -> ticketHandler.get().onDrawTickets());
 
@@ -132,7 +131,7 @@ class DecksViewCreator {
                 if(newValue == Card.LOCOMOTIVE) {
                     int size = cardNode.getStyleClass().size();
                     if (size == 2)
-                        cardNode.getStyleClass().set(size - 1, newValue.toString());
+                        cardNode.getStyleClass().set(size - 1, "NEUTRAL");
                     else cardNode.getStyleClass().add("NEUTRAL");
                 }
                 else{

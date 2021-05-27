@@ -61,9 +61,7 @@ public class GraphicalPlayer {
 
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
-        System.out.println(width);
         double height = screenSize.getHeight();
-        System.out.println(height);
 
         primaryStage.setScene(new Scene(mainPane, 1280, 600));
         primaryStage.setTitle("tCHu \u2014 " + playerNames.get(playerId));
@@ -314,8 +312,7 @@ public class GraphicalPlayer {
         confirmButton.setOnAction(e -> {
             stage.hide();
             SortedBag<Card> cardSet = choiceList.getSelectionModel().getSelectedItem();
-            if(cardSet != null)
-                handler.onChooseCards(cardSet);
+            handler.onChooseCards(cardSet == null ? SortedBag.of() : cardSet);
         });
 
         //-----introText: "Choisissez les cartes à utiliser pour vous emparer de cette route :"-----
