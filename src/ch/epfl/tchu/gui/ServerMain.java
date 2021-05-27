@@ -12,26 +12,24 @@ import javafx.stage.Stage;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class ServerMain extends Application {
     String player1Name;
     String player2Name;
-    Map<PlayerId, String> playerNames;
-    Map<PlayerId, Player> players;
+    Map<PlayerId, Player> players = new HashMap<>();
+    Map<PlayerId, String> playerNames = new HashMap<>();
 
 
     public static void main(String[] args){
-        launch();
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         ServerSocket serverSocket = new ServerSocket(5108);
-        Socket socket = serverSocket.accept();
+        //Socket socket = serverSocket.accept();
+        //System.out.println(socket + "socket");
 
         List<String> arguments = new ArrayList<>(getParameters().getRaw());
         if(arguments.size() ==  2) {
@@ -44,16 +42,17 @@ public class ServerMain extends Application {
             player1Name = "Ada";
             player2Name = "Charles";
         }
+        System.out.println(player1Name + " player 1 name");
+        System.out.println(player2Name + " player 2 name");
 
         playerNames.put(PlayerId.PLAYER_1, player1Name);
         playerNames.put(PlayerId.PLAYER_2, player2Name);
-
+        System.out.println(playerNames.size() + "player name size in server");
         GraphicalPlayerAdapter player1 = new GraphicalPlayerAdapter();
-        RemotePlayerProxy player2 = new RemotePlayerProxy(socket);
+        RemotePlayerProxy player2 = new RemotePlayerProxy(serverSocket.accept());
 
         players.put(PlayerId.PLAYER_1, player1);
         players.put(PlayerId.PLAYER_2, player2);
-
-        new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random()));
+        new Thread(() -> Game.play(players, playerNames, SortedBag.of(ChMap.tickets()), new Random())).start();
     }
 }

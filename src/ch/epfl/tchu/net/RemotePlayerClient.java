@@ -55,6 +55,7 @@ public class RemotePlayerClient {
                     PlayerState ownState = Serdes.playerStateSerde.deserialize(splitString[2]);
                     player.updateState(newState, ownState);
                     break;
+
                 case SET_INITIAL_TICKETS:
                     SortedBag<Ticket> tickets = Serdes.ticketSortedBagSerde.deserialize(splitString[1]);
                     player.setInitialTicketChoice(tickets);
