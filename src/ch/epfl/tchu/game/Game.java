@@ -27,6 +27,7 @@ public final class Game {
      */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng)
             throws IllegalArgumentException {
+        System.out.println("play has started");
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
         }
@@ -37,30 +38,33 @@ public final class Game {
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
-
-        informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
-
+        System.out.println("players are initialised in game ");
+        //informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
+        //System.out.println("both players are informed");
         SortedBag<Ticket> player1InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
+        System.out.println("gamestate is changed to no top tickets");
         SortedBag<Ticket> player2InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
+
         player1.setInitialTicketChoice(player1InitialTickets);
         player2.setInitialTicketChoice(player2InitialTickets);
-
+        System.out.println("setInitialTicketChoice is called in game");
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
-
+        System.out.println("both players were informed of a game state change");
         SortedBag<Ticket> player1Tickets = player1.chooseInitialTickets();
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
-
+        System.out.println("chooseInitialTickets is called in game");
         gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
         gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
 
         informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
-
+        System.out.println("both players are informed of a game change");
         boolean doWhile = true;
         boolean lastTurn = false;
         while (doWhile || !lastTurn) {
+            System.out.println("entered while of game");
             Player currentPlayer = players.get(gameState.currentPlayerId());
             Info currentPlayerInfo = new Info(playerNames.get(gameState.currentPlayerId()));
             PlayerState currentPlayerState = gameState.currentPlayerState();
@@ -218,9 +222,14 @@ public final class Game {
         }
     }
 
-    private static void informBothPlayerOfAGameStateChange(Map<PlayerId, Player> players, PlayerState player1State, PlayerState player2State, PublicGameState newGameState) {
-        players.get(PlayerId.PLAYER_1).updateState(newGameState, player1State);
-        players.get(PlayerId.PLAYER_2).updateState(newGameState, player2State);
+    private static void informBothPlayerOfAGameStateChange(Map<PlayerId, Player> players, PlayerState currentPlayerState, PlayerState otherPlayState, PublicGameState newGameState) {
+        if(newGameState.currentPlayerId().equals(PlayerId.PLAYER_1)){
+            players.get(PlayerId.PLAYER_1).updateState(newGameState, currentPlayerState);
+            players.get(PlayerId.PLAYER_2).updateState(newGameState, otherPlayState);
+        }else{
+            players.get(PlayerId.PLAYER_1).updateState(newGameState, otherPlayState);
+            players.get(PlayerId.PLAYER_2).updateState(newGameState, currentPlayerState);
+        }
     }
 
     private static void informBothPlayers(String string, Map<PlayerId, Player> players) {
