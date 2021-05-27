@@ -83,6 +83,7 @@ public class RemotePlayerClient {
                     sendMessage(Serdes.intSerde.serialize(player.drawSlot()));
                     break;
                 case ROUTE:
+                    System.out.println("route is claimed");
                     sendMessage(Serdes.routeSerde.serialize(player.claimedRoute()));
                     break;
                 case CARDS:
