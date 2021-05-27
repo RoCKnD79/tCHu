@@ -22,8 +22,6 @@ public class RemotePlayerClient {
 
     public RemotePlayerClient(Player player, String host, int port) throws IOException {
         this.player = player;
-
-
             this.socket = new Socket(host, port);
             this.r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
 
@@ -33,17 +31,21 @@ public class RemotePlayerClient {
         String string;
         //.out.println("line read is the following : " + string);
         while ((string = r.readLine()) != null){
-
+            if(string.equals("")){
+                continue;
+            }
+            System.out.println("message received by client is :  " + string);
             String[] splitString = string.split(Pattern.quote(" "), -1);
-            System.out.println(splitString[0]);
+            System.out.println(splitString[0] + " enum looked for");
             MessageId messageId = MessageId.valueOf(splitString[0]);
             switch (messageId){
                 case INIT_PLAYERS:
+
                     List<String> playerNames = Serdes.stringListSerde.deserialize(splitString[2]);
                     PlayerId ownId = Serdes.playerIdSerde.deserialize(splitString[1]);
                     Map<PlayerId, String> playerNameMap = new EnumMap<PlayerId, String>(PlayerId.class);
                     for(PlayerId playerId : PlayerId.ALL){
-
+                        System.out.println("Player names size " + playerNames.size());
                         playerNameMap.put(playerId, playerNames.get(playerId.ordinal()));
                     }
                     player.initPlayers(ownId, playerNameMap);
@@ -60,9 +62,8 @@ public class RemotePlayerClient {
                 case CHOOSE_INITIAL_TICKETS:
                     SortedBag<Ticket> sortedbagTickets = player.chooseInitialTickets();
                     sendMessage(Serdes.ticketSortedBagSerde.serialize(sortedbagTickets));
-                    System.out.println("message was sent");
+                    System.out.println("choose initial tickets client message was sent");
                     System.out.println(r.readLine());
-
                     break;
                 case NEXT_TURN:
                     Player.TurnKind turnkind = player.nextTurn();
@@ -95,6 +96,7 @@ public class RemotePlayerClient {
     private void sendMessage(String message){
         try{
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            System.out.println("message sent by client is : " + message);
             w.write(message);
             w.write('\n');
             w.flush();

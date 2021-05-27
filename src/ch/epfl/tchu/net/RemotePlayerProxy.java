@@ -14,46 +14,60 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public class RemotePlayerProxy implements Player {
 
-
+    BufferedReader r;
     private final Socket socket;
 
 
-    public RemotePlayerProxy(Socket socket){
+    public RemotePlayerProxy(Socket socket) throws IOException {
         this.socket = socket;
+        try {
+            this.r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+        }catch (IOException e){
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
     //TODO \n a la fin du message pas accepté wtf
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        List<String> listInfos = List.of(Serdes.playerIdSerde.serialize(ownId), Serdes.stringListSerde.serialize(List.of(playerNames.get(ownId), playerNames.get(ownId.next()))));
-        sendMessage(MessageId.INIT_PLAYERS.name() + " " + Serdes.stringListSerde.serialize(listInfos) + " " +'\n');
+        String namesSerialized = Serdes.stringListSerde.serialize(List.of(playerNames.get(ownId), playerNames.get(ownId.next())));
+        sendMessage(MessageId.INIT_PLAYERS.name() + " " + Serdes.playerIdSerde.serialize(ownId) + " " + namesSerialized + " " +'\n');
+        System.out.println("send message in initPlayersproxy ");
     }
 
     @Override
     public void receiveInfo(String info) {
+        System.out.println("receive info in proxy is called");
         String infoSerde = Serdes.stringSerde.serialize(info);
-        String message = MessageId.RECEIVE_INFO.name() + " " + infoSerde + " " + '\n';
+        String message = (MessageId.RECEIVE_INFO.name() + " " + infoSerde + " " + '\n');
+        System.out.println(infoSerde + " info serde !!!???");
+        System.out.println("receive info message is supposed to be sent");
         sendMessage(message);
     }
 
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
+        System.out.println("update state of proxy is used");
         String newStateSerde = Serdes.publicGameStateSerde.serialize(newState);
         String ownStateSerde = Serdes.playerStateSerde.serialize(ownState);
-        String message = MessageId.UPDATE_STATE.name() + " " + String.join(" ", newStateSerde, ownStateSerde) + " " + '\n';
+        String message = (MessageId.UPDATE_STATE.name() + " " + String.join(" ", newStateSerde, ownStateSerde) + " " + '\n');
+        System.out.println("update state message in proxy is sent : " + message);
         sendMessage(message);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String ticketsSerde = Serdes.ticketSortedBagSerde.serialize(tickets);
-        String message = MessageId.SET_INITIAL_TICKETS.name() + " " + ticketsSerde + " " + '\n';
+        System.out.println("setInitialTicketChoice in proxy is used ");
+        String message = (MessageId.SET_INITIAL_TICKETS.name() + " " + ticketsSerde + " " + '\n');
         sendMessage(message);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
+        System.out.println("choose initial tickets of proxy was called");
         sendMessage(MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
+        System.out.println("message is supposed to be sent : " + MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
         String string = receiveMessage();
         return Serdes.ticketSortedBagSerde.deserialize(string);
     }
@@ -104,6 +118,7 @@ public class RemotePlayerProxy implements Player {
         try{
            // BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII))){
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            System.out.println("message in sent by proxy is : " + message);
             w.write(message);
             w.write('\n');
             w.flush();

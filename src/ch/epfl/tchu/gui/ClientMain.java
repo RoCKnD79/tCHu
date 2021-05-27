@@ -27,9 +27,7 @@ public class ClientMain extends Application {
             portNumber = Integer.parseInt(arguments.get(1));
         }
 
-        GraphicalPlayerAdapter graphicalPlayerAdapter = new GraphicalPlayerAdapter();
-        RemotePlayerClient remotePlayerClient = new RemotePlayerClient(graphicalPlayerAdapter, hostname, portNumber);
-
+        RemotePlayerClient remotePlayerClient = new RemotePlayerClient(new GraphicalPlayerAdapter(), hostname, portNumber);
         new Thread(() -> {
             try {
                 remotePlayerClient.run();
