@@ -39,6 +39,11 @@ public class RemotePlayerClient {
             System.out.println(splitString[0] + " enum looked for");
             MessageId messageId = MessageId.valueOf(splitString[0]);
             switch (messageId){
+                case RECEIVE_INFO:
+                    String msg = Serdes.stringSerde.deserialize(splitString[1]);
+                    this.player.receiveInfo(msg);
+                    break;
+
                 case INIT_PLAYERS:
 
                     List<String> playerNames = Serdes.stringListSerde.deserialize(splitString[2]);
@@ -64,7 +69,7 @@ public class RemotePlayerClient {
                     SortedBag<Ticket> sortedbagTickets = player.chooseInitialTickets();
                     sendMessage(Serdes.ticketSortedBagSerde.serialize(sortedbagTickets));
                     System.out.println("choose initial tickets client message was sent");
-                    System.out.println(r.readLine());
+                    //System.out.println(r.readLine());
                     break;
                 case NEXT_TURN:
                     Player.TurnKind turnkind = player.nextTurn();
