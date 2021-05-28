@@ -35,6 +35,8 @@ public final class Game {
 
         Player player1 = players.get(PlayerId.PLAYER_1);
         Player player2 = players.get(PlayerId.PLAYER_2);
+        //Player player1 = players.get(gameState.currentPlayerId());
+        //Player player2 = players.get(gameState.currentPlayerId().next());
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
@@ -51,12 +53,14 @@ public final class Game {
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 
         SortedBag<Ticket> player1Tickets = player1.chooseInitialTickets();
+        //gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
+        //gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
 
-        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
-        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
+        gameState = gameState.withInitiallyChosenTickets(PlayerId.PLAYER_1, player1Tickets);
+        gameState = gameState.withInitiallyChosenTickets(PlayerId.PLAYER_2, player2Tickets);
 
-        informBothPlayers((new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size())), players);
+        informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size()), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
 
         boolean doWhile = true;
@@ -108,6 +112,7 @@ public final class Game {
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCard(cardSlot2)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     } else {
+                        //TODO ne faut-il pas inverser l'ordre ?
                         gameState = gameState.withBlindlyDrawnCard();
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
                     }
@@ -147,22 +152,30 @@ public final class Game {
                                 gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                             } else {
-                                List<SortedBag<Card>> currentPlayersPossibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim);
+                                /*
+                                list of POSSIBLE additional cards => cards player may play to claim,
+                                but doesn't necessarily have
+                                 */
+                                List<SortedBag<Card>> possibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim);
+
+                                SortedBag<Card> playersCardAfterInitialClaim = currentPlayerState.cards().difference(cardInitiallyUsedToClaim);
+
+                                for(SortedBag<Card> bag : new ArrayList<>(possibleAdditionalCards)) {
+                                    if(!playersCardAfterInitialClaim.contains(bag)) {
+                                        possibleAdditionalCards.remove(bag);
+                                    }
+                                }
+
                                 SortedBag<Card> additionalCardsChosen = SortedBag.of();
-                                if (currentPlayersPossibleAdditionalCards.size() > 0) {
-                                    additionalCardsChosen = (currentPlayer.chooseAdditionalCards(currentPlayersPossibleAdditionalCards));
+                                if (possibleAdditionalCards.size() > 0) {
+                                    additionalCardsChosen = (currentPlayer.chooseAdditionalCards(possibleAdditionalCards));
                                 }
 
                                 if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != numberOfAdditionalCards)) {
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                                     gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                 } else {
-
-                                    List<Card> listOfCardsUsed = additionalCardsChosen.toList();
-                                    for (Card c : cardInitiallyUsedToClaim) {
-                                        listOfCardsUsed.add(c);
-                                    }
-                                    SortedBag<Card> allCardsUsedToClaim = SortedBag.of(listOfCardsUsed);
+                                    SortedBag<Card> allCardsUsedToClaim = additionalCardsChosen.union(cardInitiallyUsedToClaim);
                                     gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
                                     gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                     informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
