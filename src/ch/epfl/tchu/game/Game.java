@@ -148,6 +148,7 @@ public final class Game {
                         } else {
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                         }
+                        informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
                     }
                     if ((routeToBeClaimed.level().equals(Route.Level.UNDERGROUND))) {
                         informBothPlayers(currentPlayerInfo.attemptsTunnelClaim(routeToBeClaimed, cardInitiallyUsedToClaim), players);
@@ -191,35 +192,9 @@ public final class Game {
                                 }
                             }
 
-                                /*SortedBag<Card> playersCardAfterInitialClaim = currentPlayerState.cards().difference(cardInitiallyUsedToClaim);
 
-                                for(SortedBag<Card> bag : new ArrayList<>(possibleAdditionalCards)) {
-                                    if(!playersCardAfterInitialClaim.contains(bag)) {
-                                        possibleAdditionalCards.remove(bag);
-
-                                    }
-                                }
-
-                                SortedBag<Card> additionalCardsChosen = SortedBag.of();
-                                if (possibleAdditionalCards.size() > 0) {
-                                    additionalCardsChosen = (currentPlayer.chooseAdditionalCards(possibleAdditionalCards));
-                                }
-
-                                if ((additionalCardsChosen.size() == 0) || (additionalCardsChosen.size() != numberOfAdditionalCards)) {
-                                    informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
-                                    gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
-                                } else {
-                                    SortedBag<Card> allCardsUsedToClaim = additionalCardsChosen.union(cardInitiallyUsedToClaim);
-                                    gameState = gameState.withClaimedRoute(routeToBeClaimed, allCardsUsedToClaim);
-                                    gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
-                                    informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
-                                }
-
-
-                        } else {
-                            informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
-                        }*/
                         }
+                        informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
                     }
                     break;
             }
