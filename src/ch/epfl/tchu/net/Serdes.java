@@ -8,15 +8,29 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
 public class Serdes {
 
     private static final String COMMA = ",";
     private static final String SEMI_COLON = ";";
     private static final String COLON = ":";
 
+    /**
+     * constructor set to private since class isn't supposed to be instanciated
+     */
     private Serdes(){}
 
+    /*--------------------------------------------------------
+    The following attributes in this class are all redefining:
+            first: the serialize() method of Serde
+            second: the deserialize() method of Serde
+     --------------------------------------------------------*/
+
+    //-----Serde to encode/decode integers-----
     public static final Serde<Integer> intSerde = Serde.of(Object::toString, Integer::parseInt);
+    //-----Serde to encode/decode strings-----
     public static final Serde<String> stringSerde = Serde.of(s -> {
         Base64.Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(s.getBytes(StandardCharsets.UTF_8));
@@ -25,19 +39,31 @@ public class Serdes {
         byte[] bytes = decoder.decode(s);
         return new String(bytes, StandardCharsets.UTF_8);
     });
+    //-----Serde to encode/decode PlayerId(s)-----
     public static final Serde<PlayerId> playerIdSerde = Serde.oneOf(PlayerId.ALL);
+    //-----Serde to encode/decode TurnKind(s)-----
     public static final Serde<Player.TurnKind> turnKindSerde = Serde.oneOf(Player.TurnKind.ALL);
+    //-----Serde to encode/decode Card(s)-----
     public static final Serde<Card> cardSerde = Serde.oneOf(Card.ALL);
+    //-----Serde to encode/decode Route(s)-----
     public static final Serde<Route> routeSerde = Serde.oneOf(ChMap.routes());
+    //-----Serde to encode/decode Ticket-----
     public static final Serde<Ticket> ticketSerde = Serde.oneOf(ChMap.tickets());
 
+    //-----Serde to encode/decode lists of strings-----
     public static final Serde<List<String>> stringListSerde = Serde.listOf(stringSerde, COMMA);
+    //-----Serde to encode/decode lists of cards-----
     public static final Serde<List<Card>> cardListSerde = Serde.listOf(cardSerde, COMMA);
+    //-----Serde to encode/decode lists of routes-----
     public static final Serde<List<Route>> routeListSerde = Serde.listOf(routeSerde, COMMA);
+    //-----Serde to encode/decode sorted bags of cards
     public static final Serde<SortedBag<Card>> cardSortedBagSerde = Serde.bagOf(cardSerde, COMMA);
+    //-----Serde to encode/decode sorted bags of tickets
     public static final Serde<SortedBag<Ticket>> ticketSortedBagSerde = Serde.bagOf(ticketSerde, COMMA);
+    //-----Serde to encode/decode lists of sorted bags of cards-----
     public static final Serde<List<SortedBag<Card>>> cardSortedBagListSerde = Serde.listOf(cardSortedBagSerde, SEMI_COLON);
 
+    //-----Serde to encode/decode publicCardState(s)-----
     public static final Serde<PublicCardState> publicCardStateSerde = Serde.of(
             publicCardState -> {
                 String faceUpCards = cardListSerde.serialize(publicCardState.faceUpCards());
@@ -62,6 +88,7 @@ public class Serdes {
                 return new PublicCardState(faceUpCards, deckSize, discardsSize);
             }
     );
+    //-----Serde to encode/decode PublicPlayerState(s)-----
     public static final Serde<PublicPlayerState> publicPlayerStateSerde = Serde.of(
       publicPlayerState -> {
           String ticketCount = intSerde.serialize(publicPlayerState.ticketCount());
@@ -85,6 +112,7 @@ public class Serdes {
           return new PublicPlayerState(ticketCount, cardCount, routes);
       }
     );
+    //-----Serde to encode/decode PlayerState(s)-----
     public static final Serde<PlayerState> playerStateSerde = Serde.of(
       playerState -> {
           String tickets = ticketSortedBagSerde.serialize(playerState.tickets());
@@ -108,6 +136,7 @@ public class Serdes {
           return new PlayerState(ticketCount, cards, routes);
       }
     );
+    //-----Serde to encode/decode PublicGameState(s)-----
     public static final Serde<PublicGameState> publicGameStateSerde = Serde.of(
         publicGameState -> {
             String ticketsCount = intSerde.serialize(publicGameState.ticketsCount());

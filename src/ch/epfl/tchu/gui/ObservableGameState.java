@@ -186,7 +186,6 @@ public class ObservableGameState {
     public ReadOnlyBooleanProperty booleanPropertyOfRoute(Route r) { return claimableRoutes.get(r); }
 
 
-
     /**
      * @return true if there are is at least 1 ticket available in deck
      */
@@ -209,20 +208,22 @@ public class ObservableGameState {
 
 
     //---------------------------updating methods---------------------------
+
+    /**
+     * updates the map associating a BooleanProperty to each route on map
+     */
     private void updateClaimableRoutesMap() {
-        //verify if it's this player's turn
+        //verify if it's this player's turn, if not then all routes' boolean properties are set to false
         if(publicGameState.currentPlayerId() != playerId) { ChMap.routes().forEach(r -> claimableRoutes.get(r).set(false)); }
 
         //removes all claimed routes from list of available routes
         List<Route> availableRoutes = new ArrayList<>(ChMap.routes());
         availableRoutes.removeAll(publicGameState.claimedRoutes());
-        //System.out.println("CLAIMABLE RRROOOOOOOOOUUUUUUUUUUTTTTTTTTTEEEEEEEEEESSSSSSSSS");
-        //publicGameState.claimedRoutes().forEach(r -> System.out.println(r.station1() + " - " + r.station2()));
+
         /*
         checks if the route attempted to be claimed is not a double-route, in which case if its neighbor route
         is claimed, it is removed from the list of available routes
          */
-        //for(Route r : availableRoutes) {
         for (Route r : new ArrayList<>(availableRoutes)) {
             if(r != null) {
                 for (Route claimedRoute : publicGameState.claimedRoutes()) {
@@ -234,6 +235,10 @@ public class ObservableGameState {
             }
         }
 
+        /*
+        if player can claim route then the associated boolean property is set to true;
+        else, it is set to false;
+         */
         for(Route r : availableRoutes) {
             if(playerState.canClaimRoute(r))
                 claimableRoutes.get(r).set(true);
@@ -243,6 +248,9 @@ public class ObservableGameState {
         System.out.println("(OGS) n° CLAIMED ROUTES: " + (ChMap.routes().size() - availableRoutes.size()));
     }
 
+    /**
+     * updates the owners associated to each Route in the routesOwners map
+     */
     private void updateRoutesOwners() {
 
         publicGameState.claimedRoutes().forEach(r -> {
@@ -260,6 +268,9 @@ public class ObservableGameState {
 
     //---------------------------initializing methods---------------------------
 
+    /**
+     * @return an initial list of card properties containing a face-up card set at null each (used in constructor)
+     */
     private List<ObjectProperty<Card>> initFaceUpCards() {
         List<ObjectProperty<Card>> list = new ArrayList<>();
         for(int i = 0; i < Constants.FACE_UP_CARDS_COUNT; ++i)
@@ -268,6 +279,9 @@ public class ObservableGameState {
         return list;
     }
 
+    /**
+     * @return An initial map associating a playerId property, initially null, to each route on the map (used in constructor)
+     */
     private Map<Route, ObjectProperty<PlayerId>> initRoutesOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         ChMap.routes().forEach(r -> map.put(r, new SimpleObjectProperty<>(null)));
@@ -275,6 +289,9 @@ public class ObservableGameState {
         return map;
     }
 
+    /**
+     * @return An initial map containing an IntegerProperty set initially at 0 for each card in playerId's hand (used in constructor)
+     */
     private Map<Card, IntegerProperty> initCardCountMap() {
         Map<Card, IntegerProperty> map = new HashMap<>();
         SortedBag<Card> cards = SortedBag.of(Card.ALL);
@@ -282,11 +299,8 @@ public class ObservableGameState {
         return map;
     }
 
-    /*
-    - le joueur est le joueur courant,
-    - la route n'appartient à personne et, dans le cas d'une route double, sa voisine non plus,
-    - le joueur a les wagons et les cartes nécessaires pour s'emparer de la route - ou
-      en tout cas tenter de le faire s'il s'agit d'un tunnel.
+    /**
+     * @return an initial map containing a BooleanProperty for each route of the game
      */
     private Map<Route, BooleanProperty> initClaimableRoutesMap() {
         Map<Route, BooleanProperty> map = new HashMap<>();
