@@ -15,9 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -26,11 +24,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 /**
  * @author Roman Danylovych (327830)
  */
@@ -38,7 +33,6 @@ public class GraphicalPlayer {
 
     Stage primaryStage = new Stage();
     ObservableGameState observableGameState;
-    //ObservableList<Text> observableList = null;
     ObservableList<Text> observableList = FXCollections.observableArrayList();
     ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler;
     ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
@@ -66,17 +60,8 @@ public class GraphicalPlayer {
 
         BorderPane mainPane = new BorderPane(mapView, null, cardsView, handView, infoView);
 
-        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        double width = screenSize.getWidth();
-        double height = screenSize.getHeight();
-
         primaryStage.setScene(new Scene(mainPane, 1280, 600));
         primaryStage.setTitle("tCHu \u2014 " + playerNames.get(playerId));
-        System.out.println("PLAYERID MY GUY: " + playerId);
-        playerNames.forEach((p,s) -> System.out.println("playerId: " + p.toString() + " ,nom: " + s));
-
-        primaryStage.setMaxHeight(1080);
-        primaryStage.setMaxWidth(1920);
         primaryStage.show();
 
     }
@@ -136,7 +121,6 @@ public class GraphicalPlayer {
             this.drawCardHandler.set((slot1) -> {
                 drawCardHandler.onDrawCard(slot1);
                 setHandlerPropertiesToNull();
-                drawCard(drawCardHandler);
             });
         }
 
@@ -180,7 +164,7 @@ public class GraphicalPlayer {
 
         //----------------------Choice Confirmation Button----------------------
         Button confirmButton = new Button();
-        confirmButton.setText("Choisir");
+        confirmButton.setText(StringsFr.CHOOSE);
 
         //start of game, at least 3 tickets must be chosen out of the 5 initial ones in order to press the button
         if(tickets.size() == Constants.INITIAL_TICKETS_COUNT) {
@@ -257,7 +241,7 @@ public class GraphicalPlayer {
 
         //----------------------Choice Confirmation Button----------------------
         Button confirmButton = new Button();
-        confirmButton.setText("Choisir");
+        confirmButton.setText(StringsFr.CHOOSE);
         confirmButton.disableProperty().bind(Bindings.greaterThan(1,
                 Bindings.size(choiceList.getSelectionModel().getSelectedItems())));
 
@@ -315,13 +299,12 @@ public class GraphicalPlayer {
 
         //----------------------Choice Confirmation Button----------------------
         Button confirmButton = new Button();
-        confirmButton.setText("Choisir");
+        confirmButton.setText(StringsFr.CHOOSE);
 
         //-----after confirming, window is closed and chosen tickets are passed as an argument to the handler-----
         confirmButton.setOnAction(e -> {
             stage.hide();
             SortedBag<Card> cardSet = choiceList.getSelectionModel().getSelectedItem();
-            System.out.println("cartes utilisées: " + cardSet);
             handler.onChooseCards(cardSet == null ? SortedBag.of() : cardSet);
         });
 

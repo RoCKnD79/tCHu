@@ -3,12 +3,9 @@ package ch.epfl.tchu.gui;
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.game.*;
 
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 
 import static javafx.application.Platform.runLater;
@@ -18,7 +15,6 @@ import static javafx.application.Platform.runLater;
 
 public class GraphicalPlayerAdapter implements Player {
 private GraphicalPlayer graphicalPlayer;
-Queue<Integer> slotQueue = new ArrayDeque<>();
 private final BlockingQueue<SortedBag<Ticket>> ticketsBlockingQueue = new ArrayBlockingQueue<>(1);
 private final BlockingQueue<SortedBag<Card>> cardsBlockingQueue = new ArrayBlockingQueue<>(1);
 private final BlockingQueue<Route> routeBlockingQueue = new ArrayBlockingQueue<>(1);
@@ -34,14 +30,7 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
      */
     @Override
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-        //BlockingQueue<GraphicalPlayer> blockingQueueGraphicalPlayer = new ArrayBlockingQueue<>(1);
-
         runLater(() -> graphicalPlayer = new GraphicalPlayer(ownId, playerNames));
-        /*try{
-            graphicalPlayer = blockingQueueGraphicalPlayer.take();
-        }catch (InterruptedException e){
-            throw new Error();
-        }*/
     }
 
     /**
@@ -50,14 +39,13 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
      */
     @Override
     public void receiveInfo(String info) {
-        System.out.println("receive info of adapter");
         runLater(() -> graphicalPlayer.receiveInfo(info));
     }
 
     /**
      * calls on the ajva fx thread the setState method of graphicalplayer
      * @param newState, new state of the player
-     * @param ownState, own state of the palyer
+     * @param ownState, own state of the player
      */
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
@@ -81,7 +69,6 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
         try {
-            System.out.println("helllloooo world choose initial tickets of adapter");
             return ticketsBlockingQueue.take();
         }catch (InterruptedException e){
             throw new Error();
@@ -101,7 +88,6 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
                         integerBlockingQueue.add(s);}
                 ,(r, t) -> {turnKindBlockingQueue.add(TurnKind.CLAIM_ROUTE);
                             routeBlockingQueue.add(r);
-                    System.out.println(routeBlockingQueue.size() + " : size of route blocking queue");
                             cardsBlockingQueue.add(t);}
         ));
         try{
@@ -135,7 +121,6 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
     @Override
     public int drawSlot() {
         if (!integerBlockingQueue.isEmpty()){
-            System.out.println("first case scenario in graphical adapter");
             return integerBlockingQueue.remove();
         }else{
         try{
@@ -153,11 +138,11 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
      */
     @Override
     public Route claimedRoute() {
-    try {
-        return routeBlockingQueue.take();
-    }catch (InterruptedException e){
-        throw new Error();
-    }
+        try {
+            return routeBlockingQueue.take();
+        }catch (InterruptedException e){
+            throw new Error();
+        }
     }
 
     /**
@@ -166,11 +151,11 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
      */
     @Override
     public SortedBag<Card> initialClaimCards() {
-    try{
-        return cardsBlockingQueue.take();}
-    catch (InterruptedException e){
-        throw new  Error();
-    }
+        try{
+            return cardsBlockingQueue.take();}
+        catch (InterruptedException e){
+            throw new  Error();
+        }
     }
 
     /**
@@ -181,9 +166,8 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
     @Override
     public SortedBag<Card> chooseAdditionalCards(List<SortedBag<Card>> options) {
        try {
-           BlockingQueue<SortedBag<Card>> sortedBagBlockingQueue = new ArrayBlockingQueue<>(1);
            runLater(() -> graphicalPlayer.chooseAdditionalCards(options, cardsBlockingQueue::add));
-           return sortedBagBlockingQueue.take();
+           return cardsBlockingQueue.take();
        }catch (InterruptedException e){
            throw new Error();
        }

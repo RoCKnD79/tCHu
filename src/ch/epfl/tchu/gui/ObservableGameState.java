@@ -5,7 +5,6 @@ import ch.epfl.tchu.game.*;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
 import java.util.*;
 
@@ -59,7 +58,7 @@ public class ObservableGameState {
     /**
      * updates all attributes
      * @param newGameState, the new publicGameState after a player did an action
-     * @param playerState, new PlayerState of th
+     * @param playerState, new PlayerState of playerId
      */
     public void setState(PublicGameState newGameState, PlayerState playerState) {
         publicGameState = newGameState;
@@ -240,12 +239,8 @@ public class ObservableGameState {
         else, it is set to false;
          */
         for(Route r : availableRoutes) {
-            if(playerState.canClaimRoute(r))
-                claimableRoutes.get(r).set(true);
-            else
-                claimableRoutes.get(r).set(false);
+            claimableRoutes.get(r).set(playerState.canClaimRoute(r));
         }
-        System.out.println("(OGS) n° CLAIMED ROUTES: " + (ChMap.routes().size() - availableRoutes.size()));
     }
 
     /**
@@ -285,7 +280,6 @@ public class ObservableGameState {
     private Map<Route, ObjectProperty<PlayerId>> initRoutesOwners() {
         Map<Route, ObjectProperty<PlayerId>> map = new HashMap<>();
         ChMap.routes().forEach(r -> map.put(r, new SimpleObjectProperty<>(null)));
-        //map.forEach((r, p) -> System.out.println(r));
         return map;
     }
 

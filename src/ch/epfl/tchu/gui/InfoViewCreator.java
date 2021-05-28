@@ -1,14 +1,8 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.game.GameState;
 import ch.epfl.tchu.game.PlayerId;
-import ch.epfl.tchu.game.PlayerState;
-import ch.epfl.tchu.game.PublicPlayerState;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.binding.StringExpression;
-import javafx.beans.value.ObservableStringValue;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Separator;
@@ -85,12 +79,9 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
     TextFlow textFlowMessage = new TextFlow();
     textFlowMessage.setId("game-info");
 
-    Text textMessage = new Text();
-    //textFlowMessage.getChildren().add(textMessage);
     Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
 
     //----------------------------------------------------
-    //test
     vBox2.getChildren().add(ownTextFlowStats);
     vBox2.getChildren().add(rivalTextFlowStats);
 

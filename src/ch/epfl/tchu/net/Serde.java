@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 
 /**
- * represents a serde : an object capable of serialising et deserialising
+ * represents a serde : an object capable of serializing et deserializing
  * @param <E>
  */
 public interface Serde<E> {
@@ -23,16 +23,16 @@ public interface Serde<E> {
     String serialize(E e);
 
     /**
-     * abstract method taking for argument the object to deserialise
-     * @param string, string that will be deserialised
-     * @return the deserialised string
+     * abstract method taking for argument the object to deserialisz
+     * @param string, string that will be deserialized
+     * @return the deserialized string
      */
     E deserialize(String string);
 
     /**
      *
-     * @param serialize, serialisation function
-     * @param deserialize, deserialisation function
+     * @param serialize, serialization function
+     * @param deserialize, deserialization function
      * @param <E> type parameter
      * @return the corresponding serde
      */
@@ -89,9 +89,9 @@ public interface Serde<E> {
     /**
      *
      * @param serde, gives values
-     * @param separator, seperator caracter
+     * @param separator, separator character
      * @param <E>, type parameter
-     * @return a serde capable of (de)serialising lists of values
+     * @return a serde capable of (de)serializing lists of values
      */
     static <E> Serde<List<E>> listOf(Serde<E> serde, String separator){
          return new Serde<>() {
@@ -123,9 +123,9 @@ public interface Serde<E> {
     /**
      * functions like list of but with a sortedBag
      * @param serde, gives values
-     * @param separator, sepereator used to seperate the elements
+     * @param separator, separator used to separate the elements
      * @param <E>, type parameter
-     * @return a serde capable of (de)serialising lists of values
+     * @return a serde capable of (de)serializing lists of values
      */
     static <E extends Comparable<E>> Serde<SortedBag<E>> bagOf(Serde<E> serde, String separator){
          return new Serde<>() {

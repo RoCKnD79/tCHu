@@ -5,7 +5,6 @@ import ch.epfl.tchu.game.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -144,7 +143,6 @@ public class Serdes {
             String currentPlayerId = playerIdSerde.serialize(publicGameState.currentPlayerId());
             String player1 = publicPlayerStateSerde.serialize(publicGameState.playerState(PlayerId.PLAYER_1));
             String player2 = publicPlayerStateSerde.serialize(publicGameState.playerState(PlayerId.PLAYER_2));
-            //TODO gérer le cas où lastPlayer est null
             String lastPlayer = playerIdSerde.serialize(publicGameState.lastPlayer());
 
             List<String> list = new ArrayList<>();

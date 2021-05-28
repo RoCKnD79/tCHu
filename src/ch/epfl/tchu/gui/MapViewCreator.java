@@ -14,7 +14,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -50,7 +49,6 @@ class MapViewCreator {
             routeGroup.getStyleClass().add("route");
             routeGroup.getStyleClass().add(r.level().name());
 
-            //TODO
             if(r.color() == null)
                 routeGroup.getStyleClass().add("NEUTRAL");
             else
@@ -79,10 +77,6 @@ class MapViewCreator {
                 rectangle.getStyleClass().add("track");
                 rectangle.getStyleClass().add("filled");
 
-                /*caseGroup.getChildren().add(rectangle);
-                caseGroup.getStyleClass().add("track");
-                caseGroup.getStyleClass().add("filled");*/
-
                 //--------------------Creating the car (wagon)--------------------
                 Group wagonGroup = new Group();
                 wagonGroup.getStyleClass().add("car");
@@ -99,7 +93,6 @@ class MapViewCreator {
 
                 caseGroup.getChildren().add(rectangle);
                 caseGroup.getChildren().add(wagonGroup);
-                //routeGroup.getChildren().add(wagonGroup);
                 routeGroup.getChildren().add(caseGroup);
             }
 

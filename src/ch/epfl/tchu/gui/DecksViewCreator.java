@@ -4,7 +4,6 @@ import ch.epfl.tchu.game.Card;
 import ch.epfl.tchu.game.Constants;
 import ch.epfl.tchu.game.Ticket;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -110,7 +109,7 @@ class DecksViewCreator {
 
         //-------------TicketButton and its gauge-------------
         Button ticketsButton = new Button();
-        ticketsButton.setText("Billets");
+        ticketsButton.setText(StringsFr.TICKETS);
         ticketsButton.getStyleClass().add("gauged");
 
         Group ticketGauge = new Group();
@@ -144,14 +143,13 @@ class DecksViewCreator {
 
             //will update the faceUpCards everytime they change
             cardProperty.addListener((prop, oldValue, newValue) -> {
+                int size = cardNode.getStyleClass().size();
                 if(newValue == Card.LOCOMOTIVE) {
-                    int size = cardNode.getStyleClass().size();
                     if (size == 2)
                         cardNode.getStyleClass().set(size - 1, "NEUTRAL");
                     else cardNode.getStyleClass().add("NEUTRAL");
                 }
                 else{
-                    int size = cardNode.getStyleClass().size();
                     if(size == 2)
                         cardNode.getStyleClass().set(size-1, newValue.toString());
                     else cardNode.getStyleClass().add(newValue.toString());
@@ -185,7 +183,7 @@ class DecksViewCreator {
 
         //-------------DeckButton and its gauge-------------
         Button deckButton = new Button();
-        deckButton.setText("Cartes");
+        deckButton.setText(StringsFr.CARDS);
         deckButton.getStyleClass().add("gauged");
 
         Group deckGauge = new Group();

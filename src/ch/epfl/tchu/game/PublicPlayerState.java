@@ -67,7 +67,7 @@ public class PublicPlayerState {
     }
 
     public int carCount() {
-        int numberOfCars = 40;
+        int numberOfCars = Constants.INITIAL_CAR_COUNT;
         if (routes != null) {
             for (Route r : routes) {
                 if(r != null)

@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class ClientMain extends Application {
     /**
      * main for client main
      * lauches with arguments in parameters which correspond to the host and port (in order)
-     * @param args
+     * @param args, arguments
      */
     public static void main(String[] args){
         launch(args);
@@ -50,7 +49,6 @@ public class ClientMain extends Application {
         new Thread(() -> {
             try {
                 remotePlayerClient.run();
-                System.out.println("END OF RUN");
             } catch (IOException e) {
                 e.printStackTrace();
             }

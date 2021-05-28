@@ -55,11 +55,8 @@ public class RemotePlayerProxy implements Player {
      */
     @Override
     public void receiveInfo(String info) {
-        //System.out.println("receive info in proxy is called");
         String infoSerde = Serdes.stringSerde.serialize(info);
         String message = (MessageId.RECEIVE_INFO.name() + " " + infoSerde + " " + '\n');
-        //System.out.println(infoSerde + " info serde !!!???");
-        //System.out.println("receive info message is supposed to be sent");
         sendMessage(message);
     }
 
@@ -70,11 +67,9 @@ public class RemotePlayerProxy implements Player {
      */
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        //System.out.println("update state of proxy is used");
         String newStateSerde = Serdes.publicGameStateSerde.serialize(newState);
         String ownStateSerde = Serdes.playerStateSerde.serialize(ownState);
         String message = (MessageId.UPDATE_STATE.name() + " " + String.join(" ", newStateSerde, ownStateSerde) + " " + '\n');
-        //System.out.println("update state message in proxy is sent : " + message);
         sendMessage(message);
     }
 
@@ -85,7 +80,6 @@ public class RemotePlayerProxy implements Player {
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String ticketsSerde = Serdes.ticketSortedBagSerde.serialize(tickets);
-        //System.out.println("setInitialTicketChoice in proxy is used ");
         String message = (MessageId.SET_INITIAL_TICKETS.name() + " " + ticketsSerde + " " + '\n');
         sendMessage(message);
     }
@@ -96,9 +90,7 @@ public class RemotePlayerProxy implements Player {
      */
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        //System.out.println("choose initial tickets of proxy was called");
         sendMessage(MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
-        //System.out.println("message is supposed to be sent : " + MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
         String string = receiveMessage();
         return Serdes.ticketSortedBagSerde.deserialize(string);
     }
@@ -177,9 +169,7 @@ public class RemotePlayerProxy implements Player {
      */
     private void sendMessage(String message){
         try{
-           // BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII))){
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
-            System.out.println("message in sent by proxy is : " + message);
             w.write(message);
             w.write('\n');
             w.flush();
