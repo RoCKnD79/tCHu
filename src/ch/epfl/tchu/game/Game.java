@@ -74,9 +74,9 @@ public final class Game {
             PlayerState currentPlayerState = gameState.currentPlayerState();
             PlayerState secondPlayerState = gameState.playerState(gameState.currentPlayerId().next());
 
-            if (!(gameState.lastPlayer() == null) && gameState.lastPlayer().equals(gameState.currentPlayerId())) {
+            /*if (!(gameState.lastPlayer() == null) && gameState.lastPlayer().equals(gameState.currentPlayerId())) {
                 informBothPlayers(currentPlayerInfo.lastTurnBegins(secondPlayerState.carCount()), players);
-            }
+            }*/
             informBothPlayers(currentPlayerInfo.canPlay(), players);
 
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
@@ -227,6 +227,12 @@ public final class Game {
             if (gameState.currentPlayerId().equals((gameState.lastPlayer()))) {
                 lastTurn = true;
             }
+
+            //if (!(gameState.lastPlayer() == null) && gameState.lastPlayer().equals(gameState.currentPlayerId())) {
+            if(gameState.lastTurnBegins()){
+                informBothPlayers(currentPlayerInfo.lastTurnBegins(gameState.playerState(gameState.currentPlayerId()).carCount()), players);
+            }
+
             gameState = gameState.forNextTurn();
             doWhile = !gameState.currentPlayerId().equals((gameState.lastPlayer())) && (!(gameState.lastTurnBegins()));
 
