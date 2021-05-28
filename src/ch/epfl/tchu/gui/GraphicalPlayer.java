@@ -31,7 +31,9 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+/**
+ * @author Roman Danylovych (327830)
+ */
 public class GraphicalPlayer {
 
     Stage primaryStage = new Stage();
@@ -42,6 +44,11 @@ public class GraphicalPlayer {
     ObjectProperty<ActionHandlers.DrawTicketsHandler> drawTicketsHandler;
     ObjectProperty<ActionHandlers.DrawCardHandler> drawCardHandler;
 
+    /**
+     * GraphicalPlayer's constructor
+     * @param playerId, the playerId to which we'd like to attach this graphical interface
+     * @param playerNames, map of the names corresponding to each PlayerId
+     */
     public GraphicalPlayer(PlayerId playerId, Map<PlayerId, String> playerNames){
         this.observableGameState = new ObservableGameState(playerId);
 
@@ -65,6 +72,8 @@ public class GraphicalPlayer {
 
         primaryStage.setScene(new Scene(mainPane, 1280, 600));
         primaryStage.setTitle("tCHu \u2014 " + playerNames.get(playerId));
+        System.out.println("PLAYERID MY GUY: " + playerId);
+        playerNames.forEach((p,s) -> System.out.println("playerId: " + p.toString() + " ,nom: " + s));
 
         primaryStage.setMaxHeight(1080);
         primaryStage.setMaxWidth(1920);
@@ -312,6 +321,7 @@ public class GraphicalPlayer {
         confirmButton.setOnAction(e -> {
             stage.hide();
             SortedBag<Card> cardSet = choiceList.getSelectionModel().getSelectedItem();
+            System.out.println("cartes utilisées: " + cardSet);
             handler.onChooseCards(cardSet == null ? SortedBag.of() : cardSet);
         });
 
@@ -332,7 +342,7 @@ public class GraphicalPlayer {
     }
 
     /**
-     *
+     * A setter for each handler property in this class
      * @param drawTicketsHandler, handler in charge of dealing with drawing tickets, can be null
      * @param drawCardHandler, handler in charge of dealing with drawing cards, can be null
      * @param claimRouteHandler, handler in charge of dealing with claiming routes

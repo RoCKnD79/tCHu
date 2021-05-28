@@ -17,14 +17,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+/**
+ * @author Roman Danylovych (327830)
+ */
 class DecksViewCreator {
 
+    /**
+     * private constructor, the class isn't supposed to be instantiated
+     */
     private DecksViewCreator(){}
 
     /**
-     *
-     * @param ogs,
-     * @return
+     * Creates the view of the player's hand => list of tickets and his cards
+     * @param ogs, ObservableGameState
+     * @return HBox (horizontal view) of the hand view
      */
     static HBox createHandView(ObservableGameState ogs) {
         HBox handView = new HBox();
@@ -83,6 +89,16 @@ class DecksViewCreator {
         return handView;
     }
 
+
+    /**
+     * creates the view of the cards in game => face-up cards, deck button and tickets button
+     * @param observableGameState, ObservableGameState
+     * @param ticketHandler, ticket handler, if null: tickets button can't be pressed
+     *                                       else: preforms the action it is assigned
+     * @param cardHandler, card handler, if null: deck button can't be pressed and face up cards can't be drawn
+     *                                      else: preforms the action it is assigned
+     * @return a VBox (vertical view) of the cards view
+     */
     static VBox createCardsView(ObservableGameState observableGameState,
                                 ObjectProperty<ActionHandlers.DrawTicketsHandler> ticketHandler,
                                 ObjectProperty<ActionHandlers.DrawCardHandler> cardHandler) {
