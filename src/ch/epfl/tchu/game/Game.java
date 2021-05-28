@@ -31,15 +31,17 @@ public final class Game {
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
         }
-        GameState gameState = GameState.initial(tickets, rng);
 
-        /*Player player1 = players.get(PlayerId.PLAYER_1);
-        Player player2 = players.get(PlayerId.PLAYER_2);*/
-        Player player1 = players.get(gameState.currentPlayerId());
-        Player player2 = players.get(gameState.currentPlayerId().next());
+        Player player1 = players.get(PlayerId.PLAYER_1);
+        Player player2 = players.get(PlayerId.PLAYER_2);
+
+        /*Player player1 = players.get(gameState.currentPlayerId());
+        Player player2 = players.get(gameState.currentPlayerId().next());*/
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
+
+        GameState gameState = GameState.initial(tickets, rng);
 
         informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId())).willPlayFirst()), players);
 
@@ -47,6 +49,7 @@ public final class Game {
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
         SortedBag<Ticket> player2InitialTickets = SortedBag.of(gameState.topTickets(Constants.INITIAL_TICKETS_COUNT));
         gameState = gameState.withoutTopTickets(Constants.INITIAL_TICKETS_COUNT);
+
         player1.setInitialTicketChoice(player1InitialTickets);
         player2.setInitialTicketChoice(player2InitialTickets);
 
@@ -82,19 +85,25 @@ public final class Game {
             switch (currentPlayer.nextTurn()) {
                 case DRAW_TICKETS:
 
-                    SortedBag<Ticket> proposedTickets = gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
-                    SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(proposedTickets);
+                    if(gameState.canDrawTickets()) {
+                        SortedBag<Ticket> proposedTickets = gameState.topTickets(Constants.IN_GAME_TICKETS_COUNT);
+                        informBothPlayers(currentPlayerInfo.drewTickets(proposedTickets.size()), players);
 
-                    informBothPlayers(currentPlayerInfo.drewTickets(proposedTickets.size()), players);
+                        SortedBag<Ticket> chosenTickets = currentPlayer.chooseTickets(proposedTickets);
 
-                    gameState = gameState.withChosenAdditionalTickets(proposedTickets, chosenTickets);
+                        informBothPlayers(currentPlayerInfo.keptTickets(chosenTickets.size()), players);
 
-                    informBothPlayers(currentPlayerInfo.keptTickets(chosenTickets.size()), players);
-                    informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+                        gameState = gameState.withChosenAdditionalTickets(proposedTickets, chosenTickets);
+
+                        informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+
+
+                    }
                     break;
 
                 case DRAW_CARDS:
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+                    if(gameState.canDrawCards()){
                     int cardSlot1 = currentPlayer.drawSlot();
 
                     if (cardSlot1 != Constants.DECK_SLOT) {
@@ -103,19 +112,25 @@ public final class Game {
                     } else {
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
                         gameState = gameState.withBlindlyDrawnCard();
-                    }
-                    informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
+                    }}
+
+                   // informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
 
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
+
+                    player1.updateState(gameState, gameState.playerState(PlayerId.PLAYER_1));
+                    player2.updateState(gameState, gameState.playerState(PlayerId.PLAYER_2));
+
+                    if(gameState.canDrawCards()){
                     int cardSlot2 = currentPlayer.drawSlot();
                     if (cardSlot2 != Constants.DECK_SLOT) {
                         informBothPlayers(currentPlayerInfo.drewVisibleCard(gameState.cardState().faceUpCard(cardSlot2)), players);
                         gameState = gameState.withDrawnFaceUpCard(cardSlot2);
                     } else {
-                        //TODO ne faut-il pas inverser l'ordre ?
-                        gameState = gameState.withBlindlyDrawnCard();
                         informBothPlayers(currentPlayerInfo.drewBlindCard(), players);
-                    }
+                        gameState = gameState.withBlindlyDrawnCard();
+                    }}
+
 
                     break;
 
@@ -128,7 +143,6 @@ public final class Game {
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if (currentPlayerState.canClaimRoute(routeToBeClaimed)) {
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
-                            informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                         } else {
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                         }
