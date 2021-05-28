@@ -31,43 +31,43 @@ public class RemotePlayerProxy implements Player {
     //TODO \n a la fin du message pas accepté wtf
     public void initPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
         String namesSerialized = Serdes.stringListSerde.serialize(List.of(playerNames.get(ownId), playerNames.get(ownId.next())));
-        sendMessage(MessageId.INIT_PLAYERS.name() + " " + Serdes.playerIdSerde.serialize(ownId) + " " + namesSerialized + " " +'\n');
-        System.out.println("send message in initPlayersproxy ");
+        sendMessage(MessageId.INIT_PLAYERS.name() + " " + Serdes.playerIdSerde.serialize(ownId) + " " + namesSerialized + " " );
+        //System.out.println("send message in initPlayersproxy ");
     }
 
     @Override
     public void receiveInfo(String info) {
-        System.out.println("receive info in proxy is called");
+        //System.out.println("receive info in proxy is called");
         String infoSerde = Serdes.stringSerde.serialize(info);
         String message = (MessageId.RECEIVE_INFO.name() + " " + infoSerde + " " + '\n');
-        System.out.println(infoSerde + " info serde !!!???");
-        System.out.println("receive info message is supposed to be sent");
+        //System.out.println(infoSerde + " info serde !!!???");
+        //System.out.println("receive info message is supposed to be sent");
         sendMessage(message);
     }
 
     @Override
     public void updateState(PublicGameState newState, PlayerState ownState) {
-        System.out.println("update state of proxy is used");
+        //System.out.println("update state of proxy is used");
         String newStateSerde = Serdes.publicGameStateSerde.serialize(newState);
         String ownStateSerde = Serdes.playerStateSerde.serialize(ownState);
         String message = (MessageId.UPDATE_STATE.name() + " " + String.join(" ", newStateSerde, ownStateSerde) + " " + '\n');
-        System.out.println("update state message in proxy is sent : " + message);
+        //System.out.println("update state message in proxy is sent : " + message);
         sendMessage(message);
     }
 
     @Override
     public void setInitialTicketChoice(SortedBag<Ticket> tickets) {
         String ticketsSerde = Serdes.ticketSortedBagSerde.serialize(tickets);
-        System.out.println("setInitialTicketChoice in proxy is used ");
+        //System.out.println("setInitialTicketChoice in proxy is used ");
         String message = (MessageId.SET_INITIAL_TICKETS.name() + " " + ticketsSerde + " " + '\n');
         sendMessage(message);
     }
 
     @Override
     public SortedBag<Ticket> chooseInitialTickets() {
-        System.out.println("choose initial tickets of proxy was called");
+        //System.out.println("choose initial tickets of proxy was called");
         sendMessage(MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
-        System.out.println("message is supposed to be sent : " + MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
+        //System.out.println("message is supposed to be sent : " + MessageId.CHOOSE_INITIAL_TICKETS.name()+ " " + '\n');
         String string = receiveMessage();
         return Serdes.ticketSortedBagSerde.deserialize(string);
     }
@@ -81,7 +81,7 @@ public class RemotePlayerProxy implements Player {
 
     @Override
     public SortedBag<Ticket> chooseTickets(SortedBag<Ticket> options) {
-        sendMessage(MessageId.CHOOSE_TICKETS.name()+ " " +'\n');
+        sendMessage(MessageId.CHOOSE_TICKETS.name()+ " " + Serdes.ticketSortedBagSerde.serialize(options) + " " + '\n');
         String string = receiveMessage();
         return Serdes.ticketSortedBagSerde.deserialize(string);
     }
