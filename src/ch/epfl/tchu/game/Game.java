@@ -27,7 +27,6 @@ public final class Game {
      */
     public static void play(Map<PlayerId, Player> players, Map<PlayerId, String> playerNames, SortedBag<Ticket> tickets, Random rng)
             throws IllegalArgumentException {
-        System.out.println("play has started");
         if ((players.size() < 2) || (playerNames.size() < 2)) {
             throw new IllegalArgumentException();
         }
