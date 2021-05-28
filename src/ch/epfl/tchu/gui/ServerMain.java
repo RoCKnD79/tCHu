@@ -14,17 +14,32 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
+
 public class ServerMain extends Application {
     String player1Name;
     String player2Name;
     Map<PlayerId, Player> players = new HashMap<>();
     Map<PlayerId, String> playerNames = new HashMap<>();
 
-
+    /**
+     * main method for server main, call launch with args in argument, which correspond to the name of the players
+     * @param args, name of players in String table
+     */
     public static void main(String[] args){
         launch(args);
     }
 
+    /**
+     * start method for server,
+     * creates server socket,
+     * analyses arguments,
+     * creates a new thread that is launched
+     * @param primaryStage, primary stage not used
+     * @throws Exception, thrown by the serverSocket if there is an error when opening the socket
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         ServerSocket serverSocket = new ServerSocket(5108);
