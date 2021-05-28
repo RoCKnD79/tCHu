@@ -142,7 +142,9 @@ public final class Game {
 
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if (currentPlayerState.canClaimRoute(routeToBeClaimed)) {
+                            informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
+
                         } else {
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                         }
@@ -172,11 +174,29 @@ public final class Game {
                                  */
                                 List<SortedBag<Card>> possibleAdditionalCards = currentPlayerState.possibleAdditionalCards(numberOfAdditionalCards, cardInitiallyUsedToClaim);
 
-                                SortedBag<Card> playersCardAfterInitialClaim = currentPlayerState.cards().difference(cardInitiallyUsedToClaim);
+                                if (possibleAdditionalCards.isEmpty()) {
+                                    gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                    informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+
+                                } else {
+                                    SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(possibleAdditionalCards));
+                                    if (additionalCardsChosen.isEmpty()) {
+                                        gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                        informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                                    } else {
+                                        gameState = gameState.withClaimedRoute(routeToBeClaimed, additionalCardsChosen.union(cardInitiallyUsedToClaim));
+                                        gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                        informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, additionalCardsChosen.union(cardInitiallyUsedToClaim)), players);
+                                    }
+                                }
+                            }
+
+                                /*SortedBag<Card> playersCardAfterInitialClaim = currentPlayerState.cards().difference(cardInitiallyUsedToClaim);
 
                                 for(SortedBag<Card> bag : new ArrayList<>(possibleAdditionalCards)) {
                                     if(!playersCardAfterInitialClaim.contains(bag)) {
                                         possibleAdditionalCards.remove(bag);
+
                                     }
                                 }
 
@@ -194,10 +214,11 @@ public final class Game {
                                     gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
                                     informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, allCardsUsedToClaim), players);
                                 }
-                            }
+
 
                         } else {
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
+                        }*/
                         }
                     }
                     break;
