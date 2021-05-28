@@ -84,7 +84,6 @@ public final class PlayerState extends PublicPlayerState {
         return new PlayerState(this.tickets, cards.union(newCard), this.routes);
     }
 
-//dévore moi le poireau
     /**
      * tests if given route can be claimed with the cards the player has
      *
@@ -154,7 +153,6 @@ public final class PlayerState extends PublicPlayerState {
      *
      * @param additionalCardsCount, number of additional cards the player will need to play
      * @param initialCards,         the cards the player played initially to claim the tunnel, before drawing the additional cards
-     * @param drawnCards,           the 3 cards drawn by the player after he played his initialCards to begin claiming a tunnel
      * @return a List of possible additional cards the player is able to play in order to finish claiming the tunnel
      * @throws IllegalArgumentException if the number of additionalCards (=> additionalCardsCount) is < 1 or > 3
      *                                  if initialCards is empty or more than 2 types of cards (2 types because at most
