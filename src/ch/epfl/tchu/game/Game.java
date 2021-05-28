@@ -33,10 +33,10 @@ public final class Game {
         }
         GameState gameState = GameState.initial(tickets, rng);
 
-        Player player1 = players.get(PlayerId.PLAYER_1);
-        Player player2 = players.get(PlayerId.PLAYER_2);
-        //Player player1 = players.get(gameState.currentPlayerId());
-        //Player player2 = players.get(gameState.currentPlayerId().next());
+        /*Player player1 = players.get(PlayerId.PLAYER_1);
+        Player player2 = players.get(PlayerId.PLAYER_2);*/
+        Player player1 = players.get(gameState.currentPlayerId());
+        Player player2 = players.get(gameState.currentPlayerId().next());
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
@@ -53,12 +53,12 @@ public final class Game {
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 
         SortedBag<Ticket> player1Tickets = player1.chooseInitialTickets();
-        //gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
+        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
-        //gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
+        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
 
-        gameState = gameState.withInitiallyChosenTickets(PlayerId.PLAYER_1, player1Tickets);
-        gameState = gameState.withInitiallyChosenTickets(PlayerId.PLAYER_2, player2Tickets);
+        /*gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
+        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);*/
 
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size()), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
