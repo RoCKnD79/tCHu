@@ -1,5 +1,7 @@
 package ch.epfl.tchu.net;
-//u a bitch ass
+/**
+enumeration corresponding to the different values that a message can take
+ */
 public enum MessageId {
     INIT_PLAYERS,
     RECEIVE_INFO,

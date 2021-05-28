@@ -18,9 +18,24 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.util.Map;
+/**
+ * @author Christopher Soriano (326354)
+ * @author Roman Danylovych (327830)
+ */
 
 class InfoViewCreator {
-
+    /**
+     *creates the vue for the information
+     * called before the game starts : the list of information is then empty
+     * there are three parts to the info :
+     *  - the first two correspond to the stats of both players, separated by a line
+     *  - the second part corresponds to the list of info for the unfolding of the game
+     * @param playerId, id of player to which the interface belongs
+     * @param playerNames, names of players
+     * @param gameState, observable game state
+     * @param observableGameTextList, contains the information on the unfolding of the game
+     * @return the info view
+     */
 public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playerNames, ObservableGameState gameState, ObservableList<Text> observableGameTextList){
 
     VBox infoView = new VBox();

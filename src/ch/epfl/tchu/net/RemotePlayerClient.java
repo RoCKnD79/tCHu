@@ -8,11 +8,16 @@ import java.io.*;
 import java.net.Socket;
 import java.time.chrono.IsoEra;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+/**
+@author Christopher Soriano (326354)
+*/
+
 
 public class RemotePlayerClient {
 
@@ -20,6 +25,13 @@ public class RemotePlayerClient {
     final BufferedReader r;
     Player player;
 
+    /**
+     * constructor for a RemotePlayerClient
+     * @param player, the player that will be the client
+     * @param host, the host of the server
+     * @param port, the port used
+     * @throws IOException if there is an issue whith the socket
+     */
     public RemotePlayerClient(Player player, String host, int port) throws IOException {
         this.player = player;
             this.socket = new Socket(host, port);
@@ -27,6 +39,16 @@ public class RemotePlayerClient {
 
     }
 
+    /**
+     * this method does a loop while there is still a line that is read
+     * in this loop :
+     *  - waits for a message from the proxy
+     *  - divides it into parts using a separator
+     *  - determines the type of message from the first part of the divided message
+     *  - depending on this type of message, deserialises the arguments, call the corresponding method of player.
+     *  - if this method then returns a result (not void), then it serialises it and sends it to the proxy
+     * @throws IOException if there is an issue with the socket
+     */
     public void run() throws IOException {
         String string;
         //.out.println("line read is the following : " + string);
@@ -49,9 +71,10 @@ public class RemotePlayerClient {
                     List<String> playerNames = Serdes.stringListSerde.deserialize(splitString[2]);
                     PlayerId ownId = Serdes.playerIdSerde.deserialize(splitString[1]);
                     Map<PlayerId, String> playerNameMap = new EnumMap<PlayerId, String>(PlayerId.class);
+                    //Map<PlayerId, String> playerNameMap = new HashMap<>();
                     for(PlayerId playerId : PlayerId.ALL){
                         System.out.println("Player names size " + playerNames.size());
-                        playerNameMap.put(playerId, playerNames.get(playerId.ordinal()));
+                        playerNameMap.put(playerId, playerNames.get(playerId.next().ordinal()));
                     }
                     player.initPlayers(ownId, playerNameMap);
                     break;
@@ -100,6 +123,10 @@ public class RemotePlayerClient {
     }
 
 
+    /**
+     * used to send a message through buffered writer
+     * @param message that will be sent
+     */
     private void sendMessage(String message){
         try{
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
