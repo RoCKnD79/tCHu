@@ -17,9 +17,23 @@ import javafx.scene.shape.Rectangle;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * @author Christopher Soriano (326354)
+ */
+
 //Package private class
 class MapViewCreator {
-
+    /**
+     *adds all routes to a group, sets their ids, level and color :
+     *manages the claim of routes by disabling the button if route was already claimed before
+     * if a player clicks on a road, that means he wants to claim it : if it is a normal road, if he clicks it he will claim it
+     * if it is a tunnel, he attempts to claim it
+     * this method also creates the rectangle when the route is claimed (with two circles on top of the rectangle)
+     * @param observableGameState, observable state of the game
+     * @param claimRouteHandler, handler used when player wants to claim a route
+     * @param cardChooser, card chooser for when a player has several choices of cards to claim a route
+     * @return a pane
+     */
     public static Node createMapView(ObservableGameState observableGameState, ObjectProperty<ActionHandlers.ClaimRouteHandler> claimRouteHandler, CardChooser cardChooser){
         Pane pane = new Pane();
         pane.getStylesheets().add("map.css");
@@ -94,8 +108,17 @@ class MapViewCreator {
         return pane;
     }
 
+    /**
+     * functional interface used in the case a player wants to claim a route and has several
+     * options to claim it, then this lets him choose which set of cars he wants to use.
+     */
     @FunctionalInterface
     interface CardChooser {
+        /**
+         *
+         * @param options, list of sorted bags containing all the options the player can use to claim the route
+         * @param handler, choose card handler
+         */
         void chooseCards(List<SortedBag<Card>> options,
                          ActionHandlers.ChooseCardsHandler handler);
     }

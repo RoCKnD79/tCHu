@@ -8,12 +8,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientMain extends Application {
+/**
+ * @author Christopher Soriano (326354)
+ */
 
+public class ClientMain extends Application {
+    /**
+     * main for client main
+     * lauches with arguments in parameters which correspond to the host and port (in order)
+     * @param args
+     */
     public static void main(String[] args){
         launch(args);
     }
 
+    /**
+     * contains principal programm for the tCHu server.
+     * analyses the arguments to get the names of the players
+     * waits for a connexion from the client on the port passed in argument
+     * creates two players :
+     *  -1rst player : graphicalPlayerAdapter
+     *  -2nd player  : remotePlayerClient
+     * launches a thread that runs run from the client
+     * @param primaryStage, is ignored
+     * @throws Exception if the socket is not accepted
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         String hostname;
