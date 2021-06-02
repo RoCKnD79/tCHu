@@ -1,25 +1,28 @@
 package ch.epfl.tchu.gui;
 
-import ch.epfl.tchu.game.Card;
-import ch.epfl.tchu.game.Constants;
-import ch.epfl.tchu.game.Ticket;
+import ch.epfl.tchu.game.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 /**
  * @author Roman Danylovych (327830)
  */
 class DecksViewCreator {
+
+    private static final String DEFAULT_CONTROL_INNER_BACKGROUND = "derive(-fx-base,80%)";
+    private static final String HIGHLIGHTED_CONTROL_INNER_BACKGROUND = "derive(palegreen, 50%)";
 
     /**
      * private constructor, the class isn't supposed to be instantiated
@@ -37,6 +40,32 @@ class DecksViewCreator {
         handView.getStylesheets().add("colors.css");
 
         ListView<Ticket> ticketListView = new ListView<>(ogs.ticketsListProperty());
+
+        ticketListView.setCellFactory(new Callback<ListView<Ticket>, ListCell<Ticket>>() {
+                                          @Override
+                                          public ListCell<Ticket> call(ListView<Ticket> param) {
+                                              return new ListCell<Ticket>() {
+                                                  @Override
+                                                  protected void updateItem(Ticket item, boolean empty) {
+                                                      super.updateItem(item, empty);
+
+                                                      if (item == null || empty) {
+                                                          setText(null);
+                                                      } else {
+                                                          setText(item.toString());
+                                                          if (claimedTicket(ogs, item)) {
+                                                              setStyle("-fx-control-inner-background: " + "derive(palegreen, 50%)");
+                                                          }
+                                                      }
+                                                  }
+
+                                              };
+                                          }
+                                      });
+
+
+
+
         ticketListView.setId("tickets");
         handView.getChildren().add(ticketListView);
 
@@ -207,6 +236,29 @@ class DecksViewCreator {
         cardsView.getChildren().add(deckButton);
 
         return cardsView;
+    }
+
+    private static boolean claimedTicket(ObservableGameState obs, Ticket ticket){
+        int number = 0;
+        if(obs.getPlayerState().routes() != null) {
+            for (Route route : obs.getPlayerState().routes()) {
+                if(route != null) {
+                    number = Math.max(route.station1().id(), number);
+                    number = Math.max(route.station2().id(), number);
+                }
+            }
+        }
+
+
+        StationPartition.Builder stationPartitionBuilder = new StationPartition.Builder(1 + number);
+        for(Route route2 : obs.getPlayerState().routes()){
+            if(route2 != null) {
+                stationPartitionBuilder.connect(route2.station1(), route2.station2());
+            }
+        }
+
+        StationPartition stationPartition = stationPartitionBuilder.build();
+        return ticket.points(stationPartition) > 0;
     }
 
 }
