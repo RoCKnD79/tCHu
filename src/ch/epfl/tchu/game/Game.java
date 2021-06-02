@@ -2,10 +2,12 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -16,6 +18,8 @@ public final class Game {
 
    static Media soundTrain = new Media("https://cdn.shopify.com/s/files/1/1223/4792/files/eh-ooga.mp3?3238148150578254638");
    static MediaPlayer mediaPlayerTrain = new MediaPlayer(soundTrain);
+    static String fileName = Paths.get("resources/mario_death.mp3").toUri().toString();
+    static AudioClip buzzer = new AudioClip(fileName);
    //static Media soundMario = new Media("trainSound.mp3");
    //static MediaPlayer mediaPlayerMario = new MediaPlayer(soundMario);
     private Game() {
@@ -154,7 +158,7 @@ public final class Game {
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
 
                         } else {
-                            //mediaPlayerMario.play();
+                            buzzer.play();
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                         }
                         informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
@@ -188,14 +192,14 @@ public final class Game {
 
                                 if (possibleAdditionalCards.isEmpty()) {
                                     gameState.withMoreDiscardedCards(cardsDrawnSorted);
-                                   // mediaPlayerMario.play();
+                                    buzzer.play();
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
 
                                 } else {
                                     SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(possibleAdditionalCards));
                                     if (additionalCardsChosen.isEmpty()) {
                                         gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
-                                       // mediaPlayerMario.play();
+                                        buzzer.play();
                                         informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                                     } else {
                                         gameState = gameState.withClaimedRoute(routeToBeClaimed, additionalCardsChosen.union(cardInitiallyUsedToClaim));
