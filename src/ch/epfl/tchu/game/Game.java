@@ -2,6 +2,9 @@ package ch.epfl.tchu.game;
 
 import ch.epfl.tchu.SortedBag;
 import ch.epfl.tchu.gui.Info;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.util.*;
 
@@ -11,6 +14,10 @@ import java.util.*;
 
 public final class Game {
 
+   static Media soundTrain = new Media("https://cdn.shopify.com/s/files/1/1223/4792/files/eh-ooga.mp3?3238148150578254638");
+   static MediaPlayer mediaPlayerTrain = new MediaPlayer(soundTrain);
+   //static Media soundMario = new Media("trainSound.mp3");
+   //static MediaPlayer mediaPlayerMario = new MediaPlayer(soundMario);
     private Game() {
     }
 
@@ -142,9 +149,12 @@ public final class Game {
                     if ((routeToBeClaimed.level().equals(Route.Level.OVERGROUND))) {
                         if (currentPlayerState.canClaimRoute(routeToBeClaimed)) {
                             informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
+                            mediaPlayerTrain.seek(Duration.ZERO);
+                            mediaPlayerTrain.play();
                             gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
 
                         } else {
+                            //mediaPlayerMario.play();
                             informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                         }
                         informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
@@ -166,6 +176,8 @@ public final class Game {
                             if (numberOfAdditionalCards == 0) {
                                 gameState = gameState.withClaimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim);
                                 gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                mediaPlayerTrain.seek(Duration.ZERO);
+                                mediaPlayerTrain.play();
                                 informBothPlayers(currentPlayerInfo.claimedRoute(routeToBeClaimed, cardInitiallyUsedToClaim), players);
                             } else {
                                 /*
@@ -176,12 +188,14 @@ public final class Game {
 
                                 if (possibleAdditionalCards.isEmpty()) {
                                     gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                   // mediaPlayerMario.play();
                                     informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
 
                                 } else {
                                     SortedBag<Card> additionalCardsChosen = (currentPlayer.chooseAdditionalCards(possibleAdditionalCards));
                                     if (additionalCardsChosen.isEmpty()) {
                                         gameState = gameState.withMoreDiscardedCards(cardsDrawnSorted);
+                                       // mediaPlayerMario.play();
                                         informBothPlayers(currentPlayerInfo.didNotClaimRoute(routeToBeClaimed), players);
                                     } else {
                                         gameState = gameState.withClaimedRoute(routeToBeClaimed, additionalCardsChosen.union(cardInitiallyUsedToClaim));
@@ -214,15 +228,18 @@ public final class Game {
 
         informBothPlayerOfAGameStateChange(players, gameState.currentPlayerState(), gameState.playerState(gameState.currentPlayerId().next()), gameState);
 
+        List<Route> longestRoute = new ArrayList<>();
         int currentPlayerPoints = gameState.currentPlayerState().finalPoints();
         int secondPlayerPoints = gameState.playerState(gameState.currentPlayerId().next()).finalPoints();
         if ((Trail.longest(gameState.currentPlayerState().routes()).length()) > Trail.longest(gameState.playerState(gameState.currentPlayerId().next()).routes()).length()) {
             currentPlayerPoints += Constants.LONGEST_TRAIL_BONUS_POINTS;
             informBothPlayers((new Info(playerNames.get(gameState.currentPlayerId()))).getsLongestTrailBonus(Trail.longest(gameState.currentPlayerState().routes())), players);
+            longestRoute.addAll(gameState.currentPlayerState().routes());
         }
         if ((Trail.longest(gameState.currentPlayerState().routes()).length()) < Trail.longest(gameState.playerState(gameState.currentPlayerId().next()).routes()).length()) {
             secondPlayerPoints += Constants.LONGEST_TRAIL_BONUS_POINTS;
             informBothPlayers(((new Info(playerNames.get(gameState.currentPlayerId().next()))).getsLongestTrailBonus(Trail.longest(gameState.playerState(gameState.currentPlayerId().next()).routes()))), players);
+            longestRoute.addAll(gameState.playerState(gameState.currentPlayerId().next()).routes());
         }
         if ((Trail.longest(gameState.currentPlayerState().routes()).length()) == Trail.longest(gameState.playerState(gameState.currentPlayerId().next()).routes()).length()) {
             currentPlayerPoints += Constants.LONGEST_TRAIL_BONUS_POINTS;
@@ -245,6 +262,8 @@ public final class Game {
         if (currentPlayerPoints == secondPlayerPoints) {
             informBothPlayers(Info.draw(listOfPlayers, currentPlayerPoints), players);
         }
+
+
     }
 
     private static void informBothPlayerOfAGameStateChange(Map<PlayerId, Player> players, PlayerState currentPlayerState, PlayerState otherPlayState, PublicGameState newGameState) {
