@@ -83,7 +83,9 @@ public class ObservableGameState {
         rivalCarsCount.set(rivalPlayerState.carCount());
         rivalPoints.set(rivalPlayerState.claimPoints());
 
+
         ticketList.setAll(playerState.tickets().toList());
+
         SortedBag<Card> playerCards = playerState.cards();
         countPerCard.forEach( (c, i) -> i.set(playerCards.countOf(c)));
         updateClaimableRoutesMap();
@@ -114,8 +116,6 @@ public class ObservableGameState {
      * @return the BooleanProperty corresponding to the route => if playerId owns it, BooleanProperty contains true
      */
     public ReadOnlyObjectProperty<PlayerId> routesOwnersProperty(Route route) { return routesOwners.get(route); }
-
-
 
     /*
     Following getters return properties that are proper to this class' playerId playerState
@@ -261,6 +261,7 @@ public class ObservableGameState {
     }
 
 
+
     //---------------------------initializing methods---------------------------
 
     /**
@@ -301,6 +302,19 @@ public class ObservableGameState {
         ChMap.routes().forEach(r -> map.put(r, new SimpleBooleanProperty(false)));
 
         return map;
+    }
+
+    public PlayerState getPlayerState(){
+        return playerState;
+    }
+
+    public boolean ticketIsWon(Ticket t){
+            for (Ticket ticket : playerState.claimedTickets()) {
+                if(t.equals(ticket)){
+                    return true;
+                }
+            }
+            return false;
     }
 
 }
