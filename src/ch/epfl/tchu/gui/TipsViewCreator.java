@@ -51,9 +51,9 @@ class TipsViewCreator {
 
         //-------------Text 2: choisir des cartes-------------
         Text text2 = new Text("Pour pouvoir accomplir des billets il va falloir s'emparer de routes.\n" +
-                "Pour ce faire, il faut des cartes. Lors de votre tour, vous pouvez choisir soit entre " +
+                "Pour se faire, il faut des cartes. Lors de votre tour, vous pouvez choisir soit entre " +
                 "les 5 cartes visibles\n (votre adversaire saura quelle carte vous avez tirer), soit tirer " +
-                " en secret dans la pile.\nATTENTION, lorsque vous tirez une carte, vous êtes obligés " +
+                " une carte secrete dans la pile.\nATTENTION, lorsque vous tirez une carte, vous êtes obligés " +
                 "d'en tirer une deuxième ce qui terminera votre tour.");
         tutorialTexts.add(text2);
 
@@ -98,7 +98,7 @@ class TipsViewCreator {
 
         //-------------Text 5: game infos-------------
         Text text5 = new Text("Toutes les informations sur le déroulement du jeu sont affichées à gauche de l'écran. " +
-                "Sur ce bonne chance pour accumuler le max de points et gagner !");
+                "Sur ce, bonne chance pour accumuler le max de points et gagner !");
         tutorialTexts.add(text5);
 
         BorderPane pane5 = new BorderPane();
