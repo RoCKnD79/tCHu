@@ -122,7 +122,6 @@ public class RemotePlayerClient {
     private void sendMessage(String message){
         try{
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
-            System.out.println("message sent by client is : " + message);
             w.write(message);
             w.write('\n');
             w.flush();

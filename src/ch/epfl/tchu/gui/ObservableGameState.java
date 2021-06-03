@@ -308,13 +308,5 @@ public class ObservableGameState {
         return playerState;
     }
 
-    public boolean ticketIsWon(Ticket t){
-            for (Ticket ticket : playerState.claimedTickets()) {
-                if(t.equals(ticket)){
-                    return true;
-                }
-            }
-            return false;
-    }
 
 }

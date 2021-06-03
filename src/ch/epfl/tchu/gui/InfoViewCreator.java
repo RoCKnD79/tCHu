@@ -4,13 +4,18 @@ import ch.epfl.tchu.game.PlayerId;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.io.IOException;
 import java.util.Map;
 /**
  * @author Christopher Soriano (326354)
@@ -35,9 +40,12 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
     VBox infoView = new VBox();
     infoView.getStylesheets().add("info.css");
     infoView.getStylesheets().add("colors.css");
+    infoView.getStylesheets().add("tips.css");
 
     VBox vBox2 = new VBox();
     vBox2.setId("player-stats");
+
+    HBox tipBox = new HBox();
 
     //--------------------------this player's stats section--------------------------
     TextFlow ownTextFlowStats = new TextFlow();
@@ -81,13 +89,32 @@ public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playe
 
     Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
 
+
+    //--------------------------Tips Button--------------------------
+    Button tipsButton = new Button();
+    tipsButton.getStyleClass().add("tips-button");
+    tipsButton.setOnMouseClicked(e -> {
+            try {
+                TipsViewCreator.showTips();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
+
     //----------------------------------------------------
     vBox2.getChildren().add(ownTextFlowStats);
     vBox2.getChildren().add(rivalTextFlowStats);
 
+    tipBox.setPadding(new Insets(10, 10, 10, 5));
+    tipBox.getChildren().add(tipsButton);
+
+    //tipBox.setAlignment(Pos.BOTTOM_LEFT);
+
+    infoView.getChildren().add(tipBox);
     infoView.getChildren().add(vBox2);
     infoView.getChildren().add(separator);
     infoView.getChildren().add(textFlowMessage);
+
 
 
     return infoView;
