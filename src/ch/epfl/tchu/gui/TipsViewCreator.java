@@ -28,7 +28,7 @@ class TipsViewCreator {
 
     private TipsViewCreator() {}
 
-    static void showTips() throws IOException {
+    public static void showTips() throws IOException {
         Stage stage = new Stage(StageStyle.UTILITY);
 
         List<Text> tutorialTexts = new ArrayList<>();
