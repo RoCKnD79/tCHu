@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="renduEtapePrev">
+    <output-path>$PROJECT_DIR$/out/artifacts/renduEtapePrev</output-path>
+    <root id="root">
+      <element id="archive" name="projetEtapeRendu.zip">
+        <element id="directory" name="MyProject">
+          <element id="directory" name="src">
+            <element id="dir-copy" path="$PROJECT_DIR$/src" />
+          </element>
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
