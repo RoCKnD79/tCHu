@@ -103,42 +103,15 @@ public final class PlayerState extends PublicPlayerState {
     public List<SortedBag<Card>> possibleClaimCards(Route route) {
 
         int length = route.length();
-
         if (this.carCount() < length) {
             throw new IllegalArgumentException("Number of cars must be at least " + length);
         }
 
-        Set<Card> availableCards = cards.toSet();
         List<SortedBag<Card>> list = new ArrayList<>();
-
-        if (route.level().equals(Route.Level.OVERGROUND) || !cards.contains(Card.LOCOMOTIVE)) {
-            if (route.color() == null) {
-                for (Card c : availableCards) {
-                    if (c.equals(Card.LOCOMOTIVE)) continue;
-                    if (cards.countOf(c) >= length) {
-                        list.add(SortedBag.of(length, c));
-                    }
-                }
-            } else {
-                if (cards.countOf(Card.of(route.color())) >= length) {
-                    list.add(SortedBag.of(length, Card.of(route.color())));
-                }
-            }
-
-        } else {
-            if (route.color() == null) {
-                if (cards.countOf(Card.LOCOMOTIVE) >= length) {
-                    list.add(SortedBag.of(length, Card.LOCOMOTIVE));
-                }
-            } else {
-                for (int i = 0; i <= length; ++i) {
-                    if (cards.countOf(Card.of(route.color())) >= length - i && cards.countOf(Card.LOCOMOTIVE) >= i) {
-                        list.add(SortedBag.of(length - i, Card.of(route.color()), i, Card.LOCOMOTIVE));
-                    }
-                }
-            }
-
+        for(SortedBag<Card> candidate : route.possibleClaimCards()) {
+            if(cards.contains(candidate)) list.add(candidate);
         }
+
         return list;
     }
 
@@ -161,7 +134,7 @@ public final class PlayerState extends PublicPlayerState {
      */
     public List<SortedBag<Card>> possibleAdditionalCards(int additionalCardsCount, SortedBag<Card> initialCards) throws IllegalArgumentException {
 
-        if ((additionalCardsCount < 1) || (additionalCardsCount > 3)) {
+        if ((additionalCardsCount < 1) || (additionalCardsCount > Constants.ADDITIONAL_TUNNEL_CARDS)) {
             throw new IllegalArgumentException("additionnal card count is not between 1 and 3 included");
         }
         if (initialCards.isEmpty() || initialCards.toSet().size() > 2) {

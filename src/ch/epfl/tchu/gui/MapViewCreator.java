@@ -41,8 +41,6 @@ class MapViewCreator {
         ImageView imageView = new ImageView();
         pane.getChildren().add(imageView);
 
-
-
         for(Route r : ChMap.routes()){
             Group routeGroup = new Group();
             routeGroup.setId(r.id());
@@ -96,8 +94,10 @@ class MapViewCreator {
                 routeGroup.getChildren().add(caseGroup);
             }
 
-
         }
+
+
+
         return pane;
     }
 

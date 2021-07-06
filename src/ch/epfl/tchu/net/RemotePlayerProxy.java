@@ -18,8 +18,10 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  */
 public class RemotePlayerProxy implements Player {
 
-    BufferedReader r;
+    private final BufferedReader r;
     private final Socket socket;
+    private final InputStream inputStream;
+    private final OutputStream outputStream;
 
     /**
      * constructor of remotePlayerProxy
@@ -29,7 +31,10 @@ public class RemotePlayerProxy implements Player {
     public RemotePlayerProxy(Socket socket) throws IOException {
         this.socket = socket;
         try {
-            this.r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            //this.r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            inputStream = socket.getInputStream();
+            outputStream = socket.getOutputStream();
+            this.r = new BufferedReader(new InputStreamReader(inputStream, US_ASCII));
         }catch (IOException e){
             throw new UncheckedIOException(e);
         }
@@ -169,7 +174,8 @@ public class RemotePlayerProxy implements Player {
      */
     private void sendMessage(String message){
         try{
-            BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            //BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), US_ASCII));
+            BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outputStream, US_ASCII));
             w.write(message);
             w.write('\n');
             w.flush();
@@ -184,7 +190,8 @@ public class RemotePlayerProxy implements Player {
      */
     private String receiveMessage(){
         try{
-            BufferedReader r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            //BufferedReader r = new BufferedReader(new InputStreamReader(socket.getInputStream(), US_ASCII));
+            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream, US_ASCII));
             return r.readLine();
         }catch(IOException e){
             throw new UncheckedIOException(e);

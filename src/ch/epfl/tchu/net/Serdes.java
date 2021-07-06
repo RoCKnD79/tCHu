@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * @author Roman Danylovych (327830)
  */
-public class Serdes {
+public final class Serdes {
 
     private static final String COMMA = ",";
     private static final String SEMI_COLON = ";";

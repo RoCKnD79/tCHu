@@ -22,8 +22,7 @@ public final class Game {
     static AudioClip buzzer = new AudioClip(fileName);
    //static Media soundMario = new Media("trainSound.mp3");
    //static MediaPlayer mediaPlayerMario = new MediaPlayer(soundMario);
-    private Game() {
-    }
+    private Game() {}
 
     /**
      * makes the players play a game of tCHu
@@ -44,9 +43,6 @@ public final class Game {
 
         Player player1 = players.get(PlayerId.PLAYER_1);
         Player player2 = players.get(PlayerId.PLAYER_2);
-
-        /*Player player1 = players.get(gameState.currentPlayerId());
-        Player player2 = players.get(gameState.currentPlayerId().next());*/
 
         player1.initPlayers(PlayerId.PLAYER_1, playerNames);
         player2.initPlayers(PlayerId.PLAYER_2, playerNames);
@@ -70,9 +66,6 @@ public final class Game {
         SortedBag<Ticket> player2Tickets = player2.chooseInitialTickets();
         gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);
 
-        /*gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId(), player1Tickets);
-        gameState = gameState.withInitiallyChosenTickets(gameState.currentPlayerId().next(), player2Tickets);*/
-
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_1)).keptTickets(player2Tickets.size()), players);
         informBothPlayers(new Info(playerNames.get(PlayerId.PLAYER_2)).keptTickets(player1Tickets.size()), players);
 
@@ -84,9 +77,6 @@ public final class Game {
             PlayerState currentPlayerState = gameState.currentPlayerState();
             PlayerState secondPlayerState = gameState.playerState(gameState.currentPlayerId().next());
 
-            /*if (!(gameState.lastPlayer() == null) && gameState.lastPlayer().equals(gameState.currentPlayerId())) {
-                informBothPlayers(currentPlayerInfo.lastTurnBegins(secondPlayerState.carCount()), players);
-            }*/
             informBothPlayers(currentPlayerInfo.canPlay(), players);
 
             informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
@@ -124,7 +114,6 @@ public final class Game {
                         gameState = gameState.withBlindlyDrawnCard();
                     }}
 
-                   // informBothPlayerOfAGameStateChange(players, currentPlayerState, secondPlayerState, gameState);
 
                     gameState = gameState.withCardsDeckRecreatedIfNeeded(rng);
 
@@ -220,7 +209,6 @@ public final class Game {
                 lastTurn = true;
             }
 
-            //if (!(gameState.lastPlayer() == null) && gameState.lastPlayer().equals(gameState.currentPlayerId())) {
             if(gameState.lastTurnBegins()){
                 informBothPlayers(currentPlayerInfo.lastTurnBegins(gameState.playerState(gameState.currentPlayerId()).carCount()), players);
             }

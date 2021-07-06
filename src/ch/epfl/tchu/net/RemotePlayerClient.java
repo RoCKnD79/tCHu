@@ -64,7 +64,6 @@ public class RemotePlayerClient {
                     break;
 
                 case INIT_PLAYERS:
-
                     List<String> playerNames = Serdes.stringListSerde.deserialize(splitString[2]);
                     PlayerId ownId = Serdes.playerIdSerde.deserialize(splitString[1]);
                     Map<PlayerId, String> playerNameMap = new EnumMap<>(PlayerId.class);
@@ -73,6 +72,7 @@ public class RemotePlayerClient {
                     }
                     player.initPlayers(ownId, playerNameMap);
                     break;
+
                 case UPDATE_STATE:
                     PublicGameState newState = Serdes.publicGameStateSerde.deserialize(splitString[1]);
                     PlayerState ownState = Serdes.playerStateSerde.deserialize(splitString[2]);
@@ -83,31 +83,40 @@ public class RemotePlayerClient {
                     SortedBag<Ticket> tickets = Serdes.ticketSortedBagSerde.deserialize(splitString[1]);
                     player.setInitialTicketChoice(tickets);
                     break;
+
                 case CHOOSE_INITIAL_TICKETS:
                     SortedBag<Ticket> sortedbagTickets = player.chooseInitialTickets();
                     sendMessage(Serdes.ticketSortedBagSerde.serialize(sortedbagTickets));
                     break;
+
                 case NEXT_TURN:
                     Player.TurnKind turnkind = player.nextTurn();
                     sendMessage(Serdes.turnKindSerde.serialize(turnkind));
                     break;
+
                 case CHOOSE_TICKETS:
                     SortedBag<Ticket> options = Serdes.ticketSortedBagSerde.deserialize(splitString[1]);
                     sendMessage(Serdes.ticketSortedBagSerde.serialize(player.chooseTickets(options)));
                     break;
+
                 case DRAW_SLOT:
                     sendMessage(Serdes.intSerde.serialize(player.drawSlot()));
                     break;
+
                 case ROUTE:
                     sendMessage(Serdes.routeSerde.serialize(player.claimedRoute()));
                     break;
+
                 case CARDS:
                     sendMessage(Serdes.cardSortedBagSerde.serialize(player.initialClaimCards()));
                     break;
+
                 case CHOOSE_ADDITIONAL_CARDS:
                     List<SortedBag<Card>> list = Serdes.cardSortedBagListSerde.deserialize(splitString[1]);
                     sendMessage(Serdes.cardSortedBagSerde.serialize(player.chooseAdditionalCards(list)));
                     break;
+
+                default : throw new Error("Not a possible case");
             }
 
         }

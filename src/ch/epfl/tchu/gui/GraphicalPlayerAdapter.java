@@ -14,6 +14,7 @@ import static javafx.application.Platform.runLater;
  */
 
 public class GraphicalPlayerAdapter implements Player {
+
 private GraphicalPlayer graphicalPlayer;
 private final BlockingQueue<SortedBag<Ticket>> ticketsBlockingQueue = new ArrayBlockingQueue<>(1);
 private final BlockingQueue<SortedBag<Card>> cardsBlockingQueue = new ArrayBlockingQueue<>(1);
@@ -83,12 +84,13 @@ private final BlockingQueue<Integer> integerBlockingQueue = new ArrayBlockingQue
     @Override
     public TurnKind nextTurn() {
         BlockingQueue<TurnKind> turnKindBlockingQueue = new ArrayBlockingQueue<>(1);
-        runLater(() -> graphicalPlayer.startTurn(() -> turnKindBlockingQueue.add(TurnKind.DRAW_TICKETS),
-                (s) -> {turnKindBlockingQueue.add(TurnKind.DRAW_CARDS);
-                        integerBlockingQueue.add(s);}
-                ,(r, t) -> {turnKindBlockingQueue.add(TurnKind.CLAIM_ROUTE);
-                            routeBlockingQueue.add(r);
-                            cardsBlockingQueue.add(t);}
+        runLater(() -> graphicalPlayer.startTurn(
+                    () -> turnKindBlockingQueue.add(TurnKind.DRAW_TICKETS),
+                    (s) -> {turnKindBlockingQueue.add(TurnKind.DRAW_CARDS);
+                            integerBlockingQueue.add(s);}
+                    ,(r, t) -> {turnKindBlockingQueue.add(TurnKind.CLAIM_ROUTE);
+                                routeBlockingQueue.add(r);
+                                cardsBlockingQueue.add(t);}
         ));
         try{
             return turnKindBlockingQueue.take();
