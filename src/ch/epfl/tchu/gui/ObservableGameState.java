@@ -11,11 +11,13 @@ import java.util.*;
 /**
  * @author Roman Danylovych (327830)
  */
-public class ObservableGameState {
+public final class ObservableGameState {
 
     private final PlayerId playerId;
     private PlayerState playerState;
     private PublicGameState publicGameState;
+
+    private Map<PlayerId, PublicPlayerState> publicPlayerStateOf = initNullPlayerIdMap();
 
     private final IntegerProperty ticketsPercent;
     private final IntegerProperty cardsPercent;
@@ -31,6 +33,11 @@ public class ObservableGameState {
     private final IntegerProperty rivalCardsCount = new SimpleIntegerProperty();
     private final IntegerProperty rivalCarsCount = new SimpleIntegerProperty();
     private final IntegerProperty rivalPoints = new SimpleIntegerProperty();
+
+    private final Map<PlayerId, IntegerProperty> ticketsCountOf = initIntegerPropertyMap();
+    private final Map<PlayerId, IntegerProperty> cardsCountOf = initIntegerPropertyMap();
+    private final Map<PlayerId, IntegerProperty> carsCountOf = initIntegerPropertyMap();
+    private final Map<PlayerId, IntegerProperty> pointsOf = initIntegerPropertyMap();
 
     private final ObservableList<Ticket> ticketList;
     private final Map<Card, IntegerProperty> countPerCard;
@@ -72,17 +79,8 @@ public class ObservableGameState {
         }
         updateRoutesOwners();
 
-        ownTicketsCount.set(playerState.ticketCount());
-        ownCardsCount.set(playerState.cardCount());
-        ownCarsCount.set(playerState.carCount());
-        ownPoints.set(playerState.claimPoints());
-
-        PublicPlayerState rivalPlayerState = newGameState.playerState(playerId.next());
-        rivalTicketsCount.set(rivalPlayerState.ticketCount());
-        rivalCardsCount.set(rivalPlayerState.cardCount());
-        rivalCarsCount.set(rivalPlayerState.carCount());
-        rivalPoints.set(rivalPlayerState.claimPoints());
-
+        updatePlayerStates();
+        updatePublicProperties();
 
         ticketList.setAll(playerState.tickets().toList());
 
@@ -125,46 +123,22 @@ public class ObservableGameState {
     /**
      * @return property containing the tickets of playerId
      */
-    public ReadOnlyIntegerProperty ownTicketsCountProperty() { return ownTicketsCount; }
+    public ReadOnlyIntegerProperty ticketsCountProperty(PlayerId id) { return ticketsCountOf.get(id); }
 
     /**
-     * @return property containing the number of cards playerId owns
+     * @return property containing the number of cards given player owns
      */
-    public ReadOnlyIntegerProperty ownCardsCountProperty() { return ownCardsCount; }
+    public ReadOnlyIntegerProperty cardsCountProperty(PlayerId id) { return cardsCountOf.get(id); }
 
     /**
-     * @return property containing the number of cars playerId owns
+     * @return property containing the number of cars given player owns
      */
-    public ReadOnlyIntegerProperty ownCarsCountProperty() { return ownCarsCount; }
+    public ReadOnlyIntegerProperty carsCountProperty(PlayerId id) { return carsCountOf.get(id); }
 
     /**
-     * @return property containing the number of points playerId owns
+     * @return property containing the number of points given player owns
      */
-    public ReadOnlyIntegerProperty ownPointsProperty() { return ownPoints; }
-
-    /*
-    Following getters return properties that are proper to playerId's adversary playerState
-    => their number of tickets, cards, cars and points
-     */
-    /**
-     * @return property containing the tickets of playerId's adversary
-     */
-    public ReadOnlyIntegerProperty rivalTicketsCountProperty() { return rivalTicketsCount; }
-
-    /**
-     * @return property containing the number of cards playerId's adversary owns
-     */
-    public ReadOnlyIntegerProperty rivalCardsCountProperty() { return rivalCardsCount; }
-
-    /**
-     * @return property containing the number of cars playerId's adversary owns
-     */
-    public ReadOnlyIntegerProperty rivalCarsCountProperty() { return rivalCarsCount; }
-
-    /**
-     * @return property containing the number of points playerId's adversary owns
-     */
-    public ReadOnlyIntegerProperty rivalPointsProperty() { return rivalPoints; }
+    public ReadOnlyIntegerProperty pointsProperty(PlayerId id) { return pointsOf.get(id); }
 
 
     /**
@@ -203,7 +177,9 @@ public class ObservableGameState {
         return playerState.possibleClaimCards(routeToClaim);
     }
 
-
+    public PlayerState getPlayerState(){
+        return playerState;
+    }
 
 
     //---------------------------updating methods---------------------------
@@ -260,7 +236,19 @@ public class ObservableGameState {
         });
     }
 
+    private void updatePlayerStates() {
+        PlayerId.ALL.forEach(id -> publicPlayerStateOf.putIfAbsent(id, publicGameState.playerState(id)));
+    }
 
+    private void updatePublicProperties() {
+        for(PlayerId id : PlayerId.ALL) {
+            PublicPlayerState pps = publicGameState.playerState(id);
+            ticketsCountOf.get(id).set(pps.ticketCount());
+            cardsCountOf.get(id).set(pps.cardCount());
+            carsCountOf.get(id).set(pps.carCount());
+            pointsOf.get(id).set(pps.claimPoints());
+        }
+    }
 
     //---------------------------initializing methods---------------------------
 
@@ -304,9 +292,16 @@ public class ObservableGameState {
         return map;
     }
 
-    public PlayerState getPlayerState(){
-        return playerState;
+    private Map<PlayerId, IntegerProperty> initIntegerPropertyMap() {
+        Map<PlayerId, IntegerProperty> map = new HashMap<>();
+        PlayerId.ALL.forEach(id -> map.put(id, new SimpleIntegerProperty()));
+        return map;
     }
 
+    private <E> Map<PlayerId, E> initNullPlayerIdMap() {
+        Map<PlayerId, E> map = new HashMap<>();
+        PlayerId.ALL.forEach(id -> map.put(id, null));
+        return map;
+    }
 
 }

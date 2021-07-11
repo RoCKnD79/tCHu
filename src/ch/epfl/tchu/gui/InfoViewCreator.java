@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 /**
  * @author Christopher Soriano (326354)
@@ -35,89 +36,80 @@ class InfoViewCreator {
      * @param observableGameTextList, contains the information on the unfolding of the game
      * @return the info view
      */
-public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playerNames, ObservableGameState gameState, ObservableList<Text> observableGameTextList){
+    public static VBox createInfoView(PlayerId playerId, Map<PlayerId, String> playerNames, ObservableGameState gameState, ObservableList<Text> observableGameTextList){
 
-    VBox infoView = new VBox();
-    infoView.getStylesheets().add("info.css");
-    infoView.getStylesheets().add("colors.css");
-    infoView.getStylesheets().add("tips.css");
+        VBox infoView = new VBox();
+        infoView.getStylesheets().add("info.css");
+        infoView.getStylesheets().add("colors.css");
+        infoView.getStylesheets().add("tips.css");
 
-    VBox vBox2 = new VBox();
-    vBox2.setId("player-stats");
+        VBox vBoxStats = new VBox();
+        vBoxStats.setId("player-stats");
 
-    HBox tipBox = new HBox();
+        HBox tipBox = new HBox();
 
-    //--------------------------this player's stats section--------------------------
-    TextFlow ownTextFlowStats = new TextFlow();
-    ownTextFlowStats.getStyleClass().add(playerId.toString());
+        Map<PlayerId, TextFlow> textFlowStatsOf = new HashMap<>();
+        Map<PlayerId, Circle> circleOf = new HashMap<>();
+        Map<PlayerId, Text> textStatsOf = new HashMap<>();
+        Map<PlayerId, StringExpression> stringExpressionOf = new HashMap<>();
 
-    Circle ownCircle = new Circle(5);
-    ownCircle.getStyleClass().add("filled");
+        //--------------------------players' stats section--------------------------
+        for(PlayerId id : PlayerId.ALL) {
+            textFlowStatsOf.put(id, new TextFlow());
+            textFlowStatsOf.get(id).getStyleClass().add(id.toString());
 
-    Text ownTextStats = new Text();
-    StringExpression ownStringExpression = Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId),
-            gameState.ownTicketsCountProperty(),  gameState.ownCardsCountProperty(),
-            gameState.ownCarsCountProperty(), gameState.ownPointsProperty());
-    ownTextStats.textProperty().bind(ownStringExpression);
+            circleOf.put(id, new Circle(5));
+            circleOf.get(id).getStyleClass().add("filled");
 
-    ownTextFlowStats.getChildren().add(ownCircle);
-    ownTextFlowStats.getChildren().add(ownTextStats);
+            textStatsOf.put(id, new Text());
+            stringExpressionOf.put(id,
+                            Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(id),
+                            gameState.ticketsCountProperty(id),  gameState.cardsCountProperty(id),
+                            gameState.carsCountProperty(id), gameState.pointsProperty(id)) );
+            textStatsOf.get(id).textProperty().bind(stringExpressionOf.get(id));
 
-    //--------------------------rival player's stats section--------------------------
-    TextFlow rivalTextFlowStats = new TextFlow();
-    rivalTextFlowStats.getStyleClass().add(playerId.next().toString());
-
-    Circle rivalCircle = new Circle(5);
-    rivalCircle.getStyleClass().add("filled");
-
-    Text rivalTextStats = new Text();
-    StringExpression rivalStringExpression = Bindings.format(StringsFr.PLAYER_STATS, playerNames.get(playerId.next()),
-            gameState.rivalTicketsCountProperty(),  gameState.rivalCardsCountProperty(),
-            gameState.rivalCarsCountProperty(), gameState.rivalPointsProperty());
-    rivalTextStats.textProperty().bind(rivalStringExpression);
-
-    rivalTextFlowStats.getChildren().add(rivalCircle);
-    rivalTextFlowStats.getChildren().add(rivalTextStats);
-
-    //--------------------------Separator between player stats and game information--------------------------
-    Separator separator = new Separator();
-    separator.setOrientation(Orientation.HORIZONTAL);
-
-    //--------------------------The messages giving information on the happenings in the game--------------------------
-    TextFlow textFlowMessage = new TextFlow();
-    textFlowMessage.setId("game-info");
-
-    Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
+            textFlowStatsOf.get(id).getChildren().add(circleOf.get(id));
+            textFlowStatsOf.get(id).getChildren().add(textStatsOf.get(id));
+        }
 
 
-    //--------------------------Tips Button--------------------------
-    Button tipsButton = new Button();
-    tipsButton.getStyleClass().add("tips-button");
-    tipsButton.setOnMouseClicked(e -> {
-            try {
-                TipsViewCreator.showTips();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        });
+        //--------------------------Separator between player stats and game information--------------------------
+        Separator separator = new Separator();
+        separator.setOrientation(Orientation.HORIZONTAL);
 
-    //----------------------------------------------------
-    vBox2.getChildren().add(ownTextFlowStats);
-    vBox2.getChildren().add(rivalTextFlowStats);
+        //--------------------------The messages giving information on the happenings in the game--------------------------
+        TextFlow textFlowMessage = new TextFlow();
+        textFlowMessage.setId("game-info");
 
-    tipBox.setPadding(new Insets(10, 10, 10, 5));
-    tipBox.getChildren().add(tipsButton);
-
-    //tipBox.setAlignment(Pos.BOTTOM_LEFT);
-
-    infoView.getChildren().add(tipBox);
-    infoView.getChildren().add(vBox2);
-    infoView.getChildren().add(separator);
-    infoView.getChildren().add(textFlowMessage);
+        Bindings.bindContent(textFlowMessage.getChildren(), observableGameTextList);
 
 
+        //--------------------------Tips Button--------------------------
+        Button tipsButton = new Button();
+        tipsButton.getStyleClass().add("tips-button");
+        tipsButton.setOnMouseClicked(e -> {
+                try {
+                    TipsViewCreator.showTips();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
 
-    return infoView;
-}
+        //----------------------------------------------------
+
+        vBoxStats.getChildren().add(textFlowStatsOf.get(playerId));
+        vBoxStats.getChildren().add(textFlowStatsOf.get(playerId.next()));
+
+        tipBox.setPadding(new Insets(10, 10, 10, 5));
+        tipBox.getChildren().add(tipsButton);
+
+        infoView.getChildren().add(tipBox);
+        infoView.getChildren().add(vBoxStats);
+        infoView.getChildren().add(separator);
+        infoView.getChildren().add(textFlowMessage);
+
+
+        return infoView;
+    }
 
 }
